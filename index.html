@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Esquiva</title>
+<style>
+  :root { --bg: #0d0f1a; --fg: #f2f2f7; --accent: #6ee7ff; --star: #ffd166; --danger: #ff5c7a; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; overflow: hidden; }
+  canvas { display: block; cursor: none; touch-action: none; }
+  #hud { position: fixed; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; pointer-events: none; }
+  #overlay { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 16px; background: rgba(13,15,26,.75); }
+  #overlay h1 { font-size: clamp(40px, 10vw, 80px); letter-spacing: 4px; color: var(--accent); }
+  #overlay p { max-width: 420px; line-height: 1.5; opacity: .85; }
+  #overlay button { font: inherit; font-weight: 700; font-size: 20px; padding: 12px 32px; border: 0; border-radius: 999px; background: var(--accent); color: var(--bg); cursor: pointer; }
+  #overlay button:hover { filter: brightness(1.1); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"><span id="score">0</span><span id="best">Récord: 0</span></div>
+<div id="overlay">
+  <h1 id="title">ESQUIVA</h1>
+  <p id="msg">Mueve el orbe con el ratón, el dedo o las flechas. Esquiva los bloques <b style="color:var(--danger)">rojos</b> y atrapa las estrellas <b style="color:var(--star)">doradas</b> (+5). Cada vez irá más rápido.</p>
+  <button id="play">Jugar</button>
+</div>
+<script>
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const $score = document.getElementById('score'), $best = document.getElementById('best');
+const $overlay = document.getElementById('overlay'), $title = document.getElementById('title'), $msg = document.getElementById('msg');
+let W, H;
+function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+addEventListener('resize', resize); resize();
+
+let best = 0;
+try { best = +localStorage.getItem('esquiva-best') || 0; } catch {}
+$best.textContent = 'Récord: ' + best;
+
+const player = { x: 0, y: 0, tx: 0, ty: 0, r: 12 };
+const keys = {};
+let blocks, stars, particles, score, time, spawnT, starT, running = false, last = 0, shake = 0;
+
+function reset() {
+  player.x = player.tx = W / 2; player.y = player.ty = H / 2;
+  blocks = []; stars = []; particles = [];
+  score = 0; time = 0; spawnT = 0; starT = 1.5;
+}
+
+function pointer(e) {
+  const p = e.touches ? e.touches[0] : e;
+  player.tx = p.clientX; player.ty = p.clientY;
+}
+addEventListener('mousemove', pointer);
+addEventListener('touchmove', e => { pointer(e); e.preventDefault(); }, { passive: false });
+addEventListener('touchstart', pointer);
+addEventListener('keydown', e => { keys[e.key] = true; if (!running && (e.key === 'Enter' || e.key === ' ')) start(); });
+addEventListener('keyup', e => { keys[e.key] = false; });
+
+function spawnBlock() {
+  const speed = 140 + time * 9 + Math.random() * 80;
+  const size = 14 + Math.random() * 28;
+  const side = Math.floor(Math.random() * 4);
+  let x, y;
+  if (side === 0) { x = Math.random() * W; y = -size; }
+  else if (side === 1) { x = W + size; y = Math.random() * H; }
+  else if (side === 2) { x = Math.random() * W; y = H + size; }
+  else { x = -size; y = Math.random() * H; }
+  // Apunta aproximadamente al jugador
+  const a = Math.atan2(player.y - y, player.x - x) + (Math.random() - .5) * .8;
+  blocks.push({ x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, s: size, rot: 0, vr: (Math.random() - .5) * 4 });
+}
+
+function burst(x, y, color, n) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = 60 + Math.random() * 220;
+    particles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, color });
+  }
+}
+
+function update(dt) {
+  time += dt;
+  score += dt * 10;
+
+  // Movimiento con teclado (desplaza el objetivo)
+  const k = 420 * dt;
+  if (keys.ArrowLeft || keys.a) player.tx -= k;
+  if (keys.ArrowRight || keys.d) player.tx += k;
+  if (keys.ArrowUp || keys.w) player.ty -= k;
+  if (keys.ArrowDown || keys.s) player.ty += k;
+  player.tx = Math.max(player.r, Math.min(W - player.r, player.tx));
+  player.ty = Math.max(player.r, Math.min(H - player.r, player.ty));
+  player.x += (player.tx - player.x) * Math.min(1, dt * 14);
+  player.y += (player.ty - player.y) * Math.min(1, dt * 14);
+
+  spawnT -= dt;
+  if (spawnT <= 0) { spawnBlock(); spawnT = Math.max(.12, .7 - time * .02); }
+  starT -= dt;
+  if (starT <= 0) { stars.push({ x: 40 + Math.random() * (W - 80), y: 60 + Math.random() * (H - 100), life: 5 }); starT = 2 + Math.random() * 2; }
+
+  for (const b of blocks) {
+    b.x += b.vx * dt; b.y += b.vy * dt; b.rot += b.vr * dt;
+    const dx = Math.max(Math.abs(player.x - b.x) - b.s / 2, 0), dy = Math.max(Math.abs(player.y - b.y) - b.s / 2, 0);
+    if (dx * dx + dy * dy < player.r * player.r * .7) return gameOver();
+  }
+  blocks = blocks.filter(b => b.x > -100 && b.x < W + 100 && b.y > -100 && b.y < H + 100);
+
+  for (const s of stars) {
+    s.life -= dt;
+    if (Math.hypot(player.x - s.x, player.y - s.y) < player.r + 12) {
+      s.life = 0; score += 50; burst(s.x, s.y, '#ffd166', 18);
+    }
+  }
+  stars = stars.filter(s => s.life > 0);
+
+  for (const p of particles) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .96; p.vy *= .96; p.life -= dt * 1.5; }
+  particles = particles.filter(p => p.life > 0);
+
+  $score.textContent = Math.floor(score / 10);
+}
+
+function drawStar(x, y, r, a) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const rr = i % 2 ? r * .45 : r, ang = a + i * Math.PI / 5;
+    ctx.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr);
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+function draw() {
+  ctx.save();
+  if (shake > 0) ctx.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
+  ctx.fillStyle = 'rgba(13,15,26,.35)'; // estela suave
+  ctx.fillRect(-20, -20, W + 40, H + 40);
+
+  ctx.fillStyle = '#ffd166'; ctx.shadowColor = '#ffd166'; ctx.shadowBlur = 16;
+  for (const s of stars) { ctx.globalAlpha = Math.min(1, s.life); drawStar(s.x, s.y, 12, time * 2); }
+  ctx.globalAlpha = 1;
+
+  ctx.fillStyle = '#ff5c7a'; ctx.shadowColor = '#ff5c7a';
+  for (const b of blocks) {
+    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot);
+    ctx.fillRect(-b.s / 2, -b.s / 2, b.s, b.s); ctx.restore();
+  }
+
+  for (const p of particles) {
+    ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.shadowColor = p.color;
+    ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+  }
+  ctx.globalAlpha = 1;
+
+  if (running) {
+    ctx.fillStyle = '#6ee7ff'; ctx.shadowColor = '#6ee7ff'; ctx.shadowBlur = 24;
+    ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function loop(t) {
+  const dt = Math.min(.05, (t - last) / 1000); last = t;
+  if (running) update(dt);
+  else for (const p of particles) { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; }
+  shake = Math.max(0, shake - dt * 40);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function start() {
+  reset(); running = true;
+  $overlay.classList.add('hidden');
+}
+
+function gameOver() {
+  running = false; shake = 18;
+  burst(player.x, player.y, '#6ee7ff', 40);
+  const final = Math.floor(score / 10);
+  const record = final > best;
+  if (record) { best = final; try { localStorage.setItem('esquiva-best', best); } catch {} }
+  $best.textContent = 'Récord: ' + best;
+  $title.textContent = record ? '¡NUEVO RÉCORD!' : 'GAME OVER';
+  $msg.innerHTML = `Puntuación: <b>${final}</b> · Aguantaste ${time.toFixed(1)} s`;
+  document.getElementById('play').textContent = 'Otra vez';
+  setTimeout(() => $overlay.classList.remove('hidden'), 500);
+}
+
+document.getElementById('play').onclick = start;
+reset();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
