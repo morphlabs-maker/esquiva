@@ -16,11 +16,12 @@ Se juega en horizontal. Para actualizarlo, ábrelo una vez con internet.
 | Modo | Descripción |
 | --- | --- |
 | Contra la CPU | 1 contra 1, tres dificultades |
-| Contra el jefe / Equipo con la CPU / Cooperativo | Contra Broly, el **Dragón Alienígena de tres cabezas** o Bills |
+| Contra el jefe / Equipo con la CPU / Cooperativo | Contra Broly (Goku en su forma máxima lo supera ×1,4), el **Dragón Alienígena de tres cabezas** (se le gana en Blue + Kaio-ken, es el que más vida tiene) o Bills |
 | 2 vs 1 · Tú + CPU | Tú y una CPU aliada contra una CPU |
 | 2 vs 1 · Con un amigo | Dos jugadores en el mismo celular (pantalla dividida) o con 2 mandos |
 | 1 vs 2 · Tú solo | Tú contra un equipo de 2 CPU |
-| Battle Royale 3D | Primera persona, equipos de 1 a 5 por lado (1 vs 5, 5 vs 1, 5 vs 5…) |
+| Battle Royale | Equipos de 1 a 5 por lado (1 vs 5, 5 vs 1, 5 vs 5…). 🎯 (`V`) cambia de objetivo |
+| 🌐 Online | 1 contra 1 o cooperativo contra un jefe, cada uno en su celular. Uno crea la sala y el otro entra con el código (necesita internet) |
 | Versus / Entrenamiento | En PC con teclado |
 
 El bando con menos luchadores recibe más vida (×1,6 en un 2 contra 1).
@@ -32,17 +33,14 @@ Goku, Vegeta, Gohan, Trunks, Piccolo, Krilin, Gotenks, **Gogeta**, **Vegito**, A
 - **Gogeta**: Base → SSJ → SSJ2 → SSJ3 → SSJ4 → SSJ Dios → Blue → Ultra Instinto (presagio) → Ultra Instinto dominado → Ultra Ego. Esquiva sola el 12 % de los golpes.
 - **Vegito**: las mismas fases, más un **Blue + Kaio-ken** exclusivo. Lleva pendientes Potara y tiene ataques propios. Pega un 8 % más fuerte.
 
-## Battle Royale: controles
+## Cambios de la versión 1.8
 
-| Acción | Celular | PC |
-| --- | --- | --- |
-| Moverse | Joystick izquierdo | `W` `A` `S` `D` |
-| Mirar | Arrastrar en la mitad derecha | Ratón (clic para capturarlo) o flechas |
-| Volar arriba / abajo | ⬆ / ⬇ | `Espacio` / `X` |
-| Fijar objetivo | 🎯 | `V` |
-| Golpe / ki | 👊 / ✨ | Clic izq. / der., o `F` / `H` |
-
-La mira apunta sola al enemigo más cercano al centro. Si no hay ninguno, los disparos salen en línea recta.
+- **Broly** (el de Dragon Ball Super): en base tiene el poder del SSJ Dios, en Ira 330 MM, en SSJ el del Ultra Instinto presagio y en Legendario 820 MM. Al pasar a Legendario hay una cinemática: pierde el control, sus ojos se vuelven verdes y caen rayos de fondo. Pasiva: cuanto más dura la pelea, más fuerte se hace (hasta +40 %) y menos daño recibe (hasta -30 %).
+- **Vegeta**: Blue Evolucionado 300 MM. En Ultra Ego, cuanto más daño recibe, más fuerte se hace.
+- **Piccolo**: Piccolo Naranja 36 MM y nueva forma **Piccolo Naranja Gigante** (250 MM), que crece al transformarse.
+- **Cell**: rediseñado (caparazón con manchas, cresta, alas y aguijón) y nueva forma **Cell Max** (300 MM, gigante).
+- Androide 17 Guardabosques 34 MM · Buu absorbe a Gohan 2,0 MM · Gohan Bestia 310 MM.
+- El aura del **Ultra Ego** es densa y morada, y se mueve de forma irregular.
 
 ## Estructura
 
@@ -50,6 +48,7 @@ La mira apunta sola al enemigo más cercano al centro. Si no hay ninguno, los di
 | --- | --- |
 | `index.html` | El juego (HTML, CSS y JavaScript) |
 | `vendor/three.min.js` | Three.js r128, licencia MIT |
+| `vendor/peerjs.min.js` | PeerJS 1.5.4 (online), licencia MIT |
 | `fonts/` | Fuente Press Start 2P, licencia OFL |
 | `sw.js`, `manifest.json`, `icon-*.png` | App instalable y modo sin internet |
 | `esquiva.html` | El minijuego anterior, Esquiva |

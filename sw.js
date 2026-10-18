@@ -1,6 +1,6 @@
 /* Kaioken Clash: todo el juego se guarda en el dispositivo la primera vez que se abre, para jugar sin internet. */
-const C='kaioken-v170';
-const F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png','vendor/three.min.js','fonts/PressStart2P-latin.woff2','fonts/PressStart2P-latin-ext.woff2'];
+const C='kaioken-v180';
+const F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png','vendor/three.min.js','vendor/peerjs.min.js','fonts/PressStart2P-latin.woff2','fonts/PressStart2P-latin-ext.woff2'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(r=>r||fetch(e.request).then(res=>{if(res.ok&&new URL(e.request.url).origin===location.origin){const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp));}return res;}).catch(()=>caches.match('index.html'))));});
