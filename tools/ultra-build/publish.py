@@ -1,5 +1,5 @@
 # Prepara el repo: los dos juegos como apps instalables que se actualizan solas
-import json,os,time,sys
+import json,os,time,sys;D=os.path.dirname(os.path.abspath(__file__))+'/'
 from PIL import Image,ImageDraw
 R=D+'../../';K=D+'out/'
 V=time.strftime('%Y%m%d%H%M%S')
@@ -20,7 +20,7 @@ must(u,'<link rel="manifest" href="manifest.json">');u=u.replace('<link rel="man
 must(u,'<link rel="apple-touch-icon" href="icon-180.png">');u=u.replace('<link rel="apple-touch-icon" href="icon-180.png">','<link rel="apple-touch-icon" href="icon-ultra-180.png">')
 open(R+'ultra.html','w',encoding='utf8').write(u)
 # --- Clásico: cámara más cerca y actualización automática
-c=open(R+'index.html',encoding='utf8').read()
+c=open(K+'index.html',encoding='utf8').read()  # generado por classic.py desde la v1.8
 if OLD_SW in c: c=c.replace(OLD_SW,UPD)
 else:
     i=c.index("<script>/* Actualización automática");j=c.index('</script>',i)+9;c=c[:i]+UPD+c[j:]

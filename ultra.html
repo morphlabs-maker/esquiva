@@ -262,7 +262,7 @@ body.touch .opt{width:min(22.5vw,200px);padding:8px;font-size:11px;line-height:1
 
 <script src="vendor/three.min.js"></script>
 <script src="vendor/peerjs.min.js"></script>
-<script>window.KC_PORTRAITS={"goku": "portraits/goku.webp", "vegeta": "portraits/vegeta.webp", "gohan": "portraits/gohan.webp", "trunks": "portraits/trunks.webp", "piccolo": "portraits/piccolo.webp", "krilin": "portraits/krilin.webp", "gotenks": "portraits/gotenks.webp", "gogeta": "portraits/gogeta.webp", "vegetto": "portraits/vegetto.webp", "a17": "portraits/a17.webp", "a18": "portraits/a18.webp", "freezer": "portraits/freezer.webp", "cooler": "portraits/cooler.webp", "cell": "portraits/cell.webp", "buu": "portraits/buu.webp", "broly": "portraits/broly.webp", "jiren": "portraits/jiren.webp", "hit": "portraits/hit.webp", "black": "portraits/black.webp", "zamasu": "portraits/zamasu.webp", "bills": "portraits/bills.webp", "kefla": "portraits/kefla.webp", "gamma1": "portraits/gamma1.webp", "gamma2": "portraits/gamma2.webp", "moro": "portraits/moro.webp"};</script>
+<script>window.KC_PORTRAITS={"a17": "portraits/a17.webp", "vegeta": "portraits/vegeta.webp", "black": "portraits/black.webp", "buu": "portraits/buu.webp", "krilin": "portraits/krilin.webp", "broly": "portraits/broly.webp", "a18": "portraits/a18.webp", "gamma2": "portraits/gamma2.webp", "gohan": "portraits/gohan.webp", "trunks": "portraits/trunks.webp", "kefla": "portraits/kefla.webp", "gogeta": "portraits/gogeta.webp", "cell": "portraits/cell.webp", "jiren": "portraits/jiren.webp", "moro": "portraits/moro.webp", "gotenks": "portraits/gotenks.webp", "hit": "portraits/hit.webp", "freezer": "portraits/freezer.webp", "bills": "portraits/bills.webp", "piccolo": "portraits/piccolo.webp", "vegetto": "portraits/vegetto.webp", "cooler": "portraits/cooler.webp", "gamma1": "portraits/gamma1.webp", "zamasu": "portraits/zamasu.webp", "goku": "portraits/goku.webp"};</script>
 
 <script>
 'use strict';
@@ -2533,7 +2533,7 @@ initPost();applyTouch();world=buildEarth(0);SUN_DIR.copy(sun.position).normalize
 </script>
 
 <script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
-(function(){const V='20261024021045',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+(function(){const V='20261024182704',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
 let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
 const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
 const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};

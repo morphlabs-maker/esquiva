@@ -6,7 +6,7 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 
 | Juego | Archivo | Descripción |
 | --- | --- | --- |
-| Kaioken Clash | `index.html` | Versión 1.8, estilo retro pixelado |
+| Kaioken Clash | `index.html` | Versión 1.9: la 1.8 retro/chibi con todo el contenido de Ultra (25 luchadores, técnicas, mundos, Whis) |
 | Kaioken Clash Ultra | `ultra.html` | Versión realista/anime sobre la 1.8, 25 luchadores |
 
 - Ultra también se publica como Artifact (https://claude.ai/artifact/6wVtcHbPRnkgo13nTjW5kJ, versión 5). Esa copia usa `window.KC_PORTRAITS` con imágenes en data URI y three.js desde cdnjs; la de `ultra.html` usa `portraits/<id>.webp` y `vendor/three.min.js`.
@@ -32,6 +32,7 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **Brillo:** bloom selectivo hecho a mano. Solo las auras (marcadas con `userData.glow`) alimentan el resplandor; cuerpos, mundo y rayos se pintan en negro o se ocultan en esa pasada. `KeyB` activa o desactiva el bloom. Rayos y explosiones usan mezcla normal, sin resplandor.
 - **Aura** escala con el cuerpo del luchador (`aura.body`), para personajes grandes.
 - **Cámara** más cercana que antes, y aún más en pantallas táctiles (`coarse`): factor 0,7 en Ultra y 0,72 en el clásico.
+- **Clásico = 1.8 + contenido de Ultra.** `classic.py` aplica a la v1.8 solo personajes, formas, técnicas y tienda, mundos (Kaiosama, Dimensión rota, Bills/Whis) y mecánicas (cansancio, esquivas, Moro, Gigante de Luz). No toca interfaz, pixelado, CRT, modelos chibi ni música chiptune. Sin voces. Retratos 3D chibi (no usa `portraits/`). Piezas chibi de los nuevos en `classic-model.js`.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 
 ## Cómo se construye Ultra (`tools/ultra-build/`)
@@ -40,11 +41,12 @@ Ultra no se edita a mano: se genera desde la v1.8 con scripts Python de reemplaz
 
 - `base-1.8.html`: el `index.html` v1.8 original (commit `5628e4a`), la base de todo.
 - Fuentes: `chars18.js` (personajes, formas, alturas, técnicas, Gamma, Whis), `model18.js` (modelo 3D, builds por forma, pelo, capa, colas), `audio18.js` (voz, sfx, música), `worlds.js` (Kaiosama, Dimensión rota, planeta de Bills), `head18.html` (CSS).
-- Parches, en este orden: `build18.py` → `build18b.py` (juego, Moro, bosses) → `build18c.py` → `build18d.py` (sombreado, bloom, efectos) → `build18e.py` (voces, brillo, aura, cámara, rayos) → `assemble.py`. Cada `rep()` aborta si el texto no aparece el número esperado de veces.
+- Clásico: `classic.py` (+ `classic-model.js`) genera `out/index.html` desde `base-1.8.html`; `make.sh` lo ejecuta y `publish.py` lo copia a `index.html`. Para cambiar el clásico, edita `classic.py`, nunca `index.html`.
+- Parches de Ultra, en este orden: `build18.py` → `build18b.py` (juego, Moro, bosses) → `build18c.py` → `build18d.py` (sombreado, bloom, efectos) → `build18e.py` (voces, brillo, aura, cámara, rayos) → `assemble.py`. Cada `rep()` aborta si el texto no aparece el número esperado de veces.
 - `./make.sh` genera `out/ultra.html` (Pages) y `out/kaioken-clash-ultra.html` (Artifact). `assemble.py` toma los retratos de `portraits/*.webp`.
 - `python3 publish.py` copia Ultra a `ultra.html` del repo, aplica el parche de cámara y de actualización al clásico, y regenera `sw.js`, manifiestos, iconos y `version.json`.
 - Para cambiar Ultra: edita el `.js`/`.py` correspondiente, ejecuta `make.sh`, prueba (`tests/`), ejecuta `publish.py`, republica el Artifact con `out/kaioken-clash-ultra.html` y haz commit/push. Si no ejecutas `publish.py`, los celulares no detectan la versión nueva.
-- `stage*.js`, `g18.js` y `out/` son intermedios y están en `.gitignore`.
+- `stage*.js`, `g18.js`, `gc.js` y `out/` son intermedios y están en `.gitignore`.
 
 ## Pruebas
 
