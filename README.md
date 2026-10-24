@@ -42,6 +42,17 @@ Goku, Vegeta, Gohan, Trunks, Piccolo, Krilin, Gotenks, **Gogeta**, **Vegito**, A
 - Androide 17 Guardabosques 34 MM · Buu absorbe a Gohan 2,0 MM · Gohan Bestia 310 MM.
 - El aura del **Ultra Ego** es densa y morada, y se mueve de forma irregular.
 
+## Kaioken Clash Ultra (`ultra.html`)
+
+Versión aparte, sin estilo retro, sobre la 1.8: modelos con proporciones de figura de anime, golpes fluidos, gritos y sonidos de batalla, esquivas reales y cansancio (los androides no se cansan).
+Se abre en `https://morphlabs-maker.github.io/esquiva/ultra.html` y funciona sin internet igual que el juego principal.
+
+- 25 luchadores: los 21 de la 1.8 más Moro (6 fases del manga), Gamma 1, Gamma 2 y Kefla.
+- Goku: Ultra Instinto dominado permanente y forma final **Gigante de Luz** (1,15 B, tamaño de Cell Max).
+- Tienda de técnicas de Dragon Ball Super que sustituyen al especial o al definitivo.
+- Entrenamiento en el planeta de Bills con Whis (también en el celular).
+- Mundos nuevos: Planeta de Kaiosama y Dimensión rota.
+
 ## Estructura
 
 | Archivo | Contenido |
@@ -51,6 +62,7 @@ Goku, Vegeta, Gohan, Trunks, Piccolo, Krilin, Gotenks, **Gogeta**, **Vegito**, A
 | `vendor/peerjs.min.js` | PeerJS 1.5.4 (online), licencia MIT |
 | `fonts/` | Fuente Press Start 2P, licencia OFL |
 | `sw.js`, `manifest.json`, `icon-*.png` | App instalable y modo sin internet |
+| `ultra.html` | Kaioken Clash Ultra, la versión realista |
 | `esquiva.html` | El minijuego anterior, Esquiva |
 
 Dragon Ball © Bird Studio / Shueisha / Toei Animation.
