@@ -34,19 +34,26 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **Cámara** más cercana que antes, y aún más en pantallas táctiles (`coarse`): factor 0,7 en Ultra y 0,72 en el clásico.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 
-## Cómo se construye Ultra (fuera del repo)
+## Cómo se construye Ultra (`tools/ultra-build/`)
 
-El código fuente de Ultra no está en el repo: se genera con scripts Python de reemplazo de texto sobre `index.html` (v1.8) en el directorio de scratchpad de la sesión (`.../scratchpad/kc/`): `build18.py`, `build18b.py`, `build18c.py`, `build18d.py`, `build18e.py`, `assemble.py`, `make.sh`, `publish.py`. Cada reemplazo (`rep()`) falla si no encuentra el texto exacto el número esperado de veces. `publish.py` copia Ultra al repo, aplica el parche de cámara al clásico, regenera `sw.js`, manifiestos, iconos y `version.json`.
-**Riesgo:** esos scripts viven en un directorio temporal y se pierden con el contenedor.
+Ultra no se edita a mano: se genera desde la v1.8 con scripts Python de reemplazo de texto. Todo está en el repo y es reproducible (verificado: la salida es idéntica a la publicada).
+
+- `base-1.8.html`: el `index.html` v1.8 original (commit `5628e4a`), la base de todo.
+- Fuentes: `chars18.js` (personajes, formas, alturas, técnicas, Gamma, Whis), `model18.js` (modelo 3D, builds por forma, pelo, capa, colas), `audio18.js` (voz, sfx, música), `worlds.js` (Kaiosama, Dimensión rota, planeta de Bills), `head18.html` (CSS).
+- Parches, en este orden: `build18.py` → `build18b.py` (juego, Moro, bosses) → `build18c.py` → `build18d.py` (sombreado, bloom, efectos) → `build18e.py` (voces, brillo, aura, cámara, rayos) → `assemble.py`. Cada `rep()` aborta si el texto no aparece el número esperado de veces.
+- `./make.sh` genera `out/ultra.html` (Pages) y `out/kaioken-clash-ultra.html` (Artifact). `assemble.py` toma los retratos de `portraits/*.webp`.
+- `python3 publish.py` copia Ultra a `ultra.html` del repo, aplica el parche de cámara y de actualización al clásico, y regenera `sw.js`, manifiestos, iconos y `version.json`.
+- Para cambiar Ultra: edita el `.js`/`.py` correspondiente, ejecuta `make.sh`, prueba (`tests/`), ejecuta `publish.py`, republica el Artifact con `out/kaioken-clash-ultra.html` y haz commit/push. Si no ejecutas `publish.py`, los celulares no detectan la versión nueva.
+- `stage*.js`, `g18.js` y `out/` son intermedios y están en `.gitignore`.
 
 ## Pruebas
 
-Playwright con Chromium y swiftshader (`/opt/node-tools/node_modules/playwright`). cdnjs está bloqueado, por lo que three.js se sirve localmente desde un paquete npm. Comprobado: alineación de personajes (frente, lado, espalda), selección, combate, Gigante de Luz, Dimensión rota, rayos, viewport de celular, service worker, modo sin internet y recarga por versión nueva (solo en menú, sin bucle). Conocido: el script `test.js` falla al final (`squadHTML`) por estado de royale en la prueba, no por el juego.
+Playwright con Chromium y swiftshader (`/opt/node-tools/node_modules/playwright`). Los scripts están en `tools/ultra-build/tests/` y tienen rutas de la sesión original (three.js local, `file:///home/user/kc/...`): ajústalas a `out/`. cdnjs está bloqueado, por lo que three.js se sirve localmente desde un paquete npm. Comprobado: alineación de personajes (frente, lado, espalda), selección, combate, Gigante de Luz, Dimensión rota, rayos, viewport de celular, service worker, modo sin internet y recarga por versión nueva (solo en menú, sin bucle). Conocido: el script `test.js` falla al final (`squadHTML`) por estado de royale en la prueba, no por el juego.
 
 ## Próximos pasos
 
 1. Comprobar que GitHub Pages sirve la rama y probar la instalación en un iPhone real (los dos iconos, modo avión, actualización).
-2. Guardar los scripts de build en el repo (por ejemplo `tools/ultra-build/`) con rutas relativas.
+2. (Hecho) Scripts de build guardados en `tools/ultra-build/`. Pendiente: dejar los tests con rutas relativas.
 3. Calidad visual: los cuerpos siguen hechos de piezas simples; las capas de los Gamma se ven planas. Para un salto real harían falta modelos 3D detallados.
 4. Revisar la dificultad y el equilibrio de Moro, Kefla y los Gamma con partidas reales.
 5. Decidir si `main` se actualiza con los juegos (hoy solo tiene Esquiva) y si se abre un PR.

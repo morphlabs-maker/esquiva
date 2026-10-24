@@ -1,0 +1,22 @@
+const {chromium}=require('/opt/node-tools/node_modules/playwright');
+const S='/tmp/claude-0/-home-user/c488c0f1-c25f-52ed-b887-a5a2654d4987/scratchpad/kc/shots/';
+(async()=>{
+ const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const p=await b.newPage({viewport:{width:1280,height:720}});
+ await p.route(/three\.min\.js/,r=>r.fulfill({path:'/tmp/claude-0/-home-user/c488c0f1-c25f-52ed-b887-a5a2654d4987/scratchpad/kc/three/package/build/three.min.js',contentType:'application/javascript'}));await p.route(/fonts\.g/,r=>r.abort());const errs=[];p.on('console',m=>{if(m.type()==='error'||m.type()==='warning')errs.push(m.type()+': '+m.text())});p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+ await p.goto('file:///home/user/kc/kaioken-clash-ultra.html');await p.waitForTimeout(3000);
+ await p.screenshot({path:S+'1title.png'});
+ const run=async(code,wait,name)=>{try{await p.evaluate(code);}catch(e){errs.push('EVAL '+name+': '+e.message);}await p.waitForTimeout(wait);await p.screenshot({path:S+name+'.png'});};
+ await run(`game.mode='cpu';game.cpu=true;game.diff=1;game.world=0;game.variant=0;game.sel=[0,CHARS.findIndex(c=>c.id==='gogeta')];game.startForm=[0,2];startMatch();`,3500,'2fight');
+ await run(`const a=game.f[0];a.formIdx=a.ch.forms.length-1;a.applyForm();`,2500,'3giant');
+ await run(`game.mode='cpu';game.world=3;game.sel=[CHARS.findIndex(c=>c.id==='moro'),0];game.startForm=[0,9];startMatch();`,2500,'4kaio');
+ await run(`const m=game.f[0];m.ki=7;m.doSpecial('s1');`,2000,'5absorb');
+ await run(`window.errsInfo=JSON.stringify({drained:game.f[1].drained,mul:game.f[0].absorbMul,hp:game.f[1].hp,mhp:game.f[0].maxHp})`,10,'5b');
+ console.log(await p.evaluate(()=>errsInfo));
+ await run(`game.world=4;game.sel=[CHARS.findIndex(c=>c.id==='kefla'),CHARS.findIndex(c=>c.id==='gamma1')];game.startForm=[2,0];startMatch();`,3000,'6broken');
+ await run(`game.mode='train';game.sel=[0,WHIS];game.startForm=[0,0];startMatch();`,3000,'7train');
+ await run(`prog.tech.push('dfist');prog.eq.goku={s1:'dfist'};const a=game.f[0];a.ki=7;a.pos.set(-3,2,0);a.doSpecial('s1');`,1200,'8rush');
+ await run(`game.mode='royale';game.diff=1;game.world=0;game.squad=[[{c:0,f:0,human:true},{c:5,f:0}],[{c:CHARS.length-1,f:0},{c:CHARS.length-2,f:0}]];startMatch();`,2500,'8royale');
+ await run(`toMenu('shop');shopTab='tech';shopChar=0;renderMenu();`,1500,'9shop');
+ await run(`toMenu('chars');game.mode='cpu';pst=['form','char'];renderMenu();`,2000,'10chars');
+ console.log(errs.slice(0,30).join('\n'));await b.close();})();
