@@ -2,14 +2,16 @@
 
 Juego de peleas 3D de Dragon Ball (proyecto de fans, sin fines comerciales), con estilo retro pixelado. Funciona **sin internet** y se instala en el iPhone como una app.
 
-## Instalar en el iPhone (sin internet)
+## Instalar en el iPhone (los dos juegos)
 
-1. Publica el repo con GitHub Pages: **Settings → Pages → Branch** = la rama del juego, carpeta `/ (root)`.
-2. En el iPhone, abre `https://morphlabs-maker.github.io/esquiva/` en **Safari** (con internet, solo esta vez).
-3. Toca **Compartir → Añadir a pantalla de inicio**.
-4. Ábrelo desde el icono. A partir de aquí funciona en modo avión: el juego, el motor 3D y la fuente quedan guardados en el teléfono.
+1. GitHub Pages debe publicar esta rama: **Settings → Pages → Branch** = `claude/dragon-ball-offline-ios-rmhovv`, carpeta `/ (root)`.
+2. En el iPhone, abre en **Safari**:
+   - Kaioken Clash: `https://morphlabs-maker.github.io/esquiva/`
+   - Kaioken Clash Ultra: `https://morphlabs-maker.github.io/esquiva/ultra.html`
+3. En cada uno toca **Compartir → Añadir a pantalla de inicio**. Quedan dos iconos, uno por juego.
+4. Se juega en horizontal y funciona sin internet.
 
-Se juega en horizontal. Para actualizarlo, ábrelo una vez con internet.
+**Se actualizan solos:** con internet, cada vez que abres el juego (o vuelves a él) carga la última versión publicada en GitHub. Si hay una nueva y estás en plena pelea, espera a que vuelvas al menú para recargarse. Sin internet se usa la última copia guardada.
 
 ## Modos
 
@@ -45,13 +47,15 @@ Goku, Vegeta, Gohan, Trunks, Piccolo, Krilin, Gotenks, **Gogeta**, **Vegito**, A
 ## Kaioken Clash Ultra (`ultra.html`)
 
 Versión aparte, sin estilo retro, sobre la 1.8: modelos con proporciones de figura de anime, golpes fluidos, gritos y sonidos de batalla, esquivas reales y cansancio (los androides no se cansan).
-Se abre en `https://morphlabs-maker.github.io/esquiva/ultra.html` y funciona sin internet igual que el juego principal.
+Se abre en `https://morphlabs-maker.github.io/esquiva/ultra.html`, se instala como app propia y funciona sin internet igual que el juego principal.
 
 - 25 luchadores: los 21 de la 1.8 más Moro (6 fases del manga), Gamma 1, Gamma 2 y Kefla.
 - Goku: Ultra Instinto dominado permanente y forma final **Gigante de Luz** (1,15 B, tamaño de Cell Max).
 - Tienda de técnicas de Dragon Ball Super que sustituyen al especial o al definitivo.
 - Entrenamiento en el planeta de Bills con Whis (también en el celular).
 - Mundos nuevos: Planeta de Kaiosama y Dimensión rota.
+- Retratos anime por personaje, auras proporcionales al tamaño del luchador, rayos de energía sin resplandor y cámara más cercana (más aún en el celular).
+- Voces solo en el grito de transformación.
 
 ## Estructura
 
@@ -61,7 +65,9 @@ Se abre en `https://morphlabs-maker.github.io/esquiva/ultra.html` y funciona sin
 | `vendor/three.min.js` | Three.js r128, licencia MIT |
 | `vendor/peerjs.min.js` | PeerJS 1.5.4 (online), licencia MIT |
 | `fonts/` | Fuente Press Start 2P, licencia OFL |
-| `sw.js`, `manifest.json`, `icon-*.png` | App instalable y modo sin internet |
+| `sw.js`, `manifest.json`, `icon-*.png` | App instalable, modo sin internet y actualización automática |
+| `manifest-ultra.json`, `icon-ultra-*.png`, `portraits/` | App de Ultra y retratos |
+| `version.json` | Versión publicada (la usan los juegos para saber si hay actualización) |
 | `ultra.html` | Kaioken Clash Ultra, la versión realista |
 | `esquiva.html` | El minijuego anterior, Esquiva |
 

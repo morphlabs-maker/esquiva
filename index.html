@@ -1628,7 +1628,7 @@ function camAnchors(){const f=game.f;
  const boss=f.find(x=>x.role==='boss');return[{pos:c},boss,(use.length>1?use[0].pos.distanceTo(use[1].pos)*.6:0)+boss.giant*2.4];}
 /* Battle Royale: si tu objetivo está lejos, la cámara va detrás de tu luchador mirando hacia él; de cerca vuelve el encuadre de duelo */
 function royaleChase(a,b,k){if(!isRoyale()||!a.chest||!b.chest||a.pos.distanceTo(b.pos)<20)return false;
- const to=b.pos.clone().sub(a.pos);to.y=0;if(to.lengthSq()<.01)return false;to.normalize();const r=V3(-to.z,0,to.x),tp=a.pos.clone().addScaledVector(to,-7*a.giant).addScaledVector(r,-1.8).add(V3(0,2.8*a.giant,0));
+ const to=b.pos.clone().sub(a.pos);to.y=0;if(to.lengthSq()<.01)return false;to.normalize();const r=V3(-to.z,0,to.x),tp=a.pos.clone().addScaledVector(to,-5.2*a.giant).addScaledVector(r,-1.5).add(V3(0,2.2*a.giant,0));
  const gy=world?world.groundY(tp.x,tp.z):0;if(gy>-1e9&&tp.y<gy+1.2)tp.y=gy+1.2;cam.position.lerp(tp,k);camLook.lerp(a.chest().addScaledVector(to,8),k);return true;}
 function updateCamera(dt){if(game.f.length<2)return;const [a,b,extra]=camAnchors();if(!a||!b)return;const k=1-Math.exp(-6*dt);
  const c=game.cine;
@@ -1650,7 +1650,7 @@ function updateCamera(dt){if(game.f.length<2)return;const [a,b,extra]=camAnchors
   if(game.split){for(const[f,cm]of[[a,camA],[b,camB]]){const to=f.opp.pos.clone().sub(f.pos).normalize();const r=V3(-to.z,0,to.x);const tp=f.pos.clone().addScaledVector(to,-5).addScaledVector(r,-1.4).add(V3(0,2,0));cm.position.lerp(tp,k);cm.lookAt(f.opp.chest());}}
   const ab=b.pos.clone().sub(a.pos);ab.y=0;if(ab.lengthSq()<.01)ab.set(1,0,0);ab.normalize();let n=V3(-ab.z,0,ab.x);
   const cur=cam.position.clone().sub(mid);cur.y=0;if(cur.dot(n)<0&&cur.lengthSq()>1){n.multiplyScalar(-1);camSide=-1;}else camSide=1;
-  const dy=Math.abs(a.pos.y-b.pos.y),dist=5.5+sep*.7+dy*.4;const tp=mid.clone().addScaledVector(n,dist).add(V3(0,1.9+sep*.12,0));
+  const CZ=coarse?.72:.84,dy=Math.abs(a.pos.y-b.pos.y),dist=(3.6+sep*.52+dy*.3)*CZ;const tp=mid.clone().addScaledVector(n,dist).add(V3(0,1.5+sep*.09,0));
   const gy=world?world.groundY(tp.x,tp.z):0;if(gy>-1e9&&tp.y<gy+1.2)tp.y=gy+1.2;
   cam.position.lerp(tp,k);camLook.lerp(mid.add(V3(0,.9,0)),k);}
  if(bossMode()&&bossF()){const B=bossF(),bc=B.chest(),min=B.giant*4.5,dd=cam.position.distanceTo(bc);
@@ -2079,4 +2079,10 @@ initCloud();
 applyTouch();world=buildEarth(0);SUN_DIR.copy(sun.position).normalize();renderMenu();requestAnimationFrame(frame);
 </script>
 
-<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script></body></html>
+<script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
+(function(){const V='20261024021045',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
+const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
+const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};
+addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(r=>{reg=r;}).catch(()=>{});setTimeout(chk,2500);});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')chk();});setInterval(()=>{if(pend&&!busy())go();else chk();},60000);})();</script></body></html>

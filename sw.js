@@ -1,6 +1,10 @@
-/* Kaioken Clash: todo el juego se guarda en el dispositivo la primera vez que se abre, para jugar sin internet. */
-const C='kaioken-v180';
-const F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png','vendor/three.min.js','vendor/peerjs.min.js','fonts/PressStart2P-latin.woff2','fonts/PressStart2P-latin-ext.woff2'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(r=>r||fetch(e.request).then(res=>{if(res.ok&&new URL(e.request.url).origin===location.origin){const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp));}return res;}).catch(()=>caches.match('index.html'))));});
+/* Kaioken Clash y Kaioken Clash Ultra: con internet siempre se carga la última versión publicada; sin internet se juega con la copia guardada. */
+const C='kaioken-20261024021045';
+const F=["./", "index.html", "ultra.html", "manifest.json", "manifest-ultra.json", "icon-180.png", "icon-192.png", "icon-512.png", "icon-ultra-180.png", "icon-ultra-192.png", "icon-ultra-512.png", "vendor/three.min.js", "vendor/peerjs.min.js", "fonts/OFL.txt", "fonts/PressStart2P-latin-ext.woff2", "fonts/PressStart2P-latin.woff2", "portraits/a17.webp", "portraits/a18.webp", "portraits/bills.webp", "portraits/black.webp", "portraits/broly.webp", "portraits/buu.webp", "portraits/cell.webp", "portraits/cooler.webp", "portraits/freezer.webp", "portraits/gamma1.webp", "portraits/gamma2.webp", "portraits/gogeta.webp", "portraits/gohan.webp", "portraits/goku.webp", "portraits/gotenks.webp", "portraits/hit.webp", "portraits/jiren.webp", "portraits/kefla.webp", "portraits/krilin.webp", "portraits/moro.webp", "portraits/piccolo.webp", "portraits/trunks.webp", "portraits/vegeta.webp", "portraits/vegetto.webp", "portraits/zamasu.webp"];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(F.map(u=>fetch(u,{cache:'reload'}).then(r=>{if(r.ok)return c.put(u,r);}).catch(()=>{})))).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k.startsWith('kaioken')).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+const timeout=(p,ms)=>new Promise((ok,no)=>{const t=setTimeout(()=>no(new Error('timeout')),ms);p.then(r=>{clearTimeout(t);ok(r);},e=>{clearTimeout(t);no(e);});});
+self.addEventListener('fetch',e=>{const q=e.request;if(q.method!=='GET')return;const u=new URL(q.url);if(u.origin!==location.origin)return;
+ if(u.pathname.endsWith('version.json'))return;
+ e.respondWith(timeout(fetch(q,{cache:'no-cache'}),6000).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(q,cp));}return r;})
+  .catch(()=>caches.match(q,{ignoreSearch:true}).then(r=>r||(q.mode==='navigate'?caches.match(u.pathname.endsWith('ultra.html')?'ultra.html':'index.html'):undefined)).then(r=>r||Response.error())));});
