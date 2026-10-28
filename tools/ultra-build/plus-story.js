@@ -159,16 +159,16 @@ function shenlong(){cinePlay({id:'shenlong',title:'Shenlong',world:0,v:1,cast:[{
 
 /* ---------------- Cinemáticas (con motor 3D, subtítulos y opción de saltar) ---------------- */
 let CINE=null;
-function buildShenlong(){const g=new THREE.Group(),mat=toon(0x3aa84a),bel=toon(0xe8d88a),pts=[];for(let i=0;i<14;i++)pts.push(V3(Math.sin(i*.9)*4,i*1.6,Math.cos(i*.7)*3-i*.4));
+function buildShenlong(sup){const g=new THREE.Group(),mat=toon(sup?0xffc23a:0x3aa84a),bel=toon(sup?0xfff2c0:0xe8d88a),pts=[];for(let i=0;i<14;i++)pts.push(V3(Math.sin(i*.9)*4,i*1.6,Math.cos(i*.7)*3-i*.4));
  const cur=new THREE.CatmullRomCurve3(pts),body=new THREE.Mesh(new THREE.TubeGeometry(cur,120,1.1,10,false),mat);g.add(body);
  const end=pts[pts.length-1],head=new THREE.Group();head.position.copy(end);g.add(head);head.add(new THREE.Mesh(new THREE.BoxGeometry(2.4,1.7,3),mat));
  const jaw=new THREE.Mesh(new THREE.BoxGeometry(2,.6,2.4),bel);jaw.position.set(0,-.9,.6);head.add(jaw);
  for(const s of[1,-1]){const h=new THREE.Mesh(new THREE.ConeGeometry(.25,2.4,6),bel);h.position.set(s*.8,1.6,-.8);h.rotation.x=-.6;head.add(h);const e=new THREE.Mesh(new THREE.SphereGeometry(.28,8,6),new THREE.MeshBasicMaterial({color:0xff2a2a}));e.position.set(s*.75,.3,1.4);head.add(e);
   const wh=new THREE.Mesh(new THREE.CylinderGeometry(.05,.02,3,4),bel);wh.position.set(s*1.1,-.2,1.8);wh.rotation.z=s*1.2;head.add(wh);}
- const gl=new THREE.PointLight(0x7aff6a,2,40);gl.position.copy(end);g.add(gl);return{root:g,head,shen:1};}
+ const gl=new THREE.PointLight(sup?0xffd27a:0x7aff6a,2,40);gl.position.copy(end);g.add(gl);return{root:g,head,shen:1};}
 function cinePlay(sc,done){clearMenuModels();for(const f of game.f)f.dispose();game.f=[];clearCombat();game.phase=null;$('#hud').style.display='none';
- const W=sc.world==='bills'?TRAIN_WORLD:WORLDS[clamp(sc.world|0,0,WORLDS.length-1)];world=W.build(sc.v|0);SUN_DIR.copy(sun.position).normalize();playTrack(sc.music||W.music);
- const cast={};for(const c of sc.cast||[]){let m,ch=null;if(c.c==='shenlong')m=buildShenlong();else{const i=chIdx(c.c);if(i<0&&c.c!=='whis')continue;ch=i<0?WHIS:CHARS[i];m=makeModel(ch);m.outfit=null;applyFormModel(m,ch,ch.forms[formIx(ch,c.f||'base')],0);const au=makeAura();au.setColor(ch.forms[formIx(ch,c.f||'base')].aura);m.root.add(au.group);m.aura=au;}
+ const W=sc.world==='bills'?TRAIN_WORLD:sc.world==='tdp'?TDP_WORLD:WORLDS[clamp(sc.world|0,0,WORLDS.length-1)];world=W.build(sc.v|0);SUN_DIR.copy(sun.position).normalize();playTrack(sc.music||W.music);
+ const cast={};for(const c of sc.cast||[]){let m,ch=null;if(c.c==='shenlong'||c.c==='sshenlong')m=buildShenlong(c.c==='sshenlong');else{const i=chIdx(c.c);if(i<0&&c.c!=='whis')continue;ch=i<0?WHIS:CHARS[i];m=makeModel(ch);m.outfit=null;applyFormModel(m,ch,ch.forms[formIx(ch,c.f||'base')],0);const au=makeAura();au.setColor(ch.forms[formIx(ch,c.f||'base')].aura);m.root.add(au.group);m.aura=au;}
   const gy=world.groundY(c.x||0,c.z||0);m.root.position.set(c.x||0,(gy>-1e9?gy:world.spawnY)+(c.y||0),c.z||0);m.root.scale.setScalar(c.s||1);scene.add(m.root);cast[c.c]={m,ch,f:c.f||'base',to:null,pose:c.pose||'idle',aura:0};}
  for(const k in cast){const o=cast[k];if(o.m.shen)continue;const other=Object.values(cast).filter(x=>x!==o&&!x.m.shen)[0];if(other){const d=other.m.root.position.clone().sub(o.m.root.position);o.m.root.rotation.y=Math.atan2(d.x,d.z);}}
  CINE={sc,i:-1,t:0,cast,done,typed:0,camP:V3(0,6,18),camL:V3(0,2,0),fx:[],shake:0};menuState='cine';cam.position.set(0,6,18);renderMenu();cineNext();}
@@ -184,7 +184,7 @@ function cineNext(){const C=CINE;if(!C)return;const sh=C.sc.shots[C.i];if(sh&&C.
  if(fx.startsWith('boom')){const t=C.cast[fx.split(':')[1]]||o;if(t){explosion(t.m.root.position.clone().add(V3(0,1,0)),2.5,0xffd080);sfx('boom',1);C.shake=1.4;}}
  renderCineBox();}
 function renderCineBox(){const C=CINE,s=C.sc.shots[C.i];if(!s)return;const cd=$('#cinecard');if(cd){cd.style.display=s.card?'flex':'none';if(s.card){cd.querySelector('b').textContent=s.card;cd.querySelector('span').textContent=s.sub||'';cd.style.animation='none';void cd.offsetWidth;cd.style.animation='';}}
- {const bx=$('#cinebox');if(bx)bx.style.visibility=s.say?'':'hidden';}const o=C.cast[s.who],name=s.who==='nar'?'':s.who==='shenlong'?'SHENLONG':o&&o.ch?o.ch.name.toUpperCase():(s.name||'');
+ {const bx=$('#cinebox');if(bx)bx.style.visibility=s.say?'':'hidden';}const o=C.cast[s.who],name=s.who==='nar'?'':s.who==='shenlong'?'SHENLONG':s.who==='sshenlong'?'SÚPER SHENLONG':o&&o.ch?o.ch.name.toUpperCase():(s.name||'');
  const box=$('#cinebox');if(!box)return;box.querySelector('b').textContent=name;box.classList.toggle('nar',s.who==='nar');}
 function cineFrame(dt,t){const C=CINE,s=C.sc.shots[C.i];if(!s)return;C.t+=dt;const txt=s.say||'';C.typed=Math.min(txt.length,C.typed+dt*42);const el=$('#cinetxt');if(el)el.textContent=txt.slice(0,Math.floor(C.typed));
  if(C.typed>=txt.length&&C.t>Math.max(2.4,txt.length*.055+1.4))cineNext();

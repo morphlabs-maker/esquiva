@@ -6,7 +6,7 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 
 | Juego | Archivo | Descripción |
 | --- | --- | --- |
-| Kaioken Clash | `index.html` | Versión 2.1 (entornos rehechos, 12 mundos, más historia): retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 33 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
+| Kaioken Clash | `index.html` | Versión 2.2 (Torneo del Poder cada hora, sangre y ropa rasgada, grietas, pelo Saiyajin nuevo) sobre la 2.1: retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 33 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
 | Kaioken Clash Ultra | `ultra.html` | Versión realista/anime sobre la 1.8, 25 luchadores |
 
 - Ultra también se publica como Artifact (https://claude.ai/artifact/6wVtcHbPRnkgo13nTjW5kJ, versión 5). Esa copia usa `window.KC_PORTRAITS` con imágenes en data URI y three.js desde cdnjs; la de `ultra.html` usa `portraits/<id>.webp` y `vendor/three.min.js`.
@@ -43,6 +43,9 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **Modo historia 2.1**: los lugares del mapa se colocan solos (el orden de `nodes` manda; `x`/`y` se ignoran). Cada arco tiene arte y colores propios (`MAP_ART` en `plus-story.js`). Los nodos de pelea muestran el retrato del rival. Los nodos pueden tener `intro` (escena antes de la pelea) y los rivales `outfit`. Las tomas pueden llevar `card` (título grande) y `fw` (quién se transforma si habla el narrador). No cambiar los `id` de nodos: el progreso se guarda por id.
 - **Forma nueva**: al comprar una forma (o con el deseo de formas) se reproduce `formCine`.
 - **Luchadores del modo historia** (Raditz, Nappa, Ginyu, Goten, Zamasu, Gohanks, Granolah, Gas) bloqueados hasta ganarlos; los ya existentes nunca se bloquean.
+- **2.2 · Pelo Saiyajin**: peinados nuevos en `classic-model.js` (goku, ssj, ssj2, ssj3, ssj4, gohan, vegeta, broly, brolyL, beast y fusiones). `HAIR[x].tip` afila las puntas (`hairLock` acepta el radio de la punta). Broly SSJ/Legendario usan `brolyL`.
+- **2.2 · Daño visible** (`plus-damage.js`): `dmgLook` al final de `applyFormModel` pone jirones con borde, moratón y sangre (morada en namekianos, Freezer y Cell; nada en Gamma ni Buu) con `torn>=2`; más con `torn` 3. `bleedHit` lanza gotas y manchas en el suelo. `crater()` llama a `crater2`: hueco, grietas radiales (textura canvas) y escombros, máximo 36.
+- **2.2 · Torneo del Poder** (`plus-tdp.js`, modo `tdp`): abierto los minutos 0-19 de cada hora (hora del celular), opcional. Universos U7, U6, U11, U10 (equipos del anime) o «Tu universo» (hasta 4 luchadores desbloqueados). Battle royale multi-equipo (`team` = universo, el tuyo es 0). K.O. o caer fuera de la plataforma = eliminado y pasa a la grada de su universo (`world.seat`). 5 min; al acabar gana quien tenga más en pie. Poder comprimido y relativo al pico de cada luchador (`tdpPow`) para que sea parejo. La CPU también se fusiona. Victoria = Súper Esferas (una vez por hora, `prog.tdp.last`; deseo pendiente en `prog.tdp.wish`) y deseo a Súper Shenlong. `WORLDS[2]` usa la misma arena del anime (`buildTdP`) con barrera; el evento usa `TDP_WORLD` sin barrera.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 
 ## Cómo se construye Ultra (`tools/ultra-build/`)

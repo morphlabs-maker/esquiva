@@ -3,7 +3,7 @@
    · Antes de migrar se guarda una copia de seguridad (kc_prog_bak3).
    · Las técnicas genéricas de antes se retiran y se devuelven sus monedas (una sola vez, campo «refunded»).
    · Todo se valida al leer: el almacenamiento se puede manipular. */
-const SAVE_V=4;
+const SAVE_V=4,TDP_IDS=['u7','u6','u11','u10'];
 const idOk=s=>typeof s==='string'&&/^[A-Za-z0-9_]{1,24}$/.test(s);
 const idList=(a,ok=()=>true,max=600)=>Array.isArray(a)?[...new Set(a.filter(x=>idOk(x)&&ok(x)))].slice(0,max):[];
 const nOk=(v,max)=>Number.isFinite(v)?clamp(Math.floor(v),0,max):0;
@@ -28,6 +28,9 @@ function cleanPlus(p,d){
  const c=p.chal&&typeof p.chal==='object'?p.chal:{};
  d.chal={d:typeof c.d==='string'?c.d.slice(0,12):'',w:typeof c.w==='string'?c.w.slice(0,12):'',p:objNum(c.p,1e6,k=>/^[dw]:[A-Za-z0-9_]{1,16}$/.test(k)),cl:Array.isArray(c.cl)?c.cl.filter(k=>typeof k==='string'&&/^[dw]:[A-Za-z0-9_]{1,16}$/.test(k)).slice(0,20):[]};
  d.sdiff=Number.isInteger(p.sdiff)&&p.sdiff>=0&&p.sdiff<4?p.sdiff:1;
+ /* 2.2: Torneo del Poder (hora de la última victoria, deseo pendiente y equipos elegidos) */
+ const td=p.tdp&&typeof p.tdp==='object'?p.tdp:{},cid=id=>CHARS.some(c=>c.id===id);
+ d.tdp={last:typeof td.last==='string'&&/^\d{10}$/.test(td.last)?td.last:'',wish:td.wish?1:0,uni:td.uni==='own'||TDP_IDS.includes(td.uni)?td.uni:'u7',team:idList(td.team,cid,4),cus:idList(td.cus,cid,4)};
  return d;}
 /* copia de seguridad de la partida anterior a la 2.0 (solo la primera vez) */
 (()=>{try{const v=localStorage.getItem('kc_prog');if(v&&!localStorage.getItem('kc_prog_bak3')){const o=JSON.parse(v);if(!o||!o.sv)localStorage.setItem('kc_prog_bak3',v);}}catch(e){}})();
@@ -42,4 +45,4 @@ function mergeProg(a,b){const u=(x,y)=>[...new Set([...(x||[]),...(y||[])])],mx=
  for(const k in b.own)r.own[k]=u(a.own[k],b.own[k]);
  r.sig=u(a.sig,b.sig);r.ofOwn=u(a.ofOwn,b.ofOwn);r.unl=u(a.unl,b.unl);r.ach=u(a.ach,b.ach);r.db=u(a.db,b.db);
  r.story={c:mx(a.story.c,b.story.c),seen:u(a.story.seen,b.story.seen),best:mx(a.story.best,b.story.best)};r.wi=mx(a.wi,b.wi);r.stats=mx(a.stats,b.stats);
- r.eq=Object.assign({},b.eq,a.eq);r.ofEq=Object.assign({},b.ofEq,a.ofEq);r.title=a.title||b.title;return cleanProg(r);}
+ r.tdp=Object.assign({},a.tdp.last>=b.tdp.last?a.tdp:b.tdp,{wish:a.tdp.wish||b.tdp.wish?1:0});r.eq=Object.assign({},b.eq,a.eq);r.ofEq=Object.assign({},b.ofEq,a.ofEq);r.title=a.title||b.title;return cleanProg(r);}

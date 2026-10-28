@@ -182,7 +182,9 @@ const ACHS=[
  {id:'a_outfit5',name:'A la moda',desc:'Compra 5 outfits.',title:'Bulma aprueba',st:'outfits',n:5,max:1},
  {id:'a_unlock',name:'Equipo completo',desc:'Desbloquea a todos los luchadores del modo historia.',title:'Reclutador',st:'unl',n:8,max:1},
  {id:'a_duo',name:'Mano a mano',desc:'Juega una pelea de 2 jugadores en el mismo celular.',title:'Compañero de sofá',st:'duo',n:1},
- {id:'a_photo',name:'Fotógrafo',desc:'Guarda una foto en el modo foto.',title:'Reportero de la Tierra',st:'photo',n:1}];
+ {id:'a_photo',name:'Fotógrafo',desc:'Guarda una foto en el modo foto.',title:'Reportero de la Tierra',st:'photo',n:1},
+ {id:'a_tdp',name:'Último en pie',desc:'Gana el Torneo del Poder.',title:'Superviviente del Torneo del Poder',st:'tdpwin',n:1},
+ {id:'a_sshen',name:'Dragón divino',desc:'Pide un deseo a Súper Shenlong.',title:'Elegido de Súper Shenlong',st:'swish',n:1}];
 
 /* ---- Deseos de Shenlong (al juntar las 7 Esferas del Dragón) ---- */
 const WISHES=[
