@@ -3,6 +3,11 @@ HAIR.kefla={cap:1,sp:HAIR.ssj.sp.map(s=>[s[0]*1.12,s[1],s[2]*1.1,s[3]*1.15,s[4]*
 HAIR.gamma1={cap:1,sp:[[0,.15,0,-.45,0,.2,.075],[.1,.12,.02,-.3,-.85,.18,.065],[-.1,.12,.02,-.3,.85,.18,.065],[.05,.12,.12,1.1,-.2,.14,.05],[-.05,.12,.12,1.1,.2,.14,.05]]};
 HAIR.gamma2={cap:1,sp:[[0,.16,.07,.75,0,.3,.095],[.07,.15,.05,.55,-.3,.26,.08],[-.07,.15,.05,.55,.3,.26,.08],[0,.1,-.12,-1.6,0,.18,.07],[.12,.06,-.04,-.6,-1.2,.16,.06],[-.12,.06,-.04,-.6,1.2,.16,.06]]};
 HAIR.whis={cap:1,sp:[[0,.17,-.03,-.1,0,.62,.1],[0,.15,.05,.2,0,.46,.085],[.05,.15,0,-.05,-.15,.5,.08],[-.05,.15,0,-.05,.15,.5,.08]]};
+/* 2.0: peinados de los luchadores del modo historia */
+HAIR.raditz={cap:1,sp:HAIR.goku.sp.slice(0,5).concat([[0,.06,-.15,-2.75,0,.95,.11],[.09,.04,-.13,-2.8,-.18,.92,.1],[-.09,.04,-.13,-2.8,.18,.92,.1],[0,-.04,-.15,-2.95,0,.9,.1],[.13,0,-.08,-2.9,-.4,.8,.08],[-.13,0,-.08,-2.9,.4,.8,.08]])};
+HAIR.gohanks={cap:1,sp:HAIR.gohan.sp.map(s=>[s[0],s[1],s[2],s[3]*.8,s[4],s[5]*.9,s[6]]).concat([[.06,.1,.15,2.3,-.3,.18,.04]])};
+HAIR.granolah={cap:1,sp:[[0,.16,-.02,-.35,0,.3,.08],[.09,.14,0,-.2,-.6,.26,.07],[-.09,.14,0,-.2,.6,.26,.07],[.05,.12,.12,1.6,-.25,.16,.05],[-.05,.12,.12,1.6,.25,.16,.05],[0,.08,-.14,-1.9,0,.24,.07]]};
+HAIR.gas={cap:1,sp:[[0,.16,-.02,-.2,0,.34,.09],[.1,.13,0,-.1,-.7,.3,.08],[-.1,.13,0,-.1,.7,.3,.08],[0,.1,-.12,-1.2,0,.3,.08],[.13,.05,-.04,-.4,-1.3,.24,.06],[-.13,.05,-.04,-.4,1.3,.24,.06]]};
 const NUMTEX={};
 function numTex(n){const k=n.t+n.c;return NUMTEX[k]||(NUMTEX[k]=canvasTex(64,g=>{g.fillStyle=n.c;g.font='bold 56px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText(n.t,32,36);}));}
 function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
@@ -21,5 +26,10 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
  if(e==='gammaHead1'||e==='gammaHead2'){for(const s of[1,-1])add(Sph(.032,10,8),m.ex1,J.head,s*.168,.13,0).scale.set(.6,1,1);}
  if(e==='gammaCoat'){add(new THREE.CylinderGeometry(.2,.26,.3,20,1,true),m.top,J.hips,0,-.12,0);add(new THREE.CylinderGeometry(.07,.085,.08,14),m.top,J.torso,0,.45,0);}
  if(e==='tallBoots'){for(const L of['L','R'])add(new THREE.CylinderGeometry(.078,.07,.16,14),m.boots,J['kn'+L],0,-.1,0);}
+ if(e==='apeMuzzle'){add(Sph(.11,16,12),m.ex1,J.head,0,.07,.12).scale.set(1.2,.85,1);for(const s of[1,-1])add(Sph(.016,8,6),m.mouth,J.head,s*.04,.1,.225);}
+ if(e==='apeEars'){for(const s of[1,-1])add(Sph(.05,12,8),m.ex1,J.head,s*.18,.16,-.01).scale.set(.5,1,.9);}
+ if(e==='mustache'){for(const s of[1,-1]){const b=add(Bx(.09,.025,.02),m.hair,J.head,s*.04,.06,.16);b.rotation.z=-s*.35;}}
+ if(e==='scarfRed'){add(new THREE.TorusGeometry(.1,.035,8,18),m.ex1,J.torso,0,.44,0,Math.PI/2);add(Bx(.07,.22,.025),m.ex1,J.torso,-.08,.32,-.16,-.2,0,.25);}
+ if(e==='hildCrest'){for(let i=0;i<4;i++)add(cone(.035,.16,6),m.ex1,J.head,0,.27-i*.05,-.06-i*.05,-.6-i*.35);for(const s of[1,-1])add(cone(.05,.2,6),m.ex1,J['sh'+(s>0?'L':'R')],0,.05,0,0,0,-s*.6);}
  if(e==='cape'){add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
 }

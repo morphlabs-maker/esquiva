@@ -35,5 +35,8 @@ rep("v.head.scale.setScalar(w*5*fl);v.headCore.position.copy(headPos);v.headCore
     "v.head.scale.setScalar(w*2.8*fl);v.headCore.position.copy(headPos);v.headCore.scale.setScalar(w*1.3*fl);\n v.mouth.position.copy(origin);v.mouth.scale.setScalar(w*2*fl);v.core.material.opacity=.6*fade;v.head.material.opacity=.5*fade;v.headCore.material.opacity=.35*fade;v.mouth.material.opacity=.45*fade;")
 rep("spawn({pos,color:0xffffff,size:radius*3.2,life:.22});spawn({pos,color,size:radius*4.5,life:.45,grow:radius*2});",
     "spawn({pos,color:0xffffff,size:radius*2,life:.18,op:.55});spawn({pos,color,size:radius*3.2,life:.4,grow:radius*1.5,op:.6});")
+# guardado compartido con Kaioken Clash 2.0 (mismo dominio): no perder los campos que Ultra no conoce
+rep("if(v&&v.length<20000)","if(v&&v.length<400000)")
+rep("function saveProg(){try{localStorage.setItem(PROG_KEY,JSON.stringify(prog));}catch(e){}cloudSave();}","function saveProg(){try{let raw={};try{raw=JSON.parse(localStorage.getItem(PROG_KEY)||'{}')||{};}catch(e){} /* comparte el guardado con Kaioken Clash 2.0: se conservan sus campos */localStorage.setItem(PROG_KEY,JSON.stringify(Object.assign(raw,prog)));}catch(e){}cloudSave();}")
 open(D+'stage18b.js','w',encoding='utf8').write(src)
 print('ok-e')

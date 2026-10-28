@@ -10,13 +10,13 @@ def rep(old,new,cnt=1):
     src=src.replace(old,new)
 rd=lambda f:open(D+f,encoding='utf8').read()
 # ---- cabecera y versión
-rep('KAIOKEN CLASH — prototipo jugable (fase 1)\n   1v1 local · 3 mundos · 13 luchadores · poder realista','KAIOKEN CLASH — versión retro (chibi)\n   5 mundos + planeta de Bills · 25 luchadores · el contenido de Ultra')
-rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"1.9.0",build:"2026-10-24",updateUrl:"",storeUrl:""});')
+rep('KAIOKEN CLASH — prototipo jugable (fase 1)\n   1v1 local · 3 mundos · 13 luchadores · poder realista','KAIOKEN CLASH 2.0 — versión retro (chibi)\n   Modo historia «Junto a Goku» · 33 luchadores · 5 mundos + planeta de Bills')
+rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"2.0.0",build:"2026-10-28",updateUrl:"",storeUrl:""});')
 # ---- luchadores, formas y técnicas (los mismos datos que Ultra)
 src,n=re.subn(r"(F\('ui','Ultra Instinto dominado',300000,\{era:'S',cost:7,)dur:25,hpReq:\.3,",r"\1",src);assert n==3,n
 rep("forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];",
- "forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];\n"+rd('chars18.js')
- +"\n/* clásico: los Gamma con su peinado chibi */\nCHARS.find(c=>c.id==='gamma1').hair='gamma1';CHARS.find(c=>c.id==='gamma2').hair='gamma2';\n")
+ "forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];\n"+rd('chars18.js').replace('const TECHS=[','const OLD_TECHS=[ /* técnicas genéricas anteriores a la 2.0: solo para devolver sus monedas */')
+ +"\n/* clásico: los Gamma con su peinado chibi */\nCHARS.find(c=>c.id==='gamma1').hair='gamma1';CHARS.find(c=>c.id==='gamma2').hair='gamma2';\n"+rd('plus-data.js'))
 rep("{id:'train',name:'Entrenamiento',desc:'El rival se queda quieto. Practica combos, formas y especiales.'}","{id:'train',name:'Entrenamiento',desc:'En el planeta de Bills, con Whis de maestro. Él no ataca y esquiva como el Ultra Instinto dominado.'}")
 # ---- modelo chibi: piezas nuevas, número en el pecho y altura canónica
 rep("function setExtras(model,list){",rd('classic-model.js')+"function setExtras(model,list){")
@@ -52,12 +52,12 @@ rep("const TOUCH_MODES=['cpu','boss','coopcpu','2v1cpu','2v1amigo','1v2','royale
 # ---- progreso: técnicas compradas y equipadas
 rep("const d={coins:0,own:{},day:'',wins:0,earned:0,nick:''};","const d={coins:0,own:{},day:'',wins:0,earned:0,nick:'',tech:[],eq:{}};")
 rep("d.own[k]=[...new Set(p.own[k].filter(n=>Number.isInteger(n)&&n>=0&&n<40))];return d;}","""d.own[k]=[...new Set(p.own[k].filter(n=>Number.isInteger(n)&&n>=0&&n<40))];
- if(Array.isArray(p.tech))d.tech=[...new Set(p.tech.filter(id=>typeof id==='string'&&TECHS.some(t=>t.id===id)))];
- if(p.eq&&typeof p.eq==='object')for(const k in p.eq){const e=p.eq[k];if(!/^[a-z0-9]{1,16}$/.test(k)||!e||typeof e!=='object')continue;const o={};for(const s of['s1','ult'])if(typeof e[s]==='string'&&d.tech.includes(e[s]))o[s]=e[s];d.eq[k]=o;}
+ cleanPlus(p,d);
+ if(p.eq&&typeof p.eq==='object')for(const k in p.eq){const e=p.eq[k];if(!/^[a-z0-9]{1,16}$/.test(k)||!e||typeof e!=='object')continue;const o={};for(const s of['s1','ult'])if(typeof e[s]==='string'&&(d.sig.includes(e[s])||d.tech.includes(e[s])))o[s]=e[s];d.eq[k]=o;}
  return d;}""")
-rep("const body={coins:prog.coins,own:prog.own,day:prog.day,wins:prog.wins,earned:prog.earned,nick:prog.nick,t:Date.now()};","const body={coins:prog.coins,own:prog.own,day:prog.day,wins:prog.wins,earned:prog.earned,nick:prog.nick,tech:prog.tech,eq:prog.eq,t:Date.now()};")
-rep("function buyForm(ch,i){","""const ownsTech=id=>prog.tech.includes(id);
-function buyTech(t){if(ownsTech(t.id)||prog.coins<t.price)return false;prog.coins-=t.price;prog.tech.push(t.id);const cid=CHARS[shopChar].id;if(t.who.includes(cid))(prog.eq[cid]=prog.eq[cid]||{})[t.slot]=t.id;saveProg();return true;}
+rep("const body={coins:prog.coins,own:prog.own,day:prog.day,wins:prog.wins,earned:prog.earned,nick:prog.nick,t:Date.now()};","const body=Object.assign({},prog,{t:Date.now()}); /* 2.0: la partida completa */")
+rep("function buyForm(ch,i){","""const ownsTech=id=>prog.sig.includes(id);
+function buyTech(t){if(ownsTech(t.id)||prog.coins<t.price)return false;prog.coins-=t.price;prog.sig.push(t.id);checkAchs();const cid=CHARS[shopChar].id;if(t.who.includes(cid))(prog.eq[cid]=prog.eq[cid]||{})[t.slot]=t.id;saveProg();return true;}
 function buyForm(ch,i){""")
 rep("let lockMsg='',shopChar=0,shopConfirm=-1;","let lockMsg='',shopChar=0,shopConfirm=-1,shopTab='forms';")
 # ---- Gigante de Luz: avatar de aura translúcido
@@ -202,7 +202,7 @@ rep("wsel=(wsel+1)%3;","wsel=(wsel+1)%WORLDS.length;")
 rep("if(world&&world.wmat)world.wmat.uniforms.uT.value+=dt;","if(world&&world.wmat)world.wmat.uniforms.uT.value+=dt;if(world&&world.anim)world.anim(dt);")
 rep("toState:a=>{if(a==='world'||a==='title'){menuState=a;renderMenu();}}","toState:a=>{if(a==='world'||a==='title'){menuState=a;renderMenu();}else if(a==='chars'){menuState='chars';pst=['form','ready'];renderMenu();}}")
 rep("toggleMusic:()=>onKey('KeyM'),","""toggleMusic:()=>onKey('KeyM'),
- shopTab:a=>{if(a==='forms'||a==='tech'){shopTab=a;shopConfirm=-1;sfx('sel');renderMenu();}},
+ shopTab:a=>{if(a==='forms'||a==='tech'||a==='outfit'){shopTab=a;shopConfirm=-1;tryOutfit=null;outfitConfirm='';sfx('sel');renderMenu();}},
  buyTech:a=>{const t=TECHS.find(x=>x.id===a);if(!t||ownsTech(t.id))return;if(prog.coins<t.price){shopConfirm=-1;sfx('back');renderMenu();return;}if(shopConfirm!==t.id){shopConfirm=t.id;sfx('sel');renderMenu();return;}shopConfirm=-1;if(buyTech(t))sfx('ok');renderMenu();},
  equipTech:a=>{const[slot,id]=String(a).split(':');if(slot!=='s1'&&slot!=='ult')return;const cid=CHARS[shopChar].id,e=prog.eq[cid]=prog.eq[cid]||{};if(!id)delete e[slot];else{const t=TECHS.find(x=>x.id===id);if(!t||!ownsTech(id)||!t.who.includes(cid)||t.slot!==slot)return;e[slot]=id;}saveProg();sfx('ok');renderMenu();},""")
 # ---- jefes: Bills con cola y joyas
@@ -210,22 +210,120 @@ rep("function bossChar(b){if(b.ch)return b.ch;","function bossChar(b){if(b.id===
 # ---- tienda: pestañas FORMAS y TÉCNICAS (mismo estilo de botones y filas del clásico)
 rep(".grow{",".tabs{display:flex;gap:6px;justify-content:center;margin-bottom:6px}.stars{color:#ffd23a;letter-spacing:1px}\n.grow{")
 a=src.index(" else if(menuState==='shop'){const ch=CHARS[shopChar];");b=src.index("function refreshMenuModels(){")
-src=src[:a]+""" else if(menuState==='shop'){const ch=CHARS[shopChar],isT=shopTab==='tech';let rows;
-  if(!isT)rows=ch.forms.map((f,i)=>{const own=owns(ch,i),pr=formPrice(ch,i),can=prog.coins>=pr;
+src=src[:a]+""" else if(menuState==='shop'){const ch=CHARS[shopChar],isT=shopTab==='tech',isO=shopTab==='outfit';let rows;
+  if(isO)rows=outfitRows(ch);
+  else if(!isT)rows=ch.forms.map((f,i)=>{const own=owns(ch,i),pr=formPrice(ch,i),can=prog.coins>=pr;
    const act=own?`<span class="ok">${isFree(ch,i)?'GRATIS':'TUYA'}</span>`:shopConfirm===i?`<button class="btn sbtn" data-act="buy" data-arg="${i}">¿CONFIRMAR? 🪙 ${pr}</button>`:`<button class="btn sbtn${can?'':' off'}" data-act="buy" data-arg="${i}">🪙 ${pr}</button>`;
    return`<div class="grow"><span>${own?'':'🔒 '}${f.name}<em>${fmtP(ch.base*f.mult)}</em></span>${act}</div>`;}).join('');
   else{const list=TECHS.filter(t=>t.who.includes(ch.id)),eq=prog.eq[ch.id]||{},slotL=s=>s==='ult'?'DEFINITIVO · E+H':'ESPECIAL · E';
    const defRow=slot=>{const d=slot==='ult'?ch.ult:ch.s1;return`<div class="grow"><span>${d.name}<em>${slotL(slot)} · de serie</em></span>${!eq[slot]?'<span class="ok">EQUIPADA</span>':`<button class="btn sbtn" data-act="equipTech" data-arg="${slot}:">EQUIPAR</button>`}</div>`;};
    rows=defRow('s1')+defRow('ult')+(list.length?list.map(t=>{const own=ownsTech(t.id),on=eq[t.slot]===t.id,can=prog.coins>=t.price;
     const act=on?'<span class="ok">EQUIPADA</span>':own?`<button class="btn sbtn" data-act="equipTech" data-arg="${t.slot}:${t.id}">EQUIPAR</button>`:shopConfirm===t.id?`<button class="btn sbtn" data-act="buyTech" data-arg="${t.id}">¿CONFIRMAR? 🪙 ${t.price}</button>`:`<button class="btn sbtn${can?'':' off'}" data-act="buyTech" data-arg="${t.id}">🪙 ${t.price}</button>`;
-    return`<div class="grow"><span>${own?'':'🔒 '}${t.name}<em>${slotL(t.slot)} · ${TYPE_LABEL[t.type]} · <span class="stars">${techStars(t)}</span></em></span>${act}</div>`;}).join(''):'<div class="tip" style="margin-top:8px">Este luchador no tiene técnicas extra en la tienda.</div>');}
+    return`<div class="grow"><span>${own?'':'🔒 '}${t.name}<em>${SIG_KIND[t.kind]} · ${slotL(t.slot)} · <span class="stars">${techStars(t)}</span></em></span>${act}</div>`;}).join(''):'<div class="tip" style="margin-top:8px">Las técnicas icónicas son para 14 luchadores: Goku, Vegeta, Gohan, Trunks, Piccolo, Krilin, Gogeta, Vegito, Freezer, Cell, Broly, Jiren, Goku Black y Bills.</div>');}
+  const cnt=c=>isO?OUTFITS.filter(o=>o.who===c.id&&!prog.ofOwn.includes(o.id)).length:isT?TECHS.filter(t=>t.who.includes(c.id)&&!ownsTech(t.id)).length:c.forms.filter((_,j)=>!owns(c,j)).length;
   m.innerHTML=`${backBtn()}<div class="ttl">TIENDA · ${coinTag()}</div>
-  <div class="tabs"><button class="btn sbtn${isT?' off':''}" data-act="shopTab" data-arg="forms">FORMAS</button><button class="btn sbtn${isT?'':' off'}" data-act="shopTab" data-arg="tech">TÉCNICAS</button></div>
-  <div class="grid">${CHARS.map((c,i)=>{const n=isT?TECHS.filter(t=>t.who.includes(c.id)&&!ownsTech(t.id)).length:c.forms.filter((_,j)=>!owns(c,j)).length;return`<div class="cell" data-act="shopPick" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${c.name}<br><span style="color:${n?'#c8cce0':'#7dff7a'}">${n?n+' 🔒':'✔ todo'}</span>${i===shopChar?'<div class="cur"></div>':''}</div>`;}).join('')}</div>
-  <div class="gcol shop" style="margin-top:10px;width:min(96vw,640px);flex:none">${rows}</div>
-  <div class="hint keep" style="margin-top:8px">${isT?'Las técnicas compradas sustituyen al especial (E) o al definitivo (E+H) de ese luchador, con los mismos botones. Las ★ indican su fuerza.':'Ganas monedas al vencer a la CPU o a un jefe (más en difícil y contra jefes; +50 con la primera victoria del día). Entrenamiento y Versus 2P no dan monedas.'}</div>`;
+  <div class="tabs"><button class="btn sbtn${!isT&&!isO?'':' off'}" data-act="shopTab" data-arg="forms">FORMAS</button><button class="btn sbtn${isT?'':' off'}" data-act="shopTab" data-arg="tech">TÉCNICAS</button><button class="btn sbtn${isO?'':' off'}" data-act="shopTab" data-arg="outfit">OUTFITS</button></div>
+  <div class="grid">${CHARS.map((c,i)=>{const n=cnt(c);return`<div class="cell${lockedC(i)?' lock':''}" data-act="shopPick" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${c.name}<br><span style="color:${n?'#c8cce0':'#7dff7a'}">${n?n+' 🔒':'✔ todo'}</span>${i===shopChar?'<div class="cur"></div>':''}</div>`;}).join('')}</div>
+  <div class="shopwrap" style="margin-top:10px">${isO?'<div id="probSlot"><div class="tip" style="margin:4px 0 0">PROBADOR</div></div>':''}<div class="gcol shop" style="width:min(96vw,640px);flex:none">${rows}</div></div>
+  <div class="hint keep" style="margin-top:8px">${isO?'Los outfits solo cambian la ropa: no dan poder. Pruébalos antes de comprar. Los ★ EXCLUSIVOS son de pago.':isT?'Cada luchador tiene 4 técnicas icónicas: ráfaga, rayo y cuerpo a cuerpo van al Especial (E · 🌀); la definitiva al Definitivo (E+H · ☄️). Las ★ indican su fuerza.':'Ganas monedas al vencer a la CPU o a un jefe, en el modo historia, en Supervivencia y con los desafíos. Entrenamiento y los 2 jugadores no dan monedas.'}</div>`;
   m.style.justifyContent='flex-start';}}
 """+src[b:]
+# =================== 2.0: modo historia, tienda nueva, outfits, fusiones, Supervivencia, 2P en un celular, repetición y foto ===================
+rep("const PROG_KEY='kc_prog';",rd('plus-save.js')+"const PROG_KEY='kc_prog';")
+rep("if(!p||typeof p!=='object')return d;","if(!p||typeof p!=='object')p={};")
+rep("if(v&&v.length<20000)","if(v&&v.length<400000)")
+rep("allowed(i){return ERA","allowed(i){if(this.storyForms)return this.storyForms.includes(i);return ERA")
+rep("applyForm(){const f=this.form;applyFormModel(this.model","applyForm(){const f=this.form;this.model.outfit=human(this)&&!game.online?prog.ofEq[this.ch.id]||null:null;applyFormModel(this.model")
+rep("const c=Object.assign({},ch.colors,f.colors||{}),m=model.mats;","const c=Object.assign({},ch.colors,model.outfit&&outfitOf(model.outfit)?outfitOf(model.outfit).colors:{},f.colors||{}),m=model.mats;")
+rep("const ch=CHARS[want],model=buildModel(ch),fi=pst[p]==='char'?0:fsel[p];","const ch=CHARS[want],model=buildModel(ch),fi=pst[p]==='char'?0:fsel[p];if(p===0)model.outfit=prog.ofEq[ch.id]||null;")
+# luchadores bloqueados hasta el modo historia
+rep('<div class="cell" data-act="pickChar" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${ch.name}','<div class="cell${lockedC(i)?\' lock\':\'\'}" data-act="pickChar" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${lockedC(i)?\'🔒 \':\'\'}${ch.name}')
+rep("const ok=p=>{if(pst[p]==='char'){pst[p]='form';","const ok=p=>{if(pst[p]==='char'){if(humanSide(p)&&lockedC(cur[p])){lockMsg=LOCK_MSG;sfx('back');return;}pst[p]='form';")
+rep("const forms=st==='char'?`<div>${ch.forms.length} formas","const forms=st==='char'?`${lockedC(cur[p])?'<div style=\"color:#ff9a5a\">🔒 '+LOCK_MSG+'</div>':''}<div>${ch.forms.length} formas")
+rep("const bad=sq.list.findIndex(x=>x.human&&!owns(CHARS[x.c],x.f));if(bad>=0){sq.slot=bad;lockMsg='Forma bloqueada: cómprala en la TIENDA';","const bad=sq.list.findIndex(x=>x.human&&(lockedC(x.c)||!owns(CHARS[x.c],x.f)));if(bad>=0){sq.slot=bad;lockMsg=lockedC(sq.list[bad].c)?LOCK_MSG:'Forma bloqueada: cómprala en la TIENDA';")
+rep('<div class="cell" data-act="sqPick" data-arg="${i}"><img','<div class="cell${lockedC(i)?\' lock\':\'\'}" data-act="sqPick" data-arg="${i}"><img')
+rep("cur[0]=(cur[0]+d+CHARS.length)%CHARS.length;fsel[0]=0;","do{cur[0]=(cur[0]+d+CHARS.length)%CHARS.length;}while(lockedC(cur[0]));fsel[0]=0;")
+# dificultad Legendario
+rep("transFirst:[7,10]}];","transFirst:[7,10]},\n {name:'Legendario',desc:'Lee tus ataques, esquiva casi todo y castiga cada error. Solo para maestros.',react:.13,atk:[.1,.18],guard:.55,vanish:.65,vanCool:2,escape:.5,trans:.6,special:.7,combo:5,cap:Infinity,dmg:1.15,tele:.65,bossF:1.25,bossHp:5,bossCool:.75,transCool:10,transFirst:[5,8]}];")
+rep("[20,35,50][game.diff]","[20,35,50,70][game.diff]");rep("[4,7,10][game.diff]","[4,7,10,13][game.diff]");rep("[.55,.75,.9][game.diff]","[.55,.75,.9,.95][game.diff]");rep("[3,6,9][game.diff]","[3,6,9,12][game.diff]")
+rep("game.diff=(game.diff+(U.includes(code)?1:2))%3","game.diff=(game.diff+(U.includes(code)?1:DIFFS.length-1))%DIFFS.length")
+rep("cycleDiff:()=>{game.diff=(game.diff+1)%3","cycleDiff:()=>{game.diff=(game.diff+1)%DIFFS.length")
+rep("else if(a==='d')C.d=(C.d+1)%3","else if(a==='d')C.d=(C.d+1)%DIFFS.length")
+rep("d=DIFFS[clamp(C.d|0,0,2)]","d=DIFFS[clamp(C.d|0,0,DIFFS.length-1)]")
+# modos nuevos: Supervivencia y 2 jugadores en el mismo celular
+rep("{id:'cpu',name:'Contra la CPU',desc:'Tú contra la máquina, con tres dificultades.'","{id:'cpu',name:'Contra la CPU',desc:'Tú contra la máquina, de Fácil a Legendario.'")
+rep("{id:'royale',name:'Battle Royale'","{id:'surv',name:'Supervivencia',desc:'Oleadas de rivales cada vez más fuertes. Cada K.O. da monedas; recuperas algo de vida entre oleadas.',diff:1},\n {id:'duo',name:'2 jugadores · mismo celular',desc:'Pantalla dividida por mitades: cada uno con su cámara, sus controles fijos y su HUD.',team:[1,1]},\n {id:'royale',name:'Battle Royale'")
+rep("const TOUCH_MODES=['cpu','boss','coopcpu','2v1cpu','2v1amigo','1v2','royale','train'];","const TOUCH_MODES=['cpu','boss','coopcpu','surv','duo','2v1cpu','2v1amigo','1v2','royale','train'];")
+rep("const solo=()=>['cpu','coopcpu','train','boss','2v1cpu','1v2','royale'].includes(game.mode);","const solo=()=>['cpu','coopcpu','train','boss','surv','2v1cpu','1v2','royale'].includes(game.mode);")
+rep("game.cpu=['cpu','coopcpu','2v1cpu','1v2','royale'].includes(game.mode);","game.cpu=['cpu','coopcpu','surv','2v1cpu','1v2','royale'].includes(game.mode);")
+rep("${cur[1]===i&&game.mode!=='boss'&&game.mode!=='train'?","${cur[1]===i&&!['boss','train','surv'].includes(game.mode)?")
+rep("if(p&&game.mode==='train')return'<b>MAESTRO","if(p&&game.mode==='surv')return'<b>SUPERVIVENCIA</b><br>Rivales al azar, cada oleada más fuerte. Cada K.O. da monedas.';if(p&&game.mode==='train')return'<b>MAESTRO")
+rep("const hint2=(game.mode==='boss'||game.mode==='train')?''","const hint2=['boss','train','surv'].includes(game.mode)?''")
+rep("pst=['char',(game.mode==='boss'||game.mode==='train')?'ready':'char'];","pst=['char',['boss','train','surv'].includes(game.mode)?'ready':'char'];")
+rep("if(p&&(game.mode==='boss'||game.mode==='train')){if(mm)","if(p&&['boss','train','surv'].includes(game.mode)){if(mm)")
+rep("if(teamMode()){squadInit();sfx('ok');menuState='squad';renderMenu();return;}","if(teamMode()||game.mode==='duo'){squadInit();sfx('ok');menuState='squad';renderMenu();return;}")
+rep("human=i===0||(game.mode==='2v1amigo'&&i===1)","human=i===0||((game.mode==='2v1amigo'||game.mode==='duo')&&i===1)")
+rep("game.squad=[0,1].map(t=>sq.list.filter(x=>x.t===t).map(x=>({c:x.c,f:x.f,human:x.human})));clearMenuModels();menuState='world';","game.squad=[0,1].map(t=>sq.list.filter(x=>x.t===t).map(x=>({c:x.c,f:x.f,human:x.human})));if(game.mode==='duo'){cur=[sq.list[0].c,sq.list[1].c];fsel=[sq.list[0].f,sq.list[1].f];}clearMenuModels();menuState='world';")
+rep("if(state==='chars'&&teamMode())state='squad';","if(state==='chars'&&(teamMode()||game.mode==='duo'))state='squad';")
+rep("if(teamMode())menuState='squad';else if(bossMode())","if(teamMode()||game.mode==='duo')menuState='squad';else if(bossMode())")
+rep("if(teamMode()){startTeamMatch(D);return;}","if(teamMode()){startTeamMatch(D);return;}\n if(M==='surv'){survStart();return;}")
+rep("function ko(def,att){if(isGuest()){def.hp=Math.max(1,def.hp);return;}","function ko(def,att){if(isGuest()){def.hp=Math.max(1,def.hp);return;}if(game.mode==='surv'&&def.idx!==0){survKO(def,att);return;}if(human(att))track('ko');")
+rep("function afterRound(){game.timescale=1;","function afterRound(){game.timescale=1;if(game.story){storyEnd();return;}if(game.mode==='surv'){survOver();return;}")
+rep("const timed=game.mode==='vs'||game.mode==='cpu'","const timed=game.mode==='vs'||game.mode==='cpu'||game.mode==='duo'",2)
+rep("$('#timer').textContent=(game.mode==='vs'||game.mode==='cpu')?Math.max(0,Math.ceil(game.timer)):'∞';","$('#timer').textContent=game.story?(game.story.left!=null?Math.ceil(game.story.left):'∞'):game.mode==='surv'&&game.surv?'🌊'+game.surv.w:(game.mode==='vs'||game.mode==='cpu'||game.mode==='duo')?Math.max(0,Math.ceil(game.timer)):'∞';")
+rep("function awardCoins(){const M=game.mode;if(M==='train'||(M==='vs'&&!game.online))return 0;","function awardCoins(){const M=game.mode;if(game.story)return 0;if(M==='train'||M==='duo'||(M==='vs'&&!game.online))return 0;")
+rep("prog.wins++;saveProg();return n+bonus;}","prog.wins++;saveProg();trackWin();return n+bonus;}")
+rep("const got=(game.mode==='cpu'&&game.winner===0)","if(game.mode==='duo')track('duo');const got=(game.mode==='cpu'&&game.winner===0)")
+# seguimiento: transformaciones y definitivos
+rep("this.applyForm();\n  if(up&&this.transDur>=.6)","this.applyForm();if(up)plusOnTrans(this,this.form);\n  if(up&&this.transDur>=.6)")
+rep("if(isU)game.cine={type:'ult'","if(isU)plusOnUlt(this);if(isU)game.cine={type:'ult'")
+# diálogos de entrada y pasos 2.0
+rep("if(game.phase==='intro'){game.introT+=dt;","if(game.phase==='intro'){if(!dlgTick(dt))game.introT+=dt;")
+rep("updateProjs(dt);updateStruggle(dt,performance.now()/1000);world.update(dt);}","updateProjs(dt);updateStruggle(dt,performance.now()/1000);world.update(dt);plusStep(dt);}")
+rep("+' · '+W,1.1);}","+' · '+W,1.1);game.introDlg=null;$('#dlg').style.display='none';introDialog();}")
+# teclas: diálogo, repetición, foto, historia
+rep("if(game.phase){\n  if(game.phase==='over'&&game.online)","if(game.replay){if(code==='Escape'||code==='KeyR')replayExit();else if(code==='Space'||code==='KeyF'){game.replay.pause=!game.replay.pause;renderRepBar();}return;}\n if(game.photo){if(code==='Escape')photoExit();else if(code==='Enter'||code==='KeyP')game.photo.shot=true;return;}\n if(game.phase){\n  if(game.phase==='intro'&&game.introDlg){if(code==='Escape')dlgSkip();else dlgNext();return;}\n  if(game.phase==='over'&&game.story){if(code==='KeyF'||code==='Enter'||code==='Escape'||code==='P0B0')storyNext();else if(code==='KeyG')ACTIONS.sRetry();else if(code==='KeyR')replayStart();return;}\n  if(game.phase==='over'&&code==='KeyR'&&!game.online){replayStart();return;}\n  if(game.phase==='over'&&game.online)")
+# bucle: repetición, cámara de foto y captura
+rep("if(game.phase&&(!game.paused||game.online)){","if(game.replay){replayFrame(rdt,t);updateParts(rdt);updateRings(rdt);}\n else if(game.phase&&(!game.paused||game.online)){")
+rep(" const W=Math.ceil(innerWidth/PIX),H=Math.ceil(innerHeight/PIX);"," if(game.photo)photoCam();plusFrame(rdt,t);\n const W=Math.ceil(innerWidth/PIX),H=Math.ceil(innerHeight/PIX);")
+rep("else{renderer.setViewport(0,0,W,H);renderer.render(scene,cam);}}","else{renderer.setViewport(0,0,W,H);renderer.render(scene,cam);}\n if(game.photo&&game.photo.shot){game.photo.shot=false;photoCapture();}}")
+# 2 jugadores en un celular: pantalla dividida siempre, cámaras de lado
+rep("function updateCamera(dt){if(game.f.length<2)return;","function updateCamera(dt){if(game.f.length<2)return;\n if(duoPhone()&&game.phase!=='over'&&game.f.length===2){if(game.cine&&!game.cine.dlg)game.cine=null;game.split=true;duoCams(game.f[0],game.f[1],1-Math.exp(-6*dt));cam.position.copy(camA.position);cam.quaternion.copy(camA.quaternion);return;}")
+rep("screenSign(){if(!game.split){","screenSign(){if(duoPhone())return 1;if(!game.split){")
+rep("const duoMode=()=>TOUCHM&&game.mode==='2v1amigo';","const duoMode=()=>TOUCHM&&(game.mode==='2v1amigo'||game.mode==='duo');")
+rep("['formUp','⚡',['KeyQ','KeyW'],['KeyW']]]}","['formUp','⚡',['KeyQ','KeyW'],['KeyW']],['fuse','🤝',['KeyZ']]]}")
+rep("['formUp','⚡',['KeyP','ArrowUp'],['ArrowUp']]]}","['formUp','⚡',['KeyP','ArrowUp'],['ArrowUp']],['fuse','🤝',['KeyN']]]}")
+rep("const BTN={light:{k:['KeyF']},","const BTN={fuse:{k:['KeyZ']},light:{k:['KeyF']},")
+# pausa: modo foto y volver al mapa
+rep('<button class="btn" ${NOFOCUS} data-act="toMainMenu">MENÚ PRINCIPAL','<button class="btn" data-act="photo">📷 MODO FOTO</button>${game.story?\'<button class="btn" data-act="sMapQuit">🗺 VOLVER AL MAPA</button>\':\'\'}<button class="btn" ${NOFOCUS} data-act="toMainMenu">MENÚ PRINCIPAL')
+rep("function toMenu(state){","function toMenu(state){if(game.replay)replayExit();if(game.photo){game.photo=null;canvas.style.filter='';$('#photobar').style.display='none';}game.story=null;game.surv=null;game.introDlg=null;$('#dlg').style.display='none';document.body.classList.remove('canfuse0','canfuse1');")
+rep("OVER_KEYS_KB='<br><span class=\"k\">F</span>/<span class=\"k\">Enter</span> revancha","OVER_KEYS_KB='<br><span class=\"k\">R</span> repetición &nbsp; <span class=\"k\">F</span>/<span class=\"k\">Enter</span> revancha")
+rep("'<br><button class=\"btn\" data-act=\"rematch\">REVANCHA</button>","'<br><button class=\"btn\" data-act=\"replay\">REPETICIÓN</button><button class=\"btn\" data-act=\"rematch\">REVANCHA</button>")
+# pantalla de título: historia, perfil y desafíos
+rep('data-act="goPlay">JUGAR</button>','data-act="goPlay">JUGAR</button><button class="btn" data-act="openStory">📖 HISTORIA</button>')
+rep("<button class=\"btn\" data-act=\"openRank\">🏆 RANKING</button>'}</div>","<button class=\"btn\" data-act=\"openRank\">🏆 RANKING</button>'}<button class=\"btn\" data-act=\"openProfile\">👤 PERFIL${titleName()?' · '+esc(titleName()):''}</button><button class=\"btn\" data-act=\"openChal\">🎯 DESAFÍOS${chalReady()?' ('+chalReady()+')':''}</button></div>")
+rep("setTimeout(checkUpdate,800);}","setTimeout(checkUpdate,800);setTimeout(refundNotice,700);}")
+rep(" else if(menuState==='shop'){",""" else if(menuState==='story'){m.innerHTML=storyHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='whatif'){m.innerHTML=whatifListHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='smap'){m.innerHTML=smapHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='gallery'){m.innerHTML=galleryHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='wish'){m.innerHTML=wishHTML();}
+ else if(menuState==='cine'){m.innerHTML=cineHTML();renderCineBox();}
+ else if(menuState==='profile'){m.innerHTML=profileHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='chal'){m.innerHTML=chalHTML();m.style.justifyContent='flex-start';}
+ else if(menuState==='shop'){""")
+rep("if(menuState==='title'){if(code==='KeyC')openGuide('title');else goPlay();return;}","""if(menuState==='title'){if(code==='KeyC')openGuide('title');else if(code==='KeyH')ACTIONS.openStory();else goPlay();return;}
+ if(menuState==='cine'){if(code==='Escape')cineEnd();else cineNext();return;}
+ if(menuState==='wish')return;
+ if(['story','profile','chal'].includes(menuState)){if(BACK.includes(code)){if(menuState==='profile'&&profView!=='main'){profView='main';renderMenu();return;}toMainMenu();}return;}
+ if(['smap','gallery','whatif'].includes(menuState)){if(BACK.includes(code)){if(menuState==='smap'&&book&&book.kind==='wi')menuState='whatif';else menuState='story';sfx('back');renderMenu();}return;}""")
+rep(" if(menuState==='chars'){refreshMenuModels();"," if(menuState==='cine'&&CINE)cineFrame(dt,t);\n else if(menuState==='chars'){refreshMenuModels();")
+# sistemas 2.0 (al final, antes de arrancar)
+rep("initCloud();\napplyTouch();",rd('plus.js')+rd('plus-story.js')+rd('plus-actions.js')+"initCloud();\napplyTouch();")
+# HTML y CSS nuevos
+rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
+rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')
+rep(".grow{",rd('plus.css')+"\n.grow{")
 os.makedirs(D+'out',exist_ok=True)
 open(D+'out/index.html','w',encoding='utf8').write(src)
 i=src.index("<script>\n'use strict';");j=src.index('</script>',i);open(D+'gc.js','w').write(src[i+8:j])

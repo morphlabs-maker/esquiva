@@ -1473,8 +1473,8 @@ function cleanProg(p){const d={coins:0,own:{},day:'',wins:0,earned:0,nick:'',tec
  if(Array.isArray(p.tech))d.tech=[...new Set(p.tech.filter(id=>typeof id==='string'&&TECHS.some(t=>t.id===id)))];
  if(p.eq&&typeof p.eq==='object')for(const k in p.eq){const e=p.eq[k];if(!/^[a-z0-9]{1,16}$/.test(k)||!e||typeof e!=='object')continue;const o={};for(const s of['s1','ult'])if(typeof e[s]==='string'&&d.tech.includes(e[s]))o[s]=e[s];d.eq[k]=o;}
  return d;}
-const prog=(()=>{try{const v=localStorage.getItem(PROG_KEY);if(v&&v.length<20000)return cleanProg(JSON.parse(v));}catch(e){}return cleanProg(null);})();
-function saveProg(){try{localStorage.setItem(PROG_KEY,JSON.stringify(prog));}catch(e){}cloudSave();}
+const prog=(()=>{try{const v=localStorage.getItem(PROG_KEY);if(v&&v.length<400000)return cleanProg(JSON.parse(v));}catch(e){}return cleanProg(null);})();
+function saveProg(){try{let raw={};try{raw=JSON.parse(localStorage.getItem(PROG_KEY)||'{}')||{};}catch(e){} /* comparte el guardado con Kaioken Clash 2.0: se conservan sus campos */localStorage.setItem(PROG_KEY,JSON.stringify(Object.assign(raw,prog)));}catch(e){}cloudSave();}
 /* v1.7: Kairon sale del juego y Vegito pasa de 3 a 11 formas (Vegito Blue era la 2 y ahora es la 6) */
 if(SAVE_PREV<3){delete prog.own.kairon;const vg=prog.own.vegetto;if(vg)prog.own.vegetto=[...new Set(vg.map(i=>i===2?6:i))];try{localStorage.setItem(PROG_KEY,JSON.stringify(prog));}catch(e){}}
 
@@ -2533,7 +2533,7 @@ initPost();applyTouch();world=buildEarth(0);SUN_DIR.copy(sun.position).normalize
 </script>
 
 <script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
-(function(){const V='20261024182704',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+(function(){const V='20261028035631',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
 let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
 const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
 const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};

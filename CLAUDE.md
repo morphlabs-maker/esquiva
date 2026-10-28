@@ -2,11 +2,11 @@
 
 Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin servidor ni paso de build en el repo. Responder siempre en español, con frases cortas y rutas claras.
 
-## Estado (rama `claude/dragon-ball-offline-ios-rmhovv`, último commit `88120c5`)
+## Estado (rama `claude/dragon-ball-offline-ios-rmhovv`)
 
 | Juego | Archivo | Descripción |
 | --- | --- | --- |
-| Kaioken Clash | `index.html` | Versión 1.9: la 1.8 retro/chibi con todo el contenido de Ultra (25 luchadores, técnicas, mundos, Whis) |
+| Kaioken Clash | `index.html` | Versión 2.0: retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 33 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
 | Kaioken Clash Ultra | `ultra.html` | Versión realista/anime sobre la 1.8, 25 luchadores |
 
 - Ultra también se publica como Artifact (https://claude.ai/artifact/6wVtcHbPRnkgo13nTjW5kJ, versión 5). Esa copia usa `window.KC_PORTRAITS` con imágenes en data URI y three.js desde cdnjs; la de `ultra.html` usa `portraits/<id>.webp` y `vendor/three.min.js`.
@@ -14,6 +14,8 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - GitHub Pages debe apuntar a la rama del juego (Settings → Pages). No se pudo verificar desde la sesión: el proxy bloquea la API de Pages.
 
 ## Archivos clave
+
+- `story/*.js`: arcos del modo historia (10) y `whatif.js`, como datos (`KC_STORY({...})`). Se descargan al abrir cada arco; el service worker los guarda para jugar sin internet. No van en la lista de precarga del SW (se cachean al pedirlos).
 
 - `sw.js`: service worker de red primero (siempre la última versión con internet; copia en caché sin internet). La versión de la caché se regenera en cada publicación.
 - `version.json`: `{"v": "<timestamp>"}`. Los dos juegos lo consultan al abrir, al volver a la pestaña y cada 60 s. Si cambió y no hay pelea en curso (`game.phase` activa y `menuState` vacío), recargan solos.
@@ -33,6 +35,11 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **Aura** escala con el cuerpo del luchador (`aura.body`), para personajes grandes.
 - **Cámara** más cercana que antes, y aún más en pantallas táctiles (`coarse`): factor 0,7 en Ultra y 0,72 en el clásico.
 - **Clásico = 1.8 + contenido de Ultra.** `classic.py` aplica a la v1.8 solo personajes, formas, técnicas y tienda, mundos (Kaiosama, Dimensión rota, Bills/Whis) y mecánicas (cansancio, esquivas, Moro, Gigante de Luz). No toca interfaz, pixelado, CRT, modelos chibi ni música chiptune. Sin voces. Retratos 3D chibi (no usa `portraits/`). Piezas chibi de los nuevos en `classic-model.js`.
+- **Kaioken Clash 2.0** (solo el clásico): todo el contenido nuevo es datos en `tools/ultra-build/plus-data.js` (luchadores, técnicas icónicas 4×14, outfits, fusiones válidas, jefes Oozaru/Hildegarn, diálogos, desafíos, logros, deseos, índice de arcos) y `story/*.js`. Sistemas en `plus-save.js`, `plus.js`, `plus-story.js`, `plus-actions.js`, `plus.css`; `classic.py` los inyecta.
+- **Guardado compartido**: los dos juegos usan `localStorage.kc_prog` (mismo dominio). Versión 4 (`sv`), copia previa en `kc_prog_bak3`. Ultra guarda fusionando con lo que hay (no borra campos del 2.0). Las técnicas viejas se reembolsan una vez (`refunded`) pero `tech` se conserva para Ultra.
+- **Sincronizar** = código de transferencia (Perfil → Pasar partida), sin servidor; al importar se fusiona (nunca se pierde nada).
+- **Cosméticos de pago**: PayPal desde el navegador, desactivado hasta poner `PAYPAL.clientId` en `plus-data.js`. Sin servidor no hay verificación del pago (se puede falsear); para cobrar de verdad haría falta un backend.
+- **Luchadores del modo historia** (Raditz, Nappa, Ginyu, Goten, Zamasu, Gohanks, Granolah, Gas) bloqueados hasta ganarlos; los ya existentes nunca se bloquean.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 
 ## Cómo se construye Ultra (`tools/ultra-build/`)
@@ -41,7 +48,7 @@ Ultra no se edita a mano: se genera desde la v1.8 con scripts Python de reemplaz
 
 - `base-1.8.html`: el `index.html` v1.8 original (commit `5628e4a`), la base de todo.
 - Fuentes: `chars18.js` (personajes, formas, alturas, técnicas, Gamma, Whis), `model18.js` (modelo 3D, builds por forma, pelo, capa, colas), `audio18.js` (voz, sfx, música), `worlds.js` (Kaiosama, Dimensión rota, planeta de Bills), `head18.html` (CSS).
-- Clásico: `classic.py` (+ `classic-model.js`) genera `out/index.html` desde `base-1.8.html`; `make.sh` lo ejecuta y `publish.py` lo copia a `index.html`. Para cambiar el clásico, edita `classic.py`, nunca `index.html`.
+- Clásico: `classic.py` (+ `classic-model.js` y los `plus*`) genera `out/index.html` desde `base-1.8.html`; `make.sh` lo ejecuta y `publish.py` lo copia a `index.html`. Para cambiar el clásico, edita `classic.py`, nunca `index.html`.
 - Parches de Ultra, en este orden: `build18.py` → `build18b.py` (juego, Moro, bosses) → `build18c.py` → `build18d.py` (sombreado, bloom, efectos) → `build18e.py` (voces, brillo, aura, cámara, rayos) → `assemble.py`. Cada `rep()` aborta si el texto no aparece el número esperado de veces.
 - `./make.sh` genera `out/ultra.html` (Pages) y `out/kaioken-clash-ultra.html` (Artifact). `assemble.py` toma los retratos de `portraits/*.webp`.
 - `python3 publish.py` copia Ultra a `ultra.html` del repo, aplica el parche de cámara y de actualización al clásico, y regenera `sw.js`, manifiestos, iconos y `version.json`.
@@ -53,6 +60,8 @@ Ultra no se edita a mano: se genera desde la v1.8 con scripts Python de reemplaz
 Playwright con Chromium y swiftshader (`/opt/node-tools/node_modules/playwright`). Los scripts están en `tools/ultra-build/tests/` y tienen rutas de la sesión original (three.js local, `file:///home/user/kc/...`): ajústalas a `out/`. cdnjs está bloqueado, por lo que three.js se sirve localmente desde un paquete npm. Comprobado: alineación de personajes (frente, lado, espalda), selección, combate, Gigante de Luz, Dimensión rota, rayos, viewport de celular, service worker, modo sin internet y recarga por versión nueva (solo en menú, sin bucle). Conocido: el script `test.js` falla al final (`squadHTML`) por estado de royale en la prueba, no por el juego.
 
 ## Próximos pasos
+
+0. (2.0) Probar en iPhone real: modo historia sin internet tras «Descargar todo», 2 jugadores en el mismo celular, foto (hoja de compartir), código de transferencia. Activar PayPal si se quiere (Client ID) y valorar un backend de verificación.
 
 1. Comprobar que GitHub Pages sirve la rama y probar la instalación en un iPhone real (los dos iconos, modo avión, actualización).
 2. (Hecho) Scripts de build guardados en `tools/ultra-build/`. Pendiente: dejar los tests con rutas relativas.
