@@ -116,3 +116,30 @@ body.touch .arcc b{font-size:8px}
 .tdpr.gone{opacity:.45}.tdpr.gone span{color:#ff7a7a}
 #tdpfeed{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);font-size:7px;line-height:1.7;text-align:center;pointer-events:none;text-shadow:1px 1px 0 #000;display:none}
 body.touch .tdpunis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}body.touch .tdpu em{display:none}
+/* 3.0: controles 3D en el celular */
+#b3d,#camZone{display:none}body.c3d #b3d,body.c3d #camZone{display:block}
+#camZone{position:absolute;right:0;top:0;width:58vw;height:56vh;pointer-events:auto;touch-action:none}
+.b-up3,.b-dn3,.b-lk3,.b-kk{left:calc(12px + env(safe-area-inset-left,0px));width:50px;height:50px;font-size:20px;border-color:#9fe8ff}
+.b-up3{top:calc(150px + env(safe-area-inset-top,0px))}.b-dn3{top:calc(206px + env(safe-area-inset-top,0px))}
+.b-lk3{top:calc(262px + env(safe-area-inset-top,0px));border-color:#ff4a4a}
+.b-kk{left:auto;right:calc(252px + env(safe-area-inset-right,0px));bottom:190px;font-size:12px;border-color:#ff2a2a;color:#ff6a6a}
+body:not(.cankk) .b-kk{display:none}
+.b-s2{right:calc(190px + env(safe-area-inset-right,0px));bottom:188px;width:54px;height:54px;font-size:20px;border-color:#c080ff}
+/* 3.0: selección de personaje */
+.cs{display:flex;flex-direction:row-reverse;gap:8px;width:min(1100px,98vw);flex:1;min-height:0;align-items:stretch}
+.csr{width:56%;overflow-y:auto;max-height:76vh}.csr .grid{width:100%;margin:0}
+.csl{width:44%;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;pointer-events:none}.csl>*{pointer-events:auto}
+.csinfo{background:rgba(6,10,26,.78);border:2px solid #334;padding:6px 8px;font-size:7px;line-height:1.6}.csinfo.r{border-color:#5a2a2a}
+.verrow{margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}.verrow b{color:var(--yl)}.verrow span{color:#9fd0ff}
+body.touch .csr{max-height:64vh}body.touch .csinfo{font-size:6px;padding:4px}
+.mbar{flex:1;height:8px;background:#222;margin:0 8px;display:inline-block;min-width:80px}.mbar i{display:block;height:100%;background:linear-gradient(90deg,#3aff8a,#ffd23a)}
+#roam{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);background:rgba(6,10,26,.85);border:2px solid #9fe8ff;padding:6px 10px;font-size:8px;line-height:1.6;text-align:center;max-width:min(560px,90vw);pointer-events:auto;display:none}
+#roam .rbtn{margin-top:4px;display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+body.roam #pp1,body.roam #scouter{display:none!important}
+.trainally{font-size:7px;color:#9fd0ff;margin-top:2px}
+.csr .grid{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))!important;display:grid}
+body.touch .csr .grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))!important}
+body.roam #train{display:none!important}
+body.touch .csdet,body.touch .csinfo .hint{display:none}
+body.touch .csl{gap:3px}body.touch .csl .mid{flex-direction:row;gap:4px}body.touch .csl .mid .tip{display:none}body.touch .csl .mid .btn{padding:6px 10px}
+body.touch .csinfo .formpick{max-height:22vh}

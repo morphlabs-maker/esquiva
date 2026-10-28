@@ -1,8 +1,10 @@
 /* Kaioken Clash · Modo historia · Arco 7: Torneo del Poder (datos) */
 KC_STORY({id:'tp',name:'Torneo del Poder',nodes:[
-{id:'tp0',t:'cine',name:'Ocho universos, un ganador',place:'Mundo del Vacío',cine:{id:'c_tp0',title:'El Torneo del Poder',world:2,cast:[{c:'goku',x:-3,z:0},{c:'vegeta',x:-5,z:2},{c:'jiren',x:4,z:0}],shots:[
+{id:'tp0',t:'cine',name:'Ocho universos, un ganador',place:'Mundo del Vacío',cine:{id:'c_tp0',title:'El Torneo del Poder',world:2,cast:[{c:'goku',x:-3,z:0},{c:'vegeta',x:-5,z:2},{c:'jiren',x:4,z:0,under:1},{c:'toppo',x:7,z:3,under:1},{c:'hit',x:6,z:-4,under:1},{c:'kefla',x:9,z:-1,under:1}],shots:[
  {who:'nar',say:'Zeno organiza un torneo: los universos que pierdan serán borrados.',cam:'wide'},
- {who:'jiren',say:'…',cam:'close'},
+ {who:'nar',say:'Desde el suelo de la arena aparecen los guerreros de cada universo.',cam:'wide',rise:['jiren','toppo','hit','kefla'],card:'TORNEO DEL PODER'},
+ {who:'toppo',say:'Las Tropas del Orgullo defenderán la justicia del Universo 11.',cam:'close',pose:'crossArms'},
+ {who:'jiren',say:'…',cam:'close',pose:'crossArms'},
  {who:'goku',say:'Ese tipo es increíblemente fuerte. Tengo que pelear con él.',cam:'two'},
  {who:'vegeta',say:'No te distraigas, Kakaroto. Primero sobrevive.',cam:'close'}]}},
 {id:'tp1',t:'fight',name:'Kefla',place:'Arena del Torneo del Poder',world:2,
@@ -20,7 +22,9 @@ KC_STORY({id:'tp',name:'Torneo del Poder',nodes:[
  pre:[['jiren','La confianza no vale nada. Solo la fuerza.'],['vegeta','Pues te enseñaremos la fuerza de dos Saiyajin.']],
  cine:{id:'c_tp2',title:'El instinto superior',world:2,v:1,cast:[{c:'goku',x:-2,z:0,f:'ssb'},{c:'jiren',x:4,z:0}],shots:[
   {who:'nar',say:'Al límite de sus fuerzas, el cuerpo de Goku empieza a moverse solo.',cam:'wide'},
-  {who:'goku',say:'…',cam:'close',form:'ui',fx:'flash'},
+  {who:'nar',say:'Goku cae dentro de su propia Genkidama… y del interior surge una luz plateada.',cam:'wide',fx:'flash'},
+  {who:'goku',say:'…',cam:'close',form:'uio',uiwake:'goku',card:'ULTRA INSTINTO'},
+  {who:'nar',say:'Su cuerpo esquiva y contraataca sin pensar. Hasta los dioses se levantan de sus asientos.',cam:'low',uiwake:'goku',pose:'stance'},
   {who:'jiren',say:'¿Qué es esto? ¿Me esquiva sin pensar?',cam:'close'}]}},
 {id:'tp3',t:'fight',name:'Ultra Instinto contra Jiren',place:'Arena en ruinas',world:2,v:1,
  p:{c:'goku',f:'ui',base:3e6,forms:['ui']},e:{c:'jiren',f:'full',base:1.2e11,hp:1.8,forms:['full','limit']},

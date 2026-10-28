@@ -7,7 +7,8 @@ KC_STORY({id:'god',name:'Dioses y la resurrección de Freezer',nodes:[
 {id:'god0b',t:'cine',name:'El ritual del Dios Saiyajin',place:'Corporación Cápsula',cine:{id:'c_god0b',title:'Seis Saiyajin de corazón puro',world:7,cast:[{c:'goku',x:0,z:0},{c:'vegeta',x:-3,z:1},{c:'gohan',x:3,z:1},{c:'goten',x:-2,z:3},{c:'trunks',x:2,z:3}],shots:[
  {who:'nar',say:'Shenlong revela el secreto: cinco Saiyajin de corazón puro transmiten su poder a un sexto.',cam:'wide'},
  {who:'vegeta',say:'Solo esta vez, Kakaroto. No te acostumbres.',cam:'close'},
- {who:'goku',say:'Lo noto… un calor tranquilo, como una llama.',cam:'close',form:'ssg',fx:'flash'}]}},
+ {who:'nar',say:'Los cinco se dan la mano alrededor de Goku y le transmiten su energía.',cam:'wide',poses:{vegeta:'charge',gohan:'charge',goten:'charge',trunks:'charge'},aura:{vegeta:1,gohan:1,goten:1,trunks:1}},
+ {who:'goku',say:'Lo noto… un calor tranquilo, como una llama.',cam:'close',form:'ssg',fx:'flash',card:'SUPER SAIYAJIN DIOS'}]}},
 {id:'god1',t:'fight',name:'El Super Saiyajin Dios',place:'En el cielo de la Tierra',world:7,boss:'bills',bossPow:3.6e10,bossHp:.6,
  p:{c:'goku',f:'ssg',base:3e6,forms:['ssg']},
  goal:{type:'survive',t:90},stars:[{type:'hp',v:.3,txt:'Resiste con más del 30 % de vida'},{type:'ult',txt:'Lanza un definitivo'}],coins:240,

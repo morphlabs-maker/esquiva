@@ -21,10 +21,11 @@ KC_STORY({id:'bro',name:'Broly',nodes:[
  goal:{type:'survive',t:80},stars:[{type:'ally',txt:'Vegeta sigue en pie al final'},{type:'hp',v:.3,txt:'Resiste con más del 30 % de vida'}],coins:320,
  pre:[['goku','¡Su poder no deja de subir! ¡Vegeta, hay que fusionarse!'],['vegeta','¡Ni hablar! …Está bien. Solo esta vez.']],
  cine:{id:'c_bro2',title:'¡Fusión!',world:5,v:1,cast:[{c:'goku',x:-3,z:0},{c:'vegeta',x:3,z:0}],shots:[
-  {who:'goku',say:'¡Fuuu…!',cam:'two',pose:'raise'},{who:'vegeta',say:'¡…sión!',cam:'two',pose:'raise'},
-  {who:'nar',say:'De la danza de la fusión nace el guerrero definitivo: Gogeta.',cam:'wide',fx:'flash'}]}},
+  {who:'goku',say:'¡Fuuu…!',cam:'two',dance:['goku','vegeta']},{who:'vegeta',say:'¡…sión…!',cam:'two'},{who:'goku',say:'¡HA!',cam:'two'},
+  {who:'nar',say:'De la danza de la fusión nace el guerrero definitivo: Gogeta.',cam:'wide',merge:{from:['goku','vegeta'],into:'gogeta',f:'base'},card:'GOGETA'},
+  {who:'gogeta',say:'Soy Gogeta. Broly, esto se acaba aquí.',cam:'close',form:'ssb',fx:'flash'}]}},
 {id:'bro3',t:'fight',name:'Gogeta contra Broly',place:'La dimensión rota',world:4,v:1,
- p:{c:'gogeta',f:'ssb',base:6e7,forms:['ssg','ssb']},e:{c:'broly',f:'lssj',base:1.8e10,hp:1.8,forms:['lssj']},
+ p:{c:'gogeta',f:'ssb',base:3.42e8,forms:['ssg','ssb']},e:{c:'broly',f:'lssj',base:1.8e10,hp:1.8,forms:['lssj']},
  goal:{type:'win'},stars:[{type:'ult',txt:'Acaba con un definitivo'},{type:'hp',v:.5,txt:'Termina con más del 50 % de vida'}],coins:360,
  pre:[['gogeta','Soy Gogeta. Y voy a calmarte de una vez.'],['broly','¡GRAAAAH!']],
  cine:{id:'c_bro3',title:'El espacio se rompe',world:4,v:1,cast:[{c:'gogeta',x:-3,z:0,f:'ssb'},{c:'broly',x:3,z:0,f:'lssj'}],shots:[

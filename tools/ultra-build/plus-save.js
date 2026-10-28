@@ -31,6 +31,9 @@ function cleanPlus(p,d){
  /* 2.2: Torneo del Poder (hora de la última victoria, deseo pendiente y equipos elegidos) */
  const td=p.tdp&&typeof p.tdp==='object'?p.tdp:{},cid=id=>CHARS.some(c=>c.id===id);
  d.tdp={last:typeof td.last==='string'&&/^\d{10}$/.test(td.last)?td.last:'',wish:td.wish?1:0,uni:td.uni==='own'||TDP_IDS.includes(td.uni)?td.uni:'u7',team:idList(td.team,cid,4),cus:idList(td.cus,cid,4)};
+ /* 3.0: maestría por forma (décimas) y versión elegida por luchador */
+ d.mast=objNum(p.mast,1000,k=>/^[a-z0-9]{1,16}\.[a-z0-9]{1,16}$/.test(k),1200);
+ d.ver={};if(p.ver&&typeof p.ver==='object')for(const k in p.ver){const v=p.ver[k];if(/^[a-z0-9]{1,16}$/.test(k)&&typeof v==='string'&&/^[a-z]{2,8}$/.test(v))d.ver[k]=v;}
  return d;}
 /* copia de seguridad de la partida anterior a la 2.0 (solo la primera vez) */
 (()=>{try{const v=localStorage.getItem('kc_prog');if(v&&!localStorage.getItem('kc_prog_bak3')){const o=JSON.parse(v);if(!o||!o.sv)localStorage.setItem('kc_prog_bak3',v);}}catch(e){}})();
@@ -45,4 +48,4 @@ function mergeProg(a,b){const u=(x,y)=>[...new Set([...(x||[]),...(y||[])])],mx=
  for(const k in b.own)r.own[k]=u(a.own[k],b.own[k]);
  r.sig=u(a.sig,b.sig);r.ofOwn=u(a.ofOwn,b.ofOwn);r.unl=u(a.unl,b.unl);r.ach=u(a.ach,b.ach);r.db=u(a.db,b.db);
  r.story={c:mx(a.story.c,b.story.c),seen:u(a.story.seen,b.story.seen),best:mx(a.story.best,b.story.best)};r.wi=mx(a.wi,b.wi);r.stats=mx(a.stats,b.stats);
- r.tdp=Object.assign({},a.tdp.last>=b.tdp.last?a.tdp:b.tdp,{wish:a.tdp.wish||b.tdp.wish?1:0});r.eq=Object.assign({},b.eq,a.eq);r.ofEq=Object.assign({},b.ofEq,a.ofEq);r.title=a.title||b.title;return cleanProg(r);}
+ r.mast=mx(a.mast,b.mast);r.ver=Object.assign({},b.ver,a.ver);r.tdp=Object.assign({},a.tdp.last>=b.tdp.last?a.tdp:b.tdp,{wish:a.tdp.wish||b.tdp.wish?1:0});r.eq=Object.assign({},b.eq,a.eq);r.ofEq=Object.assign({},b.ofEq,a.ofEq);r.title=a.title||b.title;return cleanProg(r);}

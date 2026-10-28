@@ -53,7 +53,12 @@ KC_STORY({id:'cel',name:'Androides y Cell',nodes:[
  p:{c:'gohan',f:'ssj',base:3e6,forms:['ssj','ssj2']},e:{c:'cell',f:'perf',base:3e7,hp:1.5,forms:['perf','sp']},
  goal:{type:'win'},stars:[{type:'ult',txt:'Acaba con el Kamehameha padre-hijo (definitivo)'},{type:'hp',v:.3,txt:'Termina con más del 30 % de vida'}],coins:240,
  pre:[['cell','¡Enfádate, muchacho! ¡Muéstrame ese poder!'],['gohan','Ya basta… No te perdonaré, Cell.']],
- cine:{id:'c_cel5',title:'Kamehameha padre-hijo',world:0,v:1,cast:[{c:'gohan',x:-3,z:0,f:'ssj2'},{c:'cell',x:4,z:0,f:'sp'}],shots:[
+ cine:{id:'c_cel5',title:'Kamehameha padre-hijo',world:0,v:1,cast:[{c:'gohan',x:-3,z:0,f:'ssj2'},{c:'cell',x:4,z:0,f:'sp'},{c:'goku',x:2,z:1,f:'ssj',hidden:1}],shots:[
+  {who:'cell',say:'¡Si no puedo ganar, me autodestruiré y la Tierra entera conmigo!',cam:'close',pose:'powerup',aura:{cell:1.4},fx:'shake'},
+  {who:'goku',say:'Lo siento, Gohan. Has peleado muy bien. Cuida de tu madre.',cam:'close',show:'goku',pose:'victory'},
+  {who:'nar',say:'Con la teletransportación, Goku se lleva a Cell al planeta de Kaiosama… y desaparece con él.',cam:'wide',hide:'goku',fx:'flash'},
+  {who:'nar',say:'',cam:'wide',hide:'cell'},
+  {who:'cell',say:'¿Me echabais de menos? ¡He vuelto más fuerte que nunca!',cam:'close',show:'cell',fx:'shake'},
   {who:'cell',say:'¡Te llevaré conmigo! ¡Kamehameha!',cam:'close',pose:'beamFire'},
   {who:'nar',say:'Con un brazo herido, Gohan escucha la voz de su padre desde el Otro Mundo.',cam:'wide'},
   {who:'gohan',say:'¡KAMEHAMEHAAA!',cam:'low',pose:'beamFire',fx:'beam:cell:5cc8ff'},

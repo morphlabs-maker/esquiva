@@ -17,8 +17,10 @@ KC_STORY({id:'sai',name:'Saga Saiyajin',nodes:[
  goal:{type:'win'},stars:[{type:'ally',txt:'Piccolo sigue en pie al final'},{type:'time',v:150,txt:'Gana en menos de 150 s'}],coins:120,unlock:'raditz',
  pre:[['raditz','¿Un namekiano y mi hermanito? ¡Qué risa!'],['piccolo','Por esta vez, Goku. Solo por esta vez.']],
  cine:{id:'c_sai1',title:'El precio de la victoria',world:8,cast:[{c:'goku',x:-1,z:0},{c:'piccolo',x:-5,z:2},{c:'raditz',x:2,z:0}],shots:[
-  {who:'raditz',say:'Ji… dentro de un año llegarán dos Saiyajin mucho más fuertes que yo.',cam:'close',pose:'down'},
-  {who:'piccolo',say:'¡Makankosappo!',cam:'low',pose:'beamFire',fx:'beam:raditz:fff07a'},
+  {who:'goku',say:'¡Piccolo, ahora! ¡Lo tengo sujeto! ¡Dispara!',cam:'two',pose:'guard',poses:{raditz:'hit'}},
+  {who:'piccolo',say:'Makanko…',cam:'close',pose:'beamCharge',aura:{piccolo:1.1}},
+  {who:'piccolo',say:'¡…SAPPO!',cam:'low',pose:'beamFire',fx:'beam:raditz:fff07a',card:'MAKANKOSAPPO'},
+  {who:'raditz',say:'Ji… dentro de un año llegarán dos Saiyajin mucho más fuertes que yo.',cam:'close',pose:'down',poses:{goku:'down'}},
   {who:'nar',say:'Goku da su vida para detener a su hermano. Su viaje continúa en el Otro Mundo.',cam:'wide',fx:'flash'}]}},
 {id:'sai1b',t:'fight',name:'El despertar de Gohan',place:'Desierto donde entrena Gohan',world:0,
  intro:{id:'c_sai1b',title:'Seis meses en el desierto',world:0,cast:[{c:'piccolo',x:3,z:0},{c:'gohan',x:-2,z:0}],shots:[

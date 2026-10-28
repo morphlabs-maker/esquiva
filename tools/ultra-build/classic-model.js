@@ -55,5 +55,23 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
  if(e==='mustache'){for(const s of[1,-1]){const b=add(Bx(.09,.025,.02),m.hair,J.head,s*.04,.06,.16);b.rotation.z=-s*.35;}}
  if(e==='scarfRed'){add(new THREE.TorusGeometry(.1,.035,8,18),m.ex1,J.torso,0,.44,0,Math.PI/2);add(Bx(.07,.22,.025),m.ex1,J.torso,-.08,.32,-.16,-.2,0,.25);}
  if(e==='hildCrest'){for(let i=0;i<4;i++)add(cone(.035,.16,6),m.ex1,J.head,0,.27-i*.05,-.06-i*.05,-.6-i*.35);for(const s of[1,-1])add(cone(.05,.2,6),m.ex1,J['sh'+(s>0?'L':'R')],0,.05,0,0,0,-s*.6);}
+ /* 3.0: piezas de los trajes (cada outfit cambia la forma, no solo el color) */
+ if(e==='giCollar'){for(const sd of[1,-1])add(Bx(.032,.21,.02),m.belt,J.torso,sd*.055,.35,.172,0,0,sd*.42);add(new THREE.TorusGeometry(.085,.022,6,16),m.belt,J.torso,0,.44,.01,Math.PI/2);}
+ if(e==='tunic'){add(new THREE.CylinderGeometry(.25,.31,.38,20,1,true),m.ex1,J.torso,0,.13,0).scale.set(1.12,1,.95);add(new THREE.CylinderGeometry(.27,.27,.04,20),m.ex2,J.torso,0,-.04,0).scale.set(1.12,1,.95);}
+ if(e==='bigCollar'){const c=add(new THREE.TorusGeometry(.14,.055,8,22),m.ex1,J.torso,0,.44,0,Math.PI/2);c.scale.set(1.25,1.25,1);}
+ if(e==='jacket'){for(const sd of[1,-1]){add(Bx(.13,.36,.035),m.ex1,J.torso,sd*.13,.25,.175,0,sd*.25,0);add(Bx(.08,.1,.03),m.ex1,J.torso,sd*.09,.43,.15,-.5,sd*.3,sd*.3);}add(Bx(.46,.38,.03),m.ex1,J.torso,0,.25,-.18);}
+ if(e==='ccLogo'){const g=new THREE.Mesh(new THREE.PlaneGeometry(.09,.09),new THREE.MeshBasicMaterial({map:canvasTex(64,(c,S)=>{c.fillStyle='#fff';c.beginPath();c.arc(32,32,30,0,TAU);c.fill();c.fillStyle='#2a5ad8';c.font='bold 30px monospace';c.textAlign='center';c.textBaseline='middle';c.fillText('CC',32,34);}),transparent:true}));g.position.set(-.13,.34,.2);g.rotation.y=-.25;J.torso.add(g);model.extras.push(g);}
+ if(e==='strawHat'){const hm=toon(0xe0c070);add(new THREE.CylinderGeometry(.34,.34,.025,22),hm,J.head,0,.31,-.01,-.12);add(new THREE.CylinderGeometry(.15,.17,.13,18),hm,J.head,0,.37,-.02,-.12);add(new THREE.CylinderGeometry(.172,.172,.03,18),m.ex2,J.head,0,.33,-.02,-.12);}
+ if(e==='patrolVest'){add(new THREE.CylinderGeometry(.25,.25,.3,20,1,true),m.ex1,J.torso,0,.3,0).scale.set(1.15,1,.95);for(const L of['L','R'])add(Sph(.095,14,10),m.ex2,J['sh'+L],0,.03,0).scale.set(1,.6,1.1);}
+ if(e==='saiyaman'){add(new THREE.CylinderGeometry(.18,.18,.07,20),m.ex1,J.head,0,.21,0);add(Bx(.17,.035,.02),new THREE.MeshBasicMaterial({color:0x111111}),J.head,0,.16,.165);add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
+ if(e==='turban'){add(new THREE.SphereGeometry(.2,18,12,0,TAU,0,Math.PI*.5),m.ex1,J.head,0,.17,-.01).scale.set(1.06,1.1,1.06);}
+ if(e==='policeCap'){add(new THREE.CylinderGeometry(.17,.18,.09,18),m.ex1,J.head,0,.3,0);add(Bx(.2,.02,.1),m.ex2,J.head,0,.26,.15,.2);}
+ if(e==='mechaPlates'){const pm=toon(0xa8b4c4);add(Bx(.09,.06,.02),pm,J.head,.07,.1,.16);add(Bx(.18,.14,.03),pm,J.torso,.06,.3,.19,0,.2,0);for(const L of['L','R'])add(new THREE.CylinderGeometry(.065,.065,.12,10),pm,J['el'+L],0,-.08,0);}
+ if(e==='nightcap'){const c=add(new THREE.ConeGeometry(.14,.34,12),m.ex1,J.head,.04,.36,-.04,-.5,0,-.4);add(Sph(.04,8,6),m.ex2,c,0,.17,0);}
+ if(e==='longCoat'){add(new THREE.CylinderGeometry(.25,.35,.56,20,1,true),m.ex1,J.hips,0,-.15,0).scale.set(1.05,1,.95);add(new THREE.TorusGeometry(.12,.04,8,18),m.ex1,J.torso,0,.44,0,Math.PI/2);}
+ if(e==='sash'){add(new THREE.CylinderGeometry(.205,.205,.07,20),m.ex1,J.hips,0,.075,0).scale.set(1.06,1,.9);add(Bx(.06,.18,.02),m.ex1,J.hips,.12,-.04,.15,0,0,.2);}
+ if(e==='gtVest'){for(const sd of[1,-1])add(Bx(.15,.36,.035),m.top,J.torso,sd*.12,.27,.177,0,sd*.2,0);add(Bx(.46,.4,.03),m.top,J.torso,0,.27,-.18);}
+ if(e==='headband'){add(new THREE.TorusGeometry(.172,.018,6,24),m.ex1,J.head,0,.21,0,Math.PI/2);}
+ if(e==='toppoStache'){for(const sd of[1,-1]){const b=add(new THREE.CylinderGeometry(.03,.012,.15,8),m.ex1,J.head,sd*.07,.055,.155);b.rotation.z=sd*1.25;b.rotation.y=-sd*.3;}add(Sph(.035,10,8),m.ex1,J.head,0,.07,.16).scale.set(1.6,.7,.8);}
  if(e==='cape'){add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
 }

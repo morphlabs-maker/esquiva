@@ -22,7 +22,9 @@ function wSun(dir,dist,r,col,glow=3){const s=new THREE.Mesh(new THREE.SphereGeom
 function wLight(o){hemi.color.setHex(o.h);hemi.groundColor.setHex(o.g);hemi.intensity=o.hi??.95;sun.color.setHex(o.s);sun.intensity=o.si??1;sun.position.set(...(o.p||[-100,140,60]));}
 /* árbol de copa redonda (pino si cone) */
 function treeList(n,area,yf,ok){const L=[];let k=0;while(L.length<n&&k++<n*8){const x=rand(-area,area),z=rand(-area,area);if(ok&&!ok(x,z))continue;L.push({x,z,y:yf(x,z),s:rand(.7,1.4)});}return L;}
-function wTrees(L,trunkC,crownC,kind='round'){const tr=L.map(t=>({x:t.x,y:t.y+2*t.s,z:t.z,sx:t.s,sy:t.s,sz:t.s}));wInst(new THREE.CylinderGeometry(.35,.55,4,5),WM(trunkC),tr,true);
+/* 3.0: los troncos son coberturas (tapan disparos y la vista de la CPU) */
+let COVER=[];
+function wTrees(L,trunkC,crownC,kind='round'){for(const t of L)COVER.push({x:t.x,z:t.z,r:.6*t.s,h:7*t.s,y0:t.y,alive:true,indestructible:true,cover:1,top(){return this.y0+this.h;}});const tr=L.map(t=>({x:t.x,y:t.y+2*t.s,z:t.z,sx:t.s,sy:t.s,sz:t.s}));wInst(new THREE.CylinderGeometry(.35,.55,4,5),WM(trunkC),tr,true);
  const cr=L.map(t=>({x:t.x,y:t.y+(kind==='pine'?5.4:5.2)*t.s,z:t.z,s:t.s,ry:t.x}));wInst(kind==='pine'?new THREE.ConeGeometry(2.2,6,6):new THREE.IcosahedronGeometry(2.4,0),WM(crownC),cr,true);}
 /* casa redonda (Namek, Goku, Corporación Cápsula) */
 function domeHouse(x,y,z,r,col,o={}){const g=new THREE.Group();g.position.set(x,y,z);worldGroup.add(g);
@@ -359,7 +361,7 @@ TRACKS.budokai={bpm:150,bass:TRACKS.menu.bass.map(n=>n&&n+2),lead:TRACKS.earth.l
 TRACKS.room={bpm:84,bass:TRACKS.void.bass.map(n=>n-5),lead:TRACKS.void.lead.map(n=>n&&n-5)};
 
 /* 2.1: entornos rehechos y nuevos (los índices 0-4 se mantienen para el online y las partidas guardadas) */
-function plusWorlds(){
+function plusWorlds(){setTimeout(()=>{for(const w of[...WORLDS,TRAIN_WORLD]){const b=w.build;if(b.cov)continue;w.build=v=>{COVER=[];const W=b(v);if(COVER.length&&W&&W.rocks)W.rocks.push(...COVER);COVER=[];return W;};w.build.cov=1;}},0);
  Object.assign(WORLDS[0],{name:'Tierra · Yermo',build:buildEarth2});
  Object.assign(WORLDS[1],{build:buildNamek2,desc:'El planeta verde de los tres soles. Se pelea en la isla central o flotando sobre el mar, que sube; la arena se encoge un 15 % cada 33 s.'});
  Object.assign(WORLDS[2],{name:'Torneo del Poder',build:buildVoid2,desc:'La arena del Mundo del Vacío, con las gradas de los 8 universos y el palco de Zeno. Una barrera rodea la plataforma.'});

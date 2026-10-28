@@ -9,7 +9,7 @@ const TDP_WIN=20,TDP_TIME=300,TDP_R=46;
 const TDP_UNIS=[
  {id:'u7',n:7,short:'U7',name:'Universo 7',col:0x3a8aff,god:'Bills',roster:['goku','vegeta','gohan','piccolo','freezer','a17','a18','krilin'],def:['goku','vegeta','a17','freezer'],max:4,desc:'Goku, Vegeta, Gohan, Piccolo, Freezer, los androides 17 y 18 y Krilin.'},
  {id:'u6',n:6,short:'U6',name:'Universo 6',col:0xff4a4a,god:'Champa',roster:['hit','kefla'],def:['hit','kefla'],max:2,desc:'Hit, el asesino legendario, y Kefla, la fusión de Kale y Caulifla.'},
- {id:'u11',n:11,short:'U11',name:'Universo 11',col:0x4ae0c0,god:'Belmod',roster:['jiren'],def:['jiren'],max:1,desc:'Jiren, el guerrero más fuerte de las Tropas del Orgullo. Pelea solo pero con mucha más vida.'},
+ {id:'u11',n:11,short:'U11',name:'Universo 11',col:0x4ae0c0,god:'Belmod',roster:['jiren','toppo'],def:['jiren','toppo'],max:2,desc:'Jiren y Toppo, de las Tropas del Orgullo. Toppo puede despertar como Dios de la Destrucción.'},
  {id:'u10',n:10,short:'U10',name:'Universo 10',col:0x9aff4a,god:'Rumsshi',roster:['zamasuk','black'],def:['zamasuk','black'],max:2,desc:'Zamasu, aprendiz de Kaioshin del Universo 10, y Goku Black.'}];
 const TDP_OWN={id:'own',n:0,short:'U★',name:'Tu universo',col:0xffd23a,god:'Tú',roster:null,def:[],max:4,desc:'Crea tu propio universo con hasta 4 luchadores que tengas.'};
 const TDP_FILL=[{short:'U2',col:0xff6ad0},{short:'U3',col:0xc06aff},{short:'U4',col:0xff8a3a},{short:'U9',col:0x6a7aff}];
@@ -58,7 +58,7 @@ function tdpStartMatch(D){const T=game.tdp;let idx=0;const all=[];
  T.t=TDP_TIME;T.kills=0;T.seatN={};T.win=null;T.feed=[];T.boardT=0;
  game.wins=T.unis.map(()=>0);game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display='flex';$('#bossbar').style.display='none';$('#train').style.display='none';
  if(!$('#tdpfeed')){const d=document.createElement('div');d.id='tdpfeed';$('#hud').appendChild(d);}$('#tdpfeed').innerHTML='';$('#tdpfeed').style.display='block';
- $('#menu').innerHTML='';menuState=null;playTrack('void');track('tdp');startRound();}
+ $('#menu').innerHTML='';menuState=null;playTrack('arc_tp');track('tdp');startRound();}
 function tdpPlace(sy){const T=game.tdp,n=T.unis.length,Rp=TDP_R*.64;
  T.unis.forEach((x,t)=>{const a=Math.PI/2+t/n*TAU,c=V3(Math.cos(a)*Rp,sy,Math.sin(a)*Rp),tg=V3(-Math.sin(a),0,Math.cos(a)),m=game.f.filter(f=>f.team===t);
   m.forEach((f,i)=>{f.reset(1,c.clone().addScaledVector(tg,(i-(m.length-1)/2)*4.5));f.face=Math.atan2(-c.x,-c.z);f.benched=false;f.tdpFall=0;f.seat=null;f.opp=null;f.retT=0;f.model.root.visible=true;});});
@@ -121,9 +121,10 @@ function grantSuperWish(id){let msg='',fc=null;
  prog.tdp.wish=0;track('swish');saveProg();toast('🐉 DESEO CONCEDIDO',msg+' · Las Súper Esferas se convierten en piedra…');
  if(fc)formCine(fc[0],fc[1],()=>toMenu('tdp'));else toMenu('tdp');}
 function superShenlong(){if(!prog.tdp.wish)return;const lead=(game.tdp&&game.tdp.unis?CHARS[game.tdp.unis[0].m[0].c].id:tdpSelTeam()[0])||'goku';$('#msg').classList.remove('show');$('#sub').innerHTML='';const fd=$('#tdpfeed');if(fd)fd.style.display='none';game.phase=null;
- cinePlay({id:'sshen',title:'Súper Shenlong',world:'tdp',cast:[{c:lead,x:-2,z:24},{c:'sshenlong',x:0,z:-30,s:2.6}],shots:[
-  {who:'nar',say:'Las siete Súper Esferas del Dragón, grandes como planetas, se reúnen sobre el Mundo del Vacío.',cam:'wide',fx:'flash'},
-  {who:'sshenlong',say:'«Yo soy el dragón divino. Os concederé un deseo, el que sea. Decidlo ya.»',cam:'shen',fx:'shake'},
+ cinePlay({id:'sshen',title:'Súper Shenlong',world:'tdp',cast:[{c:lead,x:-2,z:24},{c:'sshenlong',x:0,z:-30,s:2.6,hidden:1}],shots:[
+  {who:'nar',say:'Las siete Súper Esferas del Dragón, grandes como planetas, se reúnen sobre el Mundo del Vacío.',cam:'sky',balls:'super'},
+  {who:'nar',say:'Su luz se vuelve cegadora…',cam:'sky',fx:'shake'},
+  {who:'sshenlong',say:'«Yo soy el dragón divino, Súper Shenlong. Os concederé un deseo, el que sea. Decidlo ya.»',cam:'shen',fx:'shake',ballsOff:1,show:'sshenlong'},
   {who:lead,say:'¡Ya sé lo que quiero pedir!',cam:'close',pose:'victory'}],noSeen:1},()=>{menuState='swish';renderMenu();});}
 /* ---- arena del anime: plataforma de losas, escalones centrales, pilares, gradas flotantes de cada universo y palco de Zeno ---- */
 function tdpFigure(parent,x,y,z,body,head,h=1,o={}){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);

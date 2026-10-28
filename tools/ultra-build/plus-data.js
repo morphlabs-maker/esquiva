@@ -82,31 +82,43 @@ const TECHS=[
 
 /* ---- Outfits (solo visuales): por saga. paid = cosmético exclusivo de pago (PayPal); el resto con monedas ---- */
 const OUTFITS=[
- {id:'gk_sai',who:'goku',saga:'Saga Saiyajin',name:'Gi de Kaiosama',price:180,colors:{top:0xff7a1a,pants:0xff7a1a,belt:0x1f4fd8,boots:0x1f4fd8,wrist:0x1f4fd8,sleeve:0x1f4fd8}},
- {id:'gk_yar',who:'goku',saga:'Saga de los Androides',name:'Traje de Yardrat',price:220,colors:{top:0xe8dcb8,sleeve:0xe8dcb8,pants:0x3a5aa8,belt:0x3a5aa8,boots:0x2a2a2a,wrist:0xe8dcb8}},
- {id:'gk_far',who:'goku',saga:'La batalla de los dioses',name:'Ropa de granjero',price:160,colors:{top:0xe8e0d0,sleeve:SKIN,pants:0x6a5a40,belt:0x3a2a1a,boots:0x3a2a1a,wrist:SKIN}},
- {id:'gk_pat',who:'goku',saga:'Saga de Moro',name:'Patrulla Galáctica',price:260,colors:{top:0x2a3040,sleeve:0x2a3040,pants:0x2a3040,belt:0xe8e8e8,boots:0xe8e8e8,glove:0x2a3040,wrist:0xe8e8e8}},
- {id:'gk_gold',who:'goku',saga:'Exclusivo',name:'Gi dorado de Whis',paid:1.99,colors:{top:0xffd23a,pants:0xffd23a,belt:0x6a2ad8,boots:0x6a2ad8,wrist:0x6a2ad8,sleeve:0x6a2ad8}},
+ /* Goku */
+ {id:'gk_sai',who:'goku',saga:'Saga Saiyajin',name:'Gi de Kaiosama',price:180,add:['giCollar'],colors:{top:0xff7a1a,pants:0xff7a1a,belt:0x1f4fd8,boots:0x1f4fd8,wrist:0x1f4fd8,sleeve:0x1f4fd8}},
+ {id:'gk_endz',who:'goku',saga:'Saga de Buu',name:'Gi de finales de Z',price:200,add:['giCollar'],colors:{top:0xff6a10,pants:0xff6a10,belt:0x2448c8,boots:0x2448c8,wrist:0x2448c8,sleeve:0x2448c8}},
+ {id:'gk_gt',who:'goku',saga:'Dragon Ball GT',name:'Traje de GT',price:240,add:['gtVest','sash'],colors:{top:0x2a4ab8,sleeve:SKIN,pants:0x2a4ab8,belt:0xf2f2f2,boots:0x6a3a1a,wrist:0xffd23a,ex1:0xf2f2f2}},
+ {id:'gk_black',who:'goku',saga:'Dragon Ball Super',name:'Gi negro de entrenamiento',price:220,add:['giCollar'],colors:{top:0x1c1c22,pants:0x1c1c22,belt:0xff7a1a,boots:0x2a2a2a,wrist:0xff7a1a,sleeve:0xff7a1a}},
+ {id:'gk_yar',who:'goku',saga:'Saga de los Androides',name:'Traje de Yardrat',price:220,add:['tunic','bigCollar'],colors:{top:0x3a5aa8,sleeve:0x3a5aa8,pants:0x3a5aa8,belt:0x3a5aa8,boots:0x2a2a2a,wrist:0xe8dcb8,ex1:0xe8dcb8,ex2:0x8a7a5a}},
+ {id:'gk_far',who:'goku',saga:'La batalla de los dioses',name:'Ropa de granjero',price:160,add:['strawHat'],colors:{top:0xe8e0d0,sleeve:SKIN,pants:0x6a5a40,belt:0x3a2a1a,boots:0x3a2a1a,wrist:SKIN,ex2:0xc02a2a}},
+ {id:'gk_pat',who:'goku',saga:'Saga de Moro',name:'Patrulla Galáctica',price:260,add:['patrolVest'],colors:{top:0x2a3040,sleeve:0x2a3040,pants:0x2a3040,belt:0xe8e8e8,boots:0xe8e8e8,glove:0x2a3040,wrist:0xe8e8e8,ex1:0xe8e8e8,ex2:0x3a4a6a}},
+ {id:'gk_gold',who:'goku',saga:'Exclusivo',name:'Gi dorado de Whis',paid:1.99,add:['giCollar','headband'],colors:{top:0xffd23a,pants:0xffd23a,belt:0x6a2ad8,boots:0x6a2ad8,wrist:0x6a2ad8,sleeve:0x6a2ad8,ex1:0x6a2ad8}},
+ /* Vegeta */
  {id:'vg_sai',who:'vegeta',saga:'Saga Saiyajin',name:'Armadura Saiyajin clásica',price:180,colors:{top:0x24357f,ex1:0xf2f2f2,ex2:0x8a6a3a,boots:0xf2f2f2,glove:0xf2f2f2}},
- {id:'vg_bad',who:'vegeta',saga:'Saga de los Androides',name:'Camisa rosa «Badman»',price:200,colors:{top:0xff8ac0,sleeve:SKIN,pants:0xe8d060,belt:0xe8d060,boots:0x6a4a2a,glove:SKIN,wrist:SKIN,ex1:0xff8ac0,ex2:0xff8ac0}},
+ {id:'vg_gi',who:'vegeta',saga:'Dragon Ball Super',name:'Gi azul (sin armadura)',price:220,rm:['armor'],add:['giCollar'],colors:{top:0x2a3a9a,sleeve:0x14183a,pants:0x2a3a9a,belt:0x14183a,boots:0x1a1a1a,glove:SKIN,wrist:0x14183a}},
+ {id:'vg_yar',who:'vegeta',saga:'Saga de Moro',name:'Traje de Yardrat',price:240,rm:['armor'],add:['tunic','bigCollar'],colors:{top:0x3a3048,sleeve:0x3a3048,pants:0x3a3048,belt:0x3a3048,boots:0x2a2a2a,glove:0x3a3048,wrist:0xd8d0c0,ex1:0xd8d0c0,ex2:0x6a5a8a}},
+ {id:'vg_cc',who:'vegeta',saga:'Saga de Buu',name:'Chaqueta Capsule Corp',price:220,rm:['armor'],add:['jacket','ccLogo'],colors:{top:0x2a2a30,sleeve:0x3a6ad8,pants:0x3a3a48,belt:0x3a3a48,boots:0x8a5a2a,glove:SKIN,wrist:0x3a6ad8,ex1:0x3a6ad8}},
+ {id:'vg_bad',who:'vegeta',saga:'Saga de los Androides',name:'Camisa rosa «Badman»',price:200,rm:['armor'],colors:{top:0xff8ac0,sleeve:SKIN,pants:0xe8d060,belt:0xe8d060,boots:0x6a4a2a,glove:SKIN,wrist:SKIN}},
  {id:'vg_top',who:'vegeta',saga:'Torneo del Poder',name:'Traje del Universo 7',price:240,colors:{top:0x1a2a6a,sleeve:0x1a2a6a,pants:0x1a2a6a,ex1:0xf2f2f2,ex2:0xffd23a}},
- {id:'vg_king',who:'vegeta',saga:'Exclusivo',name:'Armadura del Rey Vegeta',paid:1.99,colors:{top:0x3a1a1a,sleeve:0x3a1a1a,pants:0x3a1a1a,ex1:0xc02a2a,ex2:0xe8c040,boots:0xe8c040,glove:0xe8c040}},
- {id:'gh_pic',who:'gohan',saga:'Saga Saiyajin',name:'Traje de Piccolo',price:180,colors:{top:0x5b2b8f,pants:0x5b2b8f,belt:0xd02020,boots:0x6b3d1f,wrist:0xd02020}},
- {id:'gh_sm',who:'gohan',saga:'Saga de Buu',name:'Gran Saiyaman',price:240,colors:{top:0x1a5a2a,sleeve:0x1a1a1a,pants:0x1a5a2a,belt:0xd02020,boots:0xf2f2f2,glove:0xf2f2f2,wrist:0xf2f2f2}},
- {id:'gh_cell',who:'gohan',saga:'Saga de Cell',name:'Armadura Saiyajin',price:220,colors:{top:0x1a2a6a,sleeve:0x1a2a6a,pants:0x1a2a6a,belt:0xf2f2f2,boots:0xf2f2f2,glove:0xf2f2f2}},
- {id:'tr_cc',who:'trunks',saga:'Saga de los Androides',name:'Chaqueta Cápsula Corp',price:200,colors:{top:0x2a2a3a,sleeve:0x2a2a3a,pants:0x3a3a4a,belt:0xe8c040,boots:0xe8c040}},
- {id:'tr_sup',who:'trunks',saga:'Saga de Trunks del futuro',name:'Abrigo de la resistencia',price:230,colors:{top:0x3a4a7a,sleeve:0x3a4a7a,pants:0x2a2a2a,belt:0xc02a2a,boots:0x8a5a2a}},
- {id:'pc_cape',who:'piccolo',saga:'Saga Saiyajin',name:'Capa y turbante blancos',price:180,colors:{top:0x6a2a9a,pants:0x6a2a9a,ex1:0xf2f2f2,ex2:0xf2f2f2}},
- {id:'pc_hero',who:'piccolo',saga:'Super Hero',name:'Traje de Super Hero',price:240,colors:{top:0x4a3a8a,pants:0x4a3a8a,belt:0xe0483a,boots:0x8a5a2a}},
- {id:'kr_pol',who:'krilin',saga:'Saga de Freezer resucitado',name:'Uniforme de policía',price:180,colors:{top:0x2a4a8a,sleeve:0x2a4a8a,pants:0x2a2a3a,belt:0x1a1a1a,boots:0x1a1a1a}},
- {id:'fr_mecha',who:'freezer',saga:'Saga de los Androides',name:'Mecha-Freezer',price:260,colors:{skin:0xb8c4d0,top:0x8a96a8,pants:0xb8c4d0,belt:0x8a96a8,boots:0x8a96a8,ex1:0x6a7a8a}},
- {id:'fr_army',who:'freezer',saga:'Saga de Freezer',name:'Armadura del Ejército',price:200,colors:{top:0x2a2a3a,ex1:0xf2f2f2,ex2:0xc8a040}},
+ {id:'vg_king',who:'vegeta',saga:'Exclusivo',name:'Armadura del Rey Vegeta',paid:1.99,add:['cape'],colors:{top:0x3a1a1a,sleeve:0x3a1a1a,pants:0x3a1a1a,ex1:0xc02a2a,ex2:0xe8c040,boots:0xe8c040,glove:0xe8c040}},
+ /* Gohan */
+ {id:'gh_pic',who:'gohan',saga:'Saga Saiyajin',name:'Traje de Piccolo',price:180,add:['pads','cape'],colors:{top:0x5b2b8f,pants:0x5b2b8f,belt:0xd02020,boots:0x6b3d1f,wrist:0xd02020,ex1:0xf2f2f2,ex2:0xf2f2f2}},
+ {id:'gh_sm',who:'gohan',saga:'Saga de Buu',name:'Gran Saiyaman',price:240,add:['saiyaman'],colors:{top:0x1a5a2a,sleeve:0x1a1a1a,pants:0x1a5a2a,belt:0xd02020,boots:0xf2f2f2,glove:0xf2f2f2,wrist:0xf2f2f2,ex1:0xf2f2f2,ex2:0xd02020}},
+ {id:'gh_cell',who:'gohan',saga:'Saga de Cell',name:'Armadura Saiyajin',price:220,add:['armor'],colors:{top:0x1a2a6a,sleeve:0x1a2a6a,pants:0x1a2a6a,belt:0xf2f2f2,boots:0xf2f2f2,glove:0xf2f2f2,ex1:0xf2f2f2,ex2:0xc8a040}},
+ /* Trunks */
+ {id:'tr_cc',who:'trunks',saga:'Saga de los Androides',name:'Chaqueta Capsule Corp',price:200,add:['jacket','ccLogo'],colors:{top:0x2a2a3a,sleeve:0x2a2a3a,pants:0x3a3a4a,belt:0xe8c040,boots:0xe8c040,ex1:0x2a2a3a}},
+ {id:'tr_sup',who:'trunks',saga:'Saga de Trunks del futuro',name:'Abrigo de la resistencia',price:230,add:['longCoat'],colors:{top:0x3a4a7a,sleeve:0x3a4a7a,pants:0x2a2a2a,belt:0xc02a2a,boots:0x8a5a2a,ex1:0x3a4a7a}},
+ /* Piccolo */
+ {id:'pc_cape',who:'piccolo',saga:'Saga Saiyajin',name:'Capa y turbante blancos',price:180,add:['turban','cape','pads'],colors:{top:0x6a2a9a,pants:0x6a2a9a,ex1:0xf2f2f2,ex2:0xf2f2f2}},
+ {id:'pc_hero',who:'piccolo',saga:'Super Hero',name:'Traje de Super Hero',price:240,add:['sash'],colors:{top:0x4a3a8a,pants:0x4a3a8a,belt:0xe0483a,boots:0x8a5a2a,ex1:0xe0483a}},
+ /* Krilin, Freezer, Cell, Broly, Jiren, Black, Bills */
+ {id:'kr_pol',who:'krilin',saga:'Saga de Freezer resucitado',name:'Uniforme de policía',price:180,add:['policeCap'],colors:{top:0x2a4a8a,sleeve:0x2a4a8a,pants:0x2a2a3a,belt:0x1a1a1a,boots:0x1a1a1a,ex1:0x2a4a8a,ex2:0x1a1a1a}},
+ {id:'fr_mecha',who:'freezer',saga:'Saga de los Androides',name:'Mecha-Freezer',price:260,add:['mechaPlates'],colors:{skin:0xb8c4d0,top:0x8a96a8,pants:0xb8c4d0,belt:0x8a96a8,boots:0x8a96a8,ex1:0x6a7a8a}},
+ {id:'fr_army',who:'freezer',saga:'Saga de Freezer',name:'Armadura del Ejército',price:200,add:['armor'],colors:{top:0x2a2a3a,ex1:0xf2f2f2,ex2:0xc8a040}},
  {id:'cl_jr',who:'cell',saga:'Saga de Cell',name:'Cell Junior',price:220,colors:{skin:0x5a8ad8,top:0x2a5ab8,sleeve:0x2a5ab8,pants:0x2a5ab8,glove:0x5a8ad8,boots:0x5a8ad8}},
- {id:'br_par',who:'broly',saga:'Dragon Ball Super: Broly',name:'Traje de Vampa',price:220,colors:{top:0x6a5a3a,sleeve:0x6a5a3a,pants:0x4a3a2a,ex1:0x8a7a5a,wrist:0x8a7a5a}},
+ {id:'br_par',who:'broly',saga:'Dragon Ball Super: Broly',name:'Traje de Vampa',price:220,add:['sash'],colors:{top:0x6a5a3a,sleeve:0x6a5a3a,pants:0x4a3a2a,ex1:0x8a7a5a,wrist:0x8a7a5a}},
  {id:'jr_red',who:'jiren',saga:'Torneo del Poder',name:'Pride Troopers negro',price:240,colors:{top:0x1a1a1a,sleeve:0x1a1a1a,pants:0x1a1a1a,belt:0xf2f2f2,boots:0xf2f2f2}},
- {id:'bk_rose',who:'black',saga:'Saga de Trunks del futuro',name:'Gi gris del Kaioshin',price:230,colors:{top:0x6a6a7a,sleeve:0x6a6a7a,pants:0x6a6a7a,belt:0xc02a6a}},
- {id:'bl_paj',who:'bills',saga:'La batalla de los dioses',name:'Pijama de la siesta',price:200,colors:{top:0x8ab0e0,pants:0x8ab0e0,belt:0xf2f2f2,ex1:0xf2f2f2}},
- {id:'bl_gold',who:'bills',saga:'Exclusivo',name:'Toga dorada del Hakai',paid:1.49,colors:{top:0xe8c040,pants:0xe8c040,ex1:0xffe88a,ex2:0x1a1a2a}}];
+ {id:'bk_rose',who:'black',saga:'Saga de Trunks del futuro',name:'Gi gris del Kaioshin',price:230,add:['giCollar'],colors:{top:0x6a6a7a,sleeve:0x6a6a7a,pants:0x6a6a7a,belt:0xc02a6a}},
+ {id:'bl_paj',who:'bills',saga:'La batalla de los dioses',name:'Pijama de la siesta',price:200,add:['nightcap'],colors:{top:0x8ab0e0,pants:0x8ab0e0,belt:0xf2f2f2,ex1:0x8ab0e0,ex2:0xf2f2f2}},
+ {id:'bl_gold',who:'bills',saga:'Exclusivo',name:'Toga dorada del Hakai',paid:1.49,add:['robe'],colors:{top:0xe8c040,pants:0xe8c040,ex1:0xffe88a,ex2:0x1a1a2a}}];
 /* Cosméticos de pago (PayPal). Pon aquí tu Client ID de PayPal (https://developer.paypal.com) para activar el botón de compra. */
 const PAYPAL={clientId:'',currency:'USD'};
 
