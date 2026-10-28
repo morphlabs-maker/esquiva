@@ -6,7 +6,7 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 
 | Juego | Archivo | Descripción |
 | --- | --- | --- |
-| Kaioken Clash | `index.html` | Versión 2.0: retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 33 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
+| Kaioken Clash | `index.html` | Versión 2.1 (entornos rehechos, 12 mundos, más historia): retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 33 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
 | Kaioken Clash Ultra | `ultra.html` | Versión realista/anime sobre la 1.8, 25 luchadores |
 
 - Ultra también se publica como Artifact (https://claude.ai/artifact/6wVtcHbPRnkgo13nTjW5kJ, versión 5). Esa copia usa `window.KC_PORTRAITS` con imágenes en data URI y three.js desde cdnjs; la de `ultra.html` usa `portraits/<id>.webp` y `vendor/three.min.js`.
@@ -39,6 +39,9 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **Guardado compartido**: los dos juegos usan `localStorage.kc_prog` (mismo dominio). Versión 4 (`sv`), copia previa en `kc_prog_bak3`. Ultra guarda fusionando con lo que hay (no borra campos del 2.0). Las técnicas viejas se reembolsan una vez (`refunded`) pero `tech` se conserva para Ultra.
 - **Sincronizar** = código de transferencia (Perfil → Pasar partida), sin servidor; al importar se fusiona (nunca se pierde nada).
 - **Cosméticos de pago**: PayPal desde el navegador, desactivado hasta poner `PAYPAL.clientId` en `plus-data.js`. Sin servidor no hay verificación del pago (se puede falsear); para cobrar de verdad haría falta un backend.
+- **Entornos 2.1** (`plus-worlds.js`): los índices 0-4 de `WORLDS` no cambian (online y partidas). Namek, Torneo del Poder, Dimensión rota y Planeta de Bills rehechos; nuevos 5 Antártida, 6 Kame House, 7 Capital del Oeste (variante: futuro en ruinas), 8 Montaña Paoz, 9 Torneo de Artes Marciales, 10 Planeta de Bills, 11 Habitación del Tiempo. El entrenamiento usa el Planeta de Bills. Namek tiene isla central y el suelo fuera de las islas está sobre el agua o la lava (antes se hundían).
+- **Modo historia 2.1**: los lugares del mapa se colocan solos (el orden de `nodes` manda; `x`/`y` se ignoran). Cada arco tiene arte y colores propios (`MAP_ART` en `plus-story.js`). Los nodos de pelea muestran el retrato del rival. Los nodos pueden tener `intro` (escena antes de la pelea) y los rivales `outfit`. Las tomas pueden llevar `card` (título grande) y `fw` (quién se transforma si habla el narrador). No cambiar los `id` de nodos: el progreso se guarda por id.
+- **Forma nueva**: al comprar una forma (o con el deseo de formas) se reproduce `formCine`.
 - **Luchadores del modo historia** (Raditz, Nappa, Ginyu, Goten, Zamasu, Gohanks, Granolah, Gas) bloqueados hasta ganarlos; los ya existentes nunca se bloquean.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 

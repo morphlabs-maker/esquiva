@@ -67,3 +67,36 @@ body.touch .smap{height:min(44vh,260px)}
 body.touch .sinfo{font-size:7px}
 body.touch .snode{width:28px;height:28px;font-size:12px}
 body.duo #hud:before{content:'';position:fixed;left:calc(50% - 2px);top:0;bottom:0;width:4px;background:#05060c;box-shadow:0 0 0 1px var(--or)}
+/* ---- 2.1: mapas personalizados por arco, tarjetas de cinemática ---- */
+.mapart{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.smap{border-color:var(--mf1,var(--or));box-shadow:0 0 0 4px var(--mf2,var(--bl)),8px 8px 0 4px #000}
+.smap svg:not(.mapart){z-index:1}
+.snode{z-index:2}
+.snode img{width:100%;height:100%;image-rendering:pixelated;display:block}
+.snode.t-fight{width:38px;height:38px;padding:0;background:#0b1430;border-color:var(--mf1,#fff)}
+.snode.t-fight.on{background:#0b1430;border-color:var(--yl)}
+.snode.t-fight.done{border-color:#7dff7a}
+.snode.boss{width:46px;height:46px;border-width:4px;border-color:#ff4a4a!important;font-size:22px}
+.sbanner{display:flex;align-items:center;gap:10px;width:min(96vw,900px);background:linear-gradient(90deg,var(--mf2),rgba(5,8,20,.9) 60%);border:3px solid var(--mf1);box-shadow:4px 4px 0 #000;padding:6px 10px;text-align:left;flex:none}
+.sbanner .emb,.arcc .emb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#ff9a1e;color:#c02a1a;border:3px solid #ffe08a;font:bold 18px serif;box-shadow:2px 2px 0 #000;flex:none}
+.sbanner div{flex:1;min-width:0}
+.sbanner em{display:block;font-style:normal;font-size:8px;color:#c8cce0}
+.sbanner b{display:block;font-weight:normal;font-size:13px;color:var(--yl);text-shadow:2px 2px 0 #000}
+.sbanner .prog{font-size:8px;color:#fff}
+.sinfo{border-color:var(--mf1,#2a3350)}
+.arcc{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--mc1),var(--mc2))}
+.arcc .mapart{opacity:.55}
+.arcc>*:not(.mapart){position:relative}
+.arcc span:not(.emb),.arcc em{text-shadow:1px 1px 0 #000,-1px -1px 0 #000}
+.arcc .emb{position:absolute;right:6px;top:6px;width:26px;height:26px;font-size:13px}
+.arcc b{padding-right:30px}
+#cinecard{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:2;pointer-events:none;text-align:center;animation:cc .9s ease-out}
+#cinecard span{font-size:12px;color:#fff;letter-spacing:4px;text-shadow:2px 2px 0 #000;margin-bottom:10px}
+#cinecard b{font-weight:normal;font-size:clamp(22px,6vw,64px);color:var(--yl);text-shadow:4px 4px 0 #c0391b,8px 8px 0 #000;line-height:1.2;padding:0 12px}
+@keyframes cc{0%{transform:scale(1.6);opacity:0}40%{transform:scale(.95);opacity:1}100%{transform:scale(1)}}
+body.touch .sbanner b{font-size:10px}
+body.touch .snode.t-fight{width:30px;height:30px}
+body.touch .snode.boss{width:36px;height:36px}
+body.touch .arcgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+body.touch .arcc{font-size:6px;padding:6px}
+body.touch .arcc b{font-size:8px}

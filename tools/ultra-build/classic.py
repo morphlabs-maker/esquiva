@@ -233,7 +233,7 @@ rep("const PROG_KEY='kc_prog';",rd('plus-save.js')+"const PROG_KEY='kc_prog';")
 rep("if(!p||typeof p!=='object')return d;","if(!p||typeof p!=='object')p={};")
 rep("if(v&&v.length<20000)","if(v&&v.length<400000)")
 rep("allowed(i){return ERA","allowed(i){if(this.storyForms)return this.storyForms.includes(i);return ERA")
-rep("applyForm(){const f=this.form;applyFormModel(this.model","applyForm(){const f=this.form;this.model.outfit=human(this)&&!game.online?prog.ofEq[this.ch.id]||null:null;applyFormModel(this.model")
+rep("applyForm(){const f=this.form;applyFormModel(this.model","applyForm(){const f=this.form;this.model.outfit=this.forceOutfit||(human(this)&&!game.online?prog.ofEq[this.ch.id]||null:null);applyFormModel(this.model")
 rep("const c=Object.assign({},ch.colors,f.colors||{}),m=model.mats;","const c=Object.assign({},ch.colors,model.outfit&&outfitOf(model.outfit)?outfitOf(model.outfit).colors:{},f.colors||{}),m=model.mats;")
 rep("const ch=CHARS[want],model=buildModel(ch),fi=pst[p]==='char'?0:fsel[p];","const ch=CHARS[want],model=buildModel(ch),fi=pst[p]==='char'?0:fsel[p];if(p===0)model.outfit=prog.ofEq[ch.id]||null;")
 # luchadores bloqueados hasta el modo historia
@@ -320,6 +320,11 @@ rep("if(menuState==='title'){if(code==='KeyC')openGuide('title');else goPlay();r
 rep(" if(menuState==='chars'){refreshMenuModels();"," if(menuState==='cine'&&CINE)cineFrame(dt,t);\n else if(menuState==='chars'){refreshMenuModels();")
 # sistemas 2.0 (al final, antes de arrancar)
 rep("initCloud();\napplyTouch();",rd('plus.js')+rd('plus-story.js')+rd('plus-actions.js')+"initCloud();\napplyTouch();")
+# 2.1: entornos rehechos y nuevos
+rep("const WORLDS=[{name:'Tierra'",rd('plus-worlds.js')+"const WORLDS=[{name:'Tierra'")
+rep("const curWorldDef=()=>game.mode==='train'?TRAIN_WORLD:WORLDS[game.world];","const curWorldDef=()=>game.mode==='train'?TRAIN_WORLD:WORLDS[game.world];\nplusWorlds();")
+rep("function destroyRock(r,pos){if(!r.alive)return;","function destroyRock(r,pos){if(!r.alive||r.indestructible)return;")
+rep("applyTouch();world=buildEarth(0);","applyTouch();world=buildEarth2(0);")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')

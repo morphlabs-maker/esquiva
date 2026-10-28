@@ -40,4 +40,7 @@ Object.assign(ACTIONS,{
  dlgNext:()=>dlgNext(),dlgSkip:()=>dlgSkip()});
 /* la tienda: cambiar de luchador reinicia el probador */
 {const sp=ACTIONS.shopPick;ACTIONS.shopPick=a=>{tryOutfit=null;outfitConfirm='';probKey='';sp(a);};}
+/* comprar una forma reproduce su cinemática */
+{const b0=ACTIONS.buy;ACTIONS.buy=a=>{const ch=CHARS[shopChar],i=+a,had=Number.isInteger(i)&&owns(ch,i);b0(a);if(Number.isInteger(i)&&!had&&owns(ch,i))formCine(shopChar,i,()=>{menuState='shop';renderMenu();});};}
+ACTIONS.sContinue=()=>{const i=ARCS.findIndex((a,k)=>arcOpen(k)&&!arcDone(a.id));if(i>=0)openArc(i);};
 checkAchs();
