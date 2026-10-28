@@ -11,6 +11,9 @@ i=src.index('<canvas id="game"></canvas>');j=src.index('<script src="vendor/thre
 k=src.index("<script>\n'use strict';");e=src.index('</script>\n\n<script>if(\'serviceWorker\'')
 html=src[i:j];js=src[k:e+len('</script>')]
 src=html+'@@LIBS@@\n'+js
+# código muerto en la 1.8: un comentario // se tragaba lo que venía detrás en la misma línea
+rep("// el dragón aguanta mucho pero pega menosif(def.ch.brolyPassive","// el dragón aguanta mucho pero pega menos\nif(def.ch.brolyPassive")
+rep("// crece o encoge poco a poco al cambiar de formaconst idleBob=","// crece o encoge poco a poco al cambiar de forma\nconst idleBob=")
 rep('<div id="flash"></div><div id="crt"></div>','<div id="flash"></div><div id="vig"></div>')
 rep('<div class="logo" style="font-size:20px">GIRA EL CELULAR</div>','<div class="logo" style="font-size:52px">GIRA EL CELULAR</div>')
 for a,b in [('font-size:8px','font-size:15px'),('font-size:9px','font-size:14px'),('font-size:10px','font-size:16px')]:src=src.replace(a,b)

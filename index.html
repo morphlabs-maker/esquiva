@@ -2115,7 +2115,8 @@ class Fighter{
    if(sp.tick<=0){sp.tick=.2;absorbTick(this,op);sfx('absorb');}}
   if(sp.t>=sp.dur)this.sp=null;}
  render(dt,t){const m=this.model;m.root.position.copy(this.pos);
-  {const gT=this.form.lightGiant?1:this.giant,cs=m.root.scale.x;if(Math.abs(cs-gT)>.002)m.root.scale.setScalar(lerp(cs,gT,1-Math.exp(-3.5*dt)));} // crece o encoge poco a poco al cambiar de formaconst idleBob=(this.state==='idle'&&this.pos.y-Math.max(-1e8,world.groundY(this.pos.x,this.pos.z))>.4)?Math.sin(t*3+this.idx)*.06:0;m.root.position.y+=idleBob;
+  {const gT=this.form.lightGiant?1:this.giant,cs=m.root.scale.x;if(Math.abs(cs-gT)>.002)m.root.scale.setScalar(lerp(cs,gT,1-Math.exp(-3.5*dt)));} // crece o encoge poco a poco al cambiar de forma
+const idleBob=(this.state==='idle'&&this.pos.y-Math.max(-1e8,world.groundY(this.pos.x,this.pos.z))>.4)?Math.sin(t*3+this.idx)*.06:0;m.root.position.y+=idleBob;
   m.root.rotation.y=this.face;const down=this.state==='down'||this.state==='ko';m.root.rotation.x=lerp(m.root.rotation.x,down?-1.45:this.state==='knock'?-.5:0,1-Math.exp(-10*dt));if(down)m.root.position.y+=.25;
   m.speed=this.vel.length();animateModel(m,dt*(game.phase?game.timescale:1),false);
   const av=this.avatar;if(av){GHOST_MAT.uniforms.uT.value=t;{const cs=av.root.scale.x;av.root.scale.setScalar(lerp(cs,this.giant,1-Math.exp(-3.5*dt)));}av.speed=m.speed;av.root.position.copy(this.pos);av.root.rotation.y=this.face;av.root.rotation.x=m.root.rotation.x;av.target=m.target;animateModel(av,dt*(game.phase?game.timescale:1),false);
@@ -2161,7 +2162,8 @@ function applyHit(att,def,o){
   dmg=o.base*.10;if(!o.full)att.finalEffort=false;pop(def,'¡ESFUERZO FINAL!','#ffd23a',true);}
  else{if(kind==='blast'&&R<=1/4){pop(def,'DESVIADO','#cccccc');sfx('tink');return'deflect';}
   dmg=o.base*clamp(Math.pow(R,.55),.02,40)*Math.max(.4,1-.06*att.comboHits);}
- if(att.ch.dmgMult)dmg*=att.ch.dmgMult;if(att.boss&&att.boss.dmgK)dmg*=att.boss.dmgK; // el dragón aguanta mucho pero pega menosif(def.ch.brolyPassive&&def.role!=='boss')dmg*=1-def.brolyK()*.3; // Vegito: +8 % de daño
+ if(att.ch.dmgMult)dmg*=att.ch.dmgMult;if(att.boss&&att.boss.dmgK)dmg*=att.boss.dmgK; // el dragón aguanta mucho pero pega menos
+if(def.ch.brolyPassive&&def.role!=='boss')dmg*=1-def.brolyK()*.3; // Vegito: +8 % de daño
  if((att.cpu&&(game.mode==='cpu'||(teamMode()&&!def.cpu)))||att.role==='boss')dmg*=DIFFS[game.diff].dmg; // la CPU pega menos en Fácil e Intermedio
  const guarding=def.state==='guard'&&!o.guardBreak&&facing(def,att);
  if(world.ringDef&&world.inRing(def))dmg*=.9;
@@ -3178,7 +3180,7 @@ applyTouch();world=buildEarth(0);SUN_DIR.copy(sun.position).normalize();renderMe
 </script>
 
 <script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
-(function(){const V='20261028035631',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+(function(){const V='20261028040023',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
 let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
 const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
 const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};

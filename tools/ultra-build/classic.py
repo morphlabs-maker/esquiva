@@ -12,6 +12,9 @@ rd=lambda f:open(D+f,encoding='utf8').read()
 # ---- cabecera y versión
 rep('KAIOKEN CLASH — prototipo jugable (fase 1)\n   1v1 local · 3 mundos · 13 luchadores · poder realista','KAIOKEN CLASH 2.0 — versión retro (chibi)\n   Modo historia «Junto a Goku» · 33 luchadores · 5 mundos + planeta de Bills')
 rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"2.0.0",build:"2026-10-28",updateUrl:"",storeUrl:""});')
+# código muerto en la 1.8: un comentario // se tragaba lo que venía detrás en la misma línea
+rep("// el dragón aguanta mucho pero pega menosif(def.ch.brolyPassive","// el dragón aguanta mucho pero pega menos\nif(def.ch.brolyPassive")
+rep("// crece o encoge poco a poco al cambiar de formaconst idleBob=","// crece o encoge poco a poco al cambiar de forma\nconst idleBob=")
 # ---- luchadores, formas y técnicas (los mismos datos que Ultra)
 src,n=re.subn(r"(F\('ui','Ultra Instinto dominado',300000,\{era:'S',cost:7,)dur:25,hpReq:\.3,",r"\1",src);assert n==3,n
 rep("forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];",
