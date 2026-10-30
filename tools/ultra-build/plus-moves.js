@@ -80,6 +80,22 @@ const MOVE3={
    if(sp.t>=.8){const t=tgtOf(f),from=sp.m.position.clone(),v=(t?t.chest():from.clone().addScaledVector(fwd,10)).sub(from).normalize().multiplyScalar(30);
     projs.push(newProj(f,from,v,{kind:'ball',base:(s.pow??(sp.isU?3000:1500)),color:0xffffff,r:R,homing:2.5,isU:sp.isU,full:sp.full,mesh:sp.m,rainbow:1}));sp.m=null;sp.phase='throw';sp.t=0;sfx('beamFire');}}
   else{sp.pose='throw';if(sp.t>.35)f.sp=null;}},
+ /* 3.3: Gigante de Luz (técnica definitiva de Goku en Ultra Instinto): el avatar celeste lo envuelve, lo protege de todo daño
+    y, al llegar al rival, descarga una ráfaga de golpes devastadora */
+ giantRush(f,dt,sp,s){const t=tgtOf(f);f.invuln=Math.max(f.invuln||0,.2);GHOST_MAT.uniforms.uT.value+=dt;
+  if(!sp.av){const m=makeModel(f.ch);applyFormModel(m,f.ch,f.form,0);m.root.traverse(o=>{if(o.isMesh){if(o.material===OUTLINE)o.visible=false;else{o.material=GHOST_MAT;o.castShadow=false;}}});
+   m.root.scale.copy(f.model.root.scale).multiplyScalar(.2);scene.add(m.root);sp.av=m;sp.avRoot=m.root;sp.phase='grow';sp.t=0;sfx('transform',1.2);flashScreen(.35,'#9fe8ff');pop(f,'¡GIGANTE DE LUZ!','#9fe8ff',true);}
+  const av=sp.av,k=sp.phase==='grow'?Math.min(1,sp.t/.5):sp.phase==='fade'?Math.max(0,1-sp.t/.35):1;
+  av.root.scale.copy(f.model.root.scale).multiplyScalar(.2+2.6*k);av.root.position.copy(f.pos);av.root.rotation.copy(f.model.root.rotation);
+  for(const j of JOINTS)if(av.J[j]&&f.model.J[j])av.J[j].rotation.copy(f.model.J[j].rotation);
+  if(sp.phase==='grow'){sp.pose='powerup';if(sp.t>=.5){sp.phase='dash';sp.t=0;}return;}
+  if(sp.phase==='dash'){sp.pose='fly';if(!t){sp.phase='fade';sp.t=0;return;}const to=t.chest().sub(f.chest()),d=to.length();f.pos.addScaledVector(to.normalize(),Math.min(d,60*dt));
+   if(d<3+f.reach()){sp.phase='combo';sp.t=0;sp.n=0;}else if(sp.t>.9){sp.phase='fade';sp.t=0;}return;}
+  if(sp.phase==='combo'){const hits=sp.isU?8:6;sp.pose=['punchR','punchL','uppercut','punchR','punchL','kick','punchR','uppercut'][sp.n%8];
+   if(sp.t>=.11&&sp.n<hits){sp.t=0;sp.n++;if(t&&t.pos.distanceTo(f.pos)<6+f.reach()){applyHit(f,t,{kind:'ult',base:(s.pow??3400)/hits,knock:sp.n===hits?34:2,up:sp.n===hits?.5:.1,stun:.35,full:true});
+     const c=t.chest();ring(c,0x9fe8ff,3,.25,false,.15);for(let i=0;i<8;i++)spawn({pos:c.clone().add(rndDir().multiplyScalar(.6)),vel:rndDir().multiplyScalar(12),color:0xbff0ff,size:.5,life:.3});game.shake=Math.max(game.shake||0,.5);}}
+   if(sp.n>=hits&&sp.t>.2){sp.phase='fade';sp.t=0;}return;}
+  sp.pose='idle';if(sp.t>=.35){scene.remove(av.root);disposeModel(av);sp.av=null;sp.avRoot=null;f.sp=null;}},
  meteors(f,dt,sp,s){const t=tgtOf(f),N=sp.isU?12:7;sp.pose='raise';const n=Math.min(N,Math.floor(sp.t/1.2*N));
   while((sp.fired||0)<n&&t){sp.fired=(sp.fired||0)+1;const from=t.pos.clone().add(V3(rand(-9,9),rand(26,34),rand(-9,9))),v=t.chest().sub(from).normalize().multiplyScalar(34);projs.push(newProj(f,from,v,{kind:'ball',base:(s.pow??(sp.isU?3000:1400))/N*1.6,color:0xff7a2a,r:.9,homing:.5,mesh:(()=>{const m=rockMesh();fxGroup.add(m);return m;})()}));}
   if(sp.t>=1.4)f.sp=null;}};
@@ -96,4 +112,7 @@ function moveFxStep(dt){mvT+=dt;for(const p of projs)if(p.rainbow){soulTint(p.me
 function spMeshes(sp){const L=[];if(!sp)return L;for(const k in sp){const v=sp[k];if(v&&v.isObject3D)L.push(v);else if(Array.isArray(v))for(const x of v)if(x&&x.isObject3D)L.push(x);}return L;}
 function cleanSp(sp){for(const m of spMeshes(sp))if(m.parent&&!projs.some(p=>p.mesh===m))m.parent.remove(m);}
 function spWatch(f){if(f._spPrev&&f._spPrev!==f.sp)cleanSp(f._spPrev);f._spPrev=f.sp;}
+/* Goku en Ultra Instinto (dominado o verdadero): su definitivo pasa a ser el Gigante de Luz */
+const GIANT_TECH={name:'Gigante de Luz',type:'giantRush',color:0x9fe8ff,pow:3400};
+{const t0=Fighter.prototype.tech;Fighter.prototype.tech=function(w){if(w==='ult'&&this.ch.id==='goku'&&this.form&&['ui','tui'].includes(this.form.id))return GIANT_TECH;return t0.call(this,w);};}
 retypeTechs();

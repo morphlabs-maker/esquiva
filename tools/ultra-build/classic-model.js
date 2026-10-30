@@ -111,6 +111,8 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
   add(new THREE.TorusGeometry(.11,.035,8,18),w,J.torso,0,.45,0,Math.PI/2);}
  if(e==='gasLines'){const ln=new THREE.MeshBasicMaterial({color:0x4a3a5a});for(const sd of[1,-1]){add(Bx(.004,.05,.004),ln,J.head,sd*.11,.11,.14,0,0,sd*.2);add(Bx(.04,.004,.004),ln,J.head,sd*.065,.11,.165);}}
  if(e==='blankEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(i%2)o.visible=false;});}
+ /* 3.3: Ultra Instinto Verdadero: contorno plateado en el pelo */
+ if(e==='silverHair'){const mat=new THREE.MeshBasicMaterial({color:0xd8e2f0,side:THREE.BackSide}),ha=(model.M||model).hairAnchor;if(ha)ha.traverse(o=>{if(o.isMesh&&o.material===OUTLINE){o.userData.o0=o.material;o.userData.s0=o.scale.clone();o.scale.multiplyScalar(1.07);o.material=mat;}});}
  if(e==='blackEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(!(i%2)){o.userData.m0=o.material;o.material=o.material.clone();o.material.color.setHex(0x14101c);}});}
  /* 3.2b: Gas según el manga: rastas moradas (o negras) largas, diadema dorada con colmillos de marfil, tabardo rojo con ribete amarillo y cuello en V */
  if(e==='dreads'||e==='dreadsWild'||e==='dreadsLong'){const wild=e==='dreadsWild',long=e==='dreadsLong';add(new THREE.SphereGeometry(.182,20,12,0,TAU,0,Math.PI*.52),m.hair,J.head,0,.15,-.012,-.18);

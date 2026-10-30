@@ -36,7 +36,7 @@ KC_STORY({id:'tr',name:'Universo 6 y Trunks del futuro',nodes:[
  goal:{type:'win'},stars:[{type:'ult',txt:'Acaba con un definitivo'},{type:'time',v:110,txt:'Gana en menos de 110 s'}],coins:270,
  pre:[['trunks','¡Esta es la ira de un Saiyajin del futuro!']]},
 {id:'tr5',t:'fight',name:'Vegito contra Zamasu fusionado',place:'Cielo del futuro',world:7,v:1,
- p:{c:'vegetto',f:'vblue',base:6e7,forms:['vblue']},e:{c:'zamasu',base:3e11,hp:1.6,forms:['base','half']},
+ p:{c:'vegetto',f:'vblue',base:6e7,forms:['vblue','vbkk']},e:{c:'zamasu',base:3e11,hp:1.6,forms:['base','half','infinite']},
  goal:{type:'win'},stars:[{type:'time',v:130,txt:'Gana en menos de 130 s'},{type:'ult',txt:'Lanza un definitivo'}],coins:300,
  pre:[['zamasu','¡Contemplad la belleza de un dios fusionado!'],['vegetto','Mucho hablar para alguien que va a perder.']],
  cine:{id:'c_tr5',title:'El botón de Zeno',world:7,v:1,cast:[{c:'goku',x:-2,z:0},{c:'trunks',x:2,z:1}],shots:[

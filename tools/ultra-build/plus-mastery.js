@@ -30,24 +30,34 @@ function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!ar
 /* 3.2: poder base de la versión (el de la historia, que sigue creciendo con el arco), sus formas y el tope de poder del arco.
    Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
 const VER_CACHE={};
+/* 3.3: poder absoluto (el de la historia, sin crecer por arco): los números del jugador mandan. Las versiones de VER_FIX tienen poder fijo por forma (pw) */
+(()=>{const ord=ARCS.map(a=>a.id);for(const c in VER_FIX){const L=VER_DATA[c]=(VER_DATA[c]||[]).slice();
+ for(const e of VER_FIX[c]){const forms=Object.keys(e.pw),d={arc:e.arc,base:e.pw.base||Math.min(...Object.values(e.pw)),forms,pw:e.pw,fix:1},i=L.findIndex(v=>v.arc===e.arc);if(i>=0)L[i]=d;else L.push(d);}
+ L.sort((x,y)=>ord.indexOf(x.arc)-ord.indexOf(y.arc));}})();
 function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CACHE[ck];const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;
- const ch=CHARS[chIdx(chId)];if(!ch)return null;const b0=v=>v.base||ch.base,first=L.find(v=>b0(v)===b0(d))||d,ord=ARCS.map(a=>a.id),
-  /* 3.2b: el crecimiento por arco se mide desde Namek para todos (los números de la historia están calibrados con Goku a 3 M): así Gas, Granolah y Goku conservan sus proporciones */
-  anc=ord.indexOf(first.arc)<ord.indexOf('nam')?first.arc:'nam';
- let forms=d.forms.filter(id=>ch.forms.some(f=>f.id===id));if(d===L[L.length-1]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.map(f=>f.id).filter(id=>!seen.has(id)));}
+ const ch=CHARS[chIdx(chId)];if(!ch)return null;const ok=id=>ch.forms.some(f=>f.id===id&&!f.hidden);
+ let forms=d.forms.filter(ok);if(!d.fix&&d===L[L.length-1]&&!VER_FIX[chId]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.filter(f=>!f.hidden&&!seen.has(f.id)).map(f=>f.id));}
  if(!forms.length)forms=[ch.forms[0].id];
- const base=b0(d)*(VER_K[arc]||1)/(VER_K[anc]||1),top=Math.max(...forms.map(id=>(ch.forms.find(f=>f.id===id)||{mult:1}).mult));
- return VER_CACHE[ck]={base,forms,cap:base*top*1.36};}
+ const base=d.base||ch.base,pw=fixPw(ch,d,base),top=Math.max(...forms.map(id=>pw[id]));
+ return VER_CACHE[ck]={base,forms,cap:top*1.36,pw,fix:!!d.fix};}
+/* poder de cada forma en una versión: el fijo si lo hay; si no, base × multiplicador. En versiones fijas, una forma sin valor toma el de la forma listada más cercana por debajo */
+function fixPw(ch,d,base){const pw={};for(const f of ch.forms)pw[f.id]=base*f.mult;if(!d.pw)return pw;
+ const listed=ch.forms.filter(f=>d.pw[f.id]!=null).sort((a,b)=>a.mult-b.mult);
+ for(const f of ch.forms){if(d.pw[f.id]!=null){pw[f.id]=d.pw[f.id];continue;}let near=null;for(const l of listed)if(l.mult<=f.mult)near=l;pw[f.id]=near?d.pw[near.id]:(listed[0]?d.pw[listed[0].id]:base);}return pw;}
+const verMultOf=(ch,d)=>ch.forms.map(fm=>d.pw[fm.id]/d.base);
 /* Kaioken encima de una transformación: desde el Universo 6 (Blue + Kaioken). Antes, solo sobre el estado base y hasta el nivel que tuviera en su arco */
 const kkStackArc=arc=>!arc||ARCS.findIndex(a=>a.id===arc)>=ARCS.findIndex(a=>a.id==='tr');
 function kkArcOf(f){if(f.ver)return f.ver;const B=game.story&&game.story.book;if(B&&B.kind==='arc'&&!game.story.free)return B.id;return null;}
 /* 3.2b: el botón KK funciona siempre (petición del jugador); se deja la lógica por arco por si se quiere volver a limitar */
 const KK_FREE=true;
-function kkLevels(f){if(KK_FREE)return[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
+const KK_FUS=['gogeta','vegetto'],isFusKK=f=>KK_FUS.includes(f.ch.id);
+/* multiplicador real del Kaioken: literal en Goku; efectivo en las fusiones (x20 = ×1,8, x50 = ×2) */
+const kkMul=f=>!f.kkL?1:isFusKK(f)?(KK_FUSION[f.kkL]||1):f.kkL;
+function kkLevels(f){if(KK_FREE)return isFusKK(f)?[3,10,20,50]:[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
  const v=VER_DATA[f.ch.id]?verNear(f.ch.id,arc):null,d=v&&verInfo(f.ch.id,v);if(!d)return[];return[3,10,20].filter(n=>d.forms.includes('kk'+n));}
 const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
-function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;
+function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;f.verMult=verMultOf(f.ch,d);f.verFix=d.fix;
  let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
  f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
 function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
@@ -59,13 +69,14 @@ function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||g
  if(v)verApply(f,v,mine);}
 /* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
 function verFormOk(ch,i,side=0){const v=verOfSide(ch.id,side);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
+const verFormPow=(ch,i,side=0)=>{const v=verOfSide(ch.id,side),d=v&&verInfo(ch.id,v);return d?d.pw[ch.forms[i].id]:ch.base*ch.forms[i].mult;};
 const verBase=(ch,side=0)=>{const v=verOfSide(ch.id,side),d=v&&verInfo(ch.id,v);return d?d.base:ch.base;};
 /* maestría: guardada en décimas (0-1000) por luchador y forma */
 const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;
 function mastOf(f){return mastFormK(f,f.form);}
 /* maestría de una forma concreta (0-1): la tuya (si eres humano) + la que trae la versión del arco */
-function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(VER_M[f.ver]||0))/100,0,1);}
+function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(f.verFix?0:(VER_M[f.ver]||0)))/100,0,1);}
 let mastSaveT=0;
 function mastTick(f,dt){if(game.phase!=='fight'||!human(f)||game.online||f.state==='ko'||!f.form||f.form.mult<=1)return;
  const crew=game.mode==='train'?(TRAIN_CREWS[game.crew||'whis']||TRAIN_CREWS.whis).k:0,rate=game.mode==='train'?3*crew:.8,k=mKey(f.ch.id,f.form.id);
@@ -98,3 +109,17 @@ function trainStep(dt){if(game.mode!=='train'||game.phase!=='fight')return;const
  if(game.crewNow==='free')freeRoamStep(dt);}
 Object.assign(ACTIONS,{crew:a=>{if(!TRAIN_CREWS[a])return;game.crew=a;game.crewPicked=true;sfx('ok');startFromGuide();},
  verPick:a=>{const [ci,d,sd]=String(a).split(':'),ch=CHARS[+ci],side=+sd||0;if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOfSide(ch.id,side)),k=side?'ver2':'ver';prog[k]=prog[k]||{};prog[k][ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();sfx('sel');renderMenu();}});
+
+/* 3.3 · Modo historia: (1) formas de forma cronológica: el jugador tiene todas las que su personaje ya consiguió hasta esa pelea;
+   (2) versiones fijas (fusiones, Bills, Zamasu) también en la historia; (3) en Extremo y Legendario el rival no supera tu tope ×1,6 / ×2,2 */
+function storyChronoForms(f,n){const B=book;if(!B||B.kind!=='arc')return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id),ids=new Set();
+ const prev=(VER_DATA[f.ch.id]||[]).filter(v=>ord.indexOf(v.arc)<ai&&!v.fix).pop();if(prev)prev.forms.forEach(x=>ids.add(x));
+ for(const m of B.nodes){const N=m.fight||m;for(const k of['p','ally','e','e2']){const sp=N[k];if(sp&&sp.c===f.ch.id){(sp.forms||[]).forEach(x=>ids.add(x));if(sp.f)ids.add(sp.f);}}if(m===n)break;}
+ for(const id of ids){const i=f.ch.forms.findIndex(x=>x.id===id&&!x.hidden);if(i>=0&&!f.storyForms.includes(i))f.storyForms.push(i);}
+ f.storyForms.sort((a,b)=>f.ch.forms[a].mult-f.ch.forms[b].mult);}
+function storyFix(f){const B=book;if(!B||B.kind!=='arc'||!VER_FIX[f.ch.id])return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id);
+ const e=VER_FIX[f.ch.id].filter(x=>ord.indexOf(x.arc)<=ai).pop();if(!e)return;const d=verInfo(f.ch.id,e.arc);if(!d)return;f.base=d.base;f.verMult=verMultOf(f.ch,d);}
+const formPow=(f,i)=>f.base*((f.verMult&&f.verMult[i])||f.ch.forms[i].mult);
+function storyPost(n){if(!game.story)return;const free=game.story.free;for(const f of game.f){if(f.role==='boss')continue;storyFix(f);if(f.team===0&&!free&&f.storyForms)storyChronoForms(f,n);}
+ const a=game.f[0];if(!a||game.diff<2)return;const peak=Math.max(...(a.storyForms||[a.formIdx]).map(i=>formPow(a,i)))*(1+.35*mastFormK(a,a.ch.forms[(a.storyForms||[a.formIdx]).slice(-1)[0]]));
+ const K=game.diff===2?1.6:2.2;for(const f of game.f)if(f.team===1)f.storyCap=peak*K*((n.e&&n.e.cap)||1);}

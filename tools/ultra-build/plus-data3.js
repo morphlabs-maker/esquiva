@@ -69,10 +69,61 @@ CHARS.push(
 (()=>{const c=CHARS.find(x=>x.id==='cell'),f=c&&c.forms.find(x=>x.id==='max');if(!f)return;
  Object.assign(f,{extras:['cellcrown','maxWings','tail','maxMace','maxPlates','maxMouth'],head:[1.1,1.0,1.15],scale:[1.45,1.2,1.4],aura:0xff4a2a,
   colors:{skin:0x84c040,top:0xc8261c,sleeve:0x84c040,pants:0x84c040,belt:0x1e1e22,boots:0xc8261c,glove:0x84c040,wrist:0x6a2a70,ex1:0x1a1a1a,ex2:0x34343a,eye:0xf2f2f2,pupil:0xf2f2f2}});})();
-/* 3.2b: Zamasu fusionado: pelo blanco, abrigo gris de Kaioshin con forro rojo, faja roja, botas blancas; forma nueva «Corrupto» con el brazo derecho morado */
-(()=>{const z=CHARS.find(x=>x.id==='zamasuk');if(!z)return;
- Object.assign(z,{extras:['earringL','pointyEars','kaioCoat'],colors:{skin:0x7ac87a,top:0x5a5a64,sleeve:0x1a1a20,pants:0x26262c,belt:0xc0201e,boots:0xf0f0f0,glove:0x7ac87a,wrist:0x1a1a20,ex1:0x5aff9a,ex2:0xffffff}});
- if(!z.forms.some(f=>f.id==='corrupt'))z.forms.push(F('corrupt','Fusión corrupta',5,{era:'S',cost:5,drain:.016,regen:.02,extras:['earringL','pointyEars','kaioCoat','purpleArm'],aura:0xb06aff,auraOn:1,bolt:1,scale:[1.08,1.04,1.08]}));})();
+/* 3.2b/3.3: Zamasu fusionado (id 'zamasu'): pelo blanco, abrigo gris de Kaioshin con forro rojo, faja roja, botas blancas; «Mitad corrompida» con el brazo derecho morado y enorme */
+(()=>{const z=CHARS.find(x=>x.id==='zamasu');if(!z)return;
+ Object.assign(z,{extras:['earrings','pointyEars','kaioCoat'],colors:Object.assign({},z.colors,{skin:0x7ac87a,top:0x5a5a64,sleeve:0x1a1a20,pants:0x26262c,belt:0xc0201e,boots:0xf0f0f0,glove:0x7ac87a,wrist:0x1a1a20})});
+ const h=z.forms.find(f=>f.id==='half');if(h)Object.assign(h,{name:'Fusión corrupta',extras:['earrings','pointyEars','kaioCoat','purpleArm'],colors:{skin:0x7ac87a}});})();
 /* 3.2b: Kaioken (botón KK) para Goku, Vegito y Gogeta en cualquier momento y forma */
 /* Gogeta: el Soul Punisher se llama Quebrantador de Espíritu (esfera pequeña y multicolor, ver plus-moves.js) */
 (()=>{const g=CHARS.find(c=>c.id==='gogeta');if(g&&g.ult&&/Soul Punisher/.test(g.ult.name))Object.assign(g.ult,{name:'Quebrantador de Espíritu',type:'soul'});})();
+/* =========================================================
+   KAIOKEN CLASH 3.3 — escala de poder del jugador (MM = mil millones, B = billón)
+   ========================================================= */
+const MM=1e9,BB=1e12,setF=(c,id,o)=>{const f=c&&c.forms.find(x=>x.id===id);if(f)Object.assign(f,o);return f;},addF=(c,f)=>{if(c&&!c.forms.some(x=>x.id===f.id))c.forms.push(f);},
+ ordF=(c,ids)=>{if(c)c.order=ids.map(id=>c.forms.findIndex(f=>f.id===id)).filter(i=>i>=0).concat(c.forms.map((_,i)=>i).filter(i=>!ids.includes(c.forms[i].id)&&!c.forms[i].hidden));};
+/* Goku: Ultra Instinto Verdadero (6,50 B, pelo con contorno plateado). El Gigante de Luz deja de ser forma (ahora es técnica, ver plus-moves.js) */
+(()=>{const g=CHARS.find(c=>c.id==='goku');if(!g)return;const ui=g.forms.find(f=>f.id==='ui')||{};
+ addF(g,F('tui','Ultra Instinto Verdadero',6.5*BB/g.base,{era:'S',cost:7,drain:.018,ui:.7,hair:ui.hair,hairColor:0x2c2c3a,extras:(ui.extras||g.extras||[]).concat('silverHair'),aura:0xdfe6f4,auraOn:1,pupil:0xc0c8d8,bolt:0}));
+ setF(g,'giant',{hidden:1});ordF(g,['base','kk3','kk10','kk20','ssj','ssj2','ssj3','ssj4','ssg','ssb','ssbkk','uio','ui','tui']);})();
+/* Granolah: base = Freezer 3.ª forma en Namek; «el más fuerte del universo» algo por debajo de Goku UI dominado y Vegeta Ultra Ego. Su forma no cambia su aspecto */
+(()=>{const g=CHARS.find(c=>c.id==='granolah');if(!g)return;g.base=530000*4;
+ setF(g,'wish',{name:'El más fuerte del universo',mult:7*1e11/g.base,hair:undefined,hairColor:undefined,extras:undefined,colors:undefined,aura:0x7affc0,auraOn:1,bolt:1});})();
+/* Gas Heata (imágenes del usuario, de la primera a la última):
+   base = Goku SSJ de Namek, tamaño de Krilin → Deseo cumplido (gabardina, algo más alto que Goku, > UI dominado) → Berserker (rayos morados, >> UI dominado y Ultra Ego)
+   → Instintos controlados (envejecido y delgado; solo cae ante Goku, Vegeta y Granolah juntos) → Gas Zombie (demacrado, ojos negros; solo Bills, Black Freezer o fusiones) */
+(()=>{const g=CHARS.find(c=>c.id==='gas');if(!g)return;const B=1.5e8,CY=0x5ac0d4;g.base=B;
+ Object.assign(g,{h:.86,scale:[1,.92,1]});
+ setF(g,'wish',{name:'Deseo cumplido',mult:1.2*BB/B,hairColor:0x24202c,extras:['dreadsLong','gasCrown','pointyEars','tabardLong','bootBuckle'],aura:0xff7a3a,auraOn:1,bolt:0,scale:[1.22,1.25,1.18],colors:{skin:CY}});
+ setF(g,'coat',{name:'Berserker',mult:2.5*BB/B,hairColor:0x7a3aa0,extras:['dreadsWild','gasTusksBig','pointyEars','rags','bootBuckle','blankEyes'],aura:0xb040ff,auraOn:1,bolt:1,scale:[1.6,1.28,1.5],
+  colors:{skin:CY,top:CY,sleeve:CY,glove:CY,pants:0xe8e8f4,belt:0xe8e8f4}});
+ setF(g,'awaken',{name:'Instintos controlados',mult:7.2*BB/B,hairColor:0x6a3a8a,extras:['dreadsWild','gasCrown','pointyEars','tabardTorn','gasLines','bootBuckle'],aura:0xff5ab0,auraOn:1,bolt:1,scale:[1.08,1.3,1.04],
+  colors:{skin:0xa8c8e0,top:0xe2dcea,sleeve:0xe2dcea,glove:0xa8c8e0}});
+ setF(g,'limit',{name:'Gas Zombie',mult:8.6*BB/B});ordF(g,['base','wish','coat','awaken','limit']);})();
+/* Black Freezer: 10,5 B */
+(()=>{const f=CHARS.find(c=>c.id==='freezer');setF(f,'black',{mult:10.5*BB/f.base});})();
+/* Bills: dos versiones (Batalla de los Dioses / final de Super). Modo Destructor con aura de Ultra Ego más densa y rayos morados, permanente */
+(()=>{const b=CHARS.find(c=>c.id==='bills');if(!b)return;b.base=45*MM;
+ setF(b,'base',{name:'Base'});setF(b,'god',{name:'Poder',mult:60/45});setF(b,'serious',{name:'Base relajado',mult:4.5*BB/b.base,aura:0xb070ff,auraOn:0,bolt:0});
+ addF(b,F('p50','Poder 50 %',9*BB/b.base,{era:'S',cost:3,drain:.008,aura:0x9a50ff,auraOn:1}));
+ addF(b,F('p70','Poder 70 %',12.6*BB/b.base,{era:'S',cost:4,drain:.012,aura:0x8a40ff,auraOn:1,bolt:1}));
+ addF(b,F('destroyer','Modo Destructor',18*BB/b.base,{era:'S',cost:6,drain:0,aura:0x6a1aff,auraOn:1,bolt:1,destroyer:1}));
+ addF(b,F('p100','Poder 100 %',25.7*BB/b.base,{era:'S',cost:7,drain:.02,aura:0x5a0aff,auraOn:1,bolt:1,destroyer:1}));
+ ordF(b,['base','god','serious','p50','p70','destroyer','p100']);})();
+/* Fusiones: Blue Evolución y Ultra Instinto Verdadero nuevos (al final de la lista) */
+(()=>{for(const id of['gogeta','vegetto']){const c=CHARS.find(x=>x.id===id);if(!c)continue;const blue=c.forms.find(f=>f.id==='ssb'||f.id==='vblue')||{},ui=c.forms.find(f=>f.id==='ui')||{};
+ addF(c,F('be','Blue Evolución',blue.mult*1.4,{era:'S',cost:6,drain:.02,hair:blue.hair,hairColor:0x2a6ad8,aura:0x3a6aff,auraOn:1,bolt:1,pupil:0x1a3a9a,scale:[1.08,1.02,1.08]}));
+ addF(c,F('tui','Ultra Instinto Verdadero',ui.mult*2,{era:'S',cost:7,drain:.018,ui:.7,hair:ui.hair,hairColor:0x2c2c3a,extras:(c.extras||[]).concat('silverHair'),aura:0xdfe6f4,auraOn:1,pupil:0xc0c8d8}));}})();
+/* Zamasu fusionado: Zamasu Infinito */
+(()=>{const z=CHARS.find(c=>c.id==='zamasu');addF(z,F('infinite','Zamasu Infinito',10.5*BB/z.base,{era:'S',cost:7,drain:.02,regen:.02,extras:['earrings','pointyEars','kaioCoat','purpleArm'],aura:0xd08aff,auraOn:1,bolt:1,scale:[1.18,1.1,1.18],colors:{skin:0x9a7ad0,glove:0x9a7ad0}}));})();
+/* Versiones con poder fijo por forma (valores del jugador). Se suman a las versiones sacadas de la historia */
+const VER_FIX={
+ gogeta:[{arc:'bro',pw:{base:1.6*BB,ssj:2.4*BB,ssg:4.8*BB,ssb:8*BB,be:11*BB}},{arc:'gr',pw:{base:2.1*BB,ssj:3.2*BB,ssg:6.3*BB,ssb:10.5*BB,be:14.7*BB,ue:16*BB,tui:18.5*BB}}],
+ vegetto:[{arc:'tr',pw:{base:1.07*BB,svg:1.6*BB,ssg:3.2*BB,vblue:5.4*BB,vbkk:9.7*BB}},{arc:'gr',pw:{base:2.2*BB,svg:3.3*BB,ssg:6.6*BB,vblue:11*BB,be:15.4*BB,ue:16.8*BB,tui:19.4*BB}}],
+ zamasuk:[{arc:'tr',pw:{base:120*MM}}],
+ black:[{arc:'tr',pw:{base:900*MM,rose:4.5*BB,rose3:4.8*BB,rose4:5.2*BB}}],
+ zamasu:[{arc:'tr',pw:{base:5*BB,half:6.5*BB,infinite:10.5*BB}}],
+ bills:[{arc:'god',pw:{base:45*MM,god:60*MM}},{arc:'gr',pw:{serious:4.5*BB,p50:9*BB,p70:12.6*BB,destroyer:18*BB,p100:25.7*BB}}]};
+/* Kaioken en fusiones: efectivo, no literal (x20 = ×1,8; x50 = ×2) para respetar el techo de Bills */
+const KK_FUSION={3:1.2,10:1.5,20:1.8,50:2};
+/* Granolah: outfit con la ropa negra de su forma del deseo */
+OUTFITS.push({id:'gr_black',who:'granolah',saga:'Granolah el superviviente',name:'Ropa negra',price:220,add:['suspenders'],rm:['vestButtons','scarfRed'],colors:{top:0x18181c,sleeve:0x18181c,pants:0x18181c,belt:0x9a9aa4,wrist:0x18181c,glove:0xe8c8a8,boots:0x18181c}});

@@ -119,7 +119,7 @@ function storyStart(n){const B=book;for(const f of game.f)f.dispose();game.f=[];
   for(const e of[n.e,n.e2].filter(Boolean)){const f=storyFighter(idx++,e,{team:1});f.cpu=true;if(D.cap!==Infinity)f.cap=D.cap*(e.cap||1);all.push(f);}
   all.forEach(f=>{f.opp=all.find(x=>x.team!==f.team);});game.f=all;game.squad=[all.filter(f=>f.team===0).map(f=>({c:f.chi})),all.filter(f=>f.team===1).map(f=>({c:f.chi}))];}
  else{game.mode='cpu';const b=storyFighter(1,n.e,{team:1});b.cpu=true;if(D.cap!==Infinity)b.cap=D.cap*(n.e.cap||1);a.opp=b;b.opp=a;game.f=[a,b];}
- game.wins=[0,0];game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display=game.mode==='boss'?'none':'flex';$('#bossbar').style.display=bossMode()?'block':'none';$('#train').style.display='none';
+ storyPost(n);game.wins=[0,0];game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display=game.mode==='boss'?'none':'flex';$('#bossbar').style.display=bossMode()?'block':'none';$('#train').style.display='none';
  $('#menu').innerHTML='';menuState=null;playTrack(arcTrack(B&&B.id)||W.music);startRound();game.timer=999;
  const g=n.goal||{};if(g.type==='survive'||g.type==='timed')game.story.left=g.t;
  showMsg(B.kind==='wi'?'¿QUÉ PASARÍA SI…?':'CAPÍTULO',n.name+' · '+goalTxt(n)+' · '+DIFFS[game.diff].name,1.6);if(n.pre)setTimeout(()=>{if(game.story&&game.story.n===n&&game.phase==='intro')dlgStart(n.pre);},400);}

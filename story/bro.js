@@ -25,7 +25,7 @@ KC_STORY({id:'bro',name:'Broly',nodes:[
   {who:'nar',say:'De la danza de la fusión nace el guerrero definitivo: Gogeta.',cam:'wide',merge:{from:['goku','vegeta'],into:'gogeta',f:'base'},card:'GOGETA'},
   {who:'gogeta',say:'Soy Gogeta. Broly, esto se acaba aquí.',cam:'close',form:'ssb',fx:'flash'}]}},
 {id:'bro3',t:'fight',name:'Gogeta contra Broly',place:'La dimensión rota',world:4,v:1,
- p:{c:'gogeta',f:'ssb',base:3.42e8,forms:['ssg','ssb']},e:{c:'broly',f:'lssj',base:1.8e10,hp:1.8,forms:['lssj']},
+ p:{c:'gogeta',f:'ssb',base:3.42e8,forms:['ssg','ssb','be']},e:{c:'broly',f:'lssj',base:3.5e10,hp:1.8,forms:['lssj']},
  goal:{type:'win'},stars:[{type:'ult',txt:'Acaba con un definitivo'},{type:'hp',v:.5,txt:'Termina con más del 50 % de vida'}],coins:360,
  pre:[['gogeta','Soy Gogeta. Y voy a calmarte de una vez.'],['broly','¡GRAAAAH!']],
  cine:{id:'c_bro3',title:'El espacio se rompe',world:4,v:1,cast:[{c:'gogeta',x:-3,z:0,f:'ssb'},{c:'broly',x:3,z:0,f:'lssj'}],shots:[

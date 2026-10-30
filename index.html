@@ -1017,13 +1017,64 @@ CHARS.push(
 (()=>{const c=CHARS.find(x=>x.id==='cell'),f=c&&c.forms.find(x=>x.id==='max');if(!f)return;
  Object.assign(f,{extras:['cellcrown','maxWings','tail','maxMace','maxPlates','maxMouth'],head:[1.1,1.0,1.15],scale:[1.45,1.2,1.4],aura:0xff4a2a,
   colors:{skin:0x84c040,top:0xc8261c,sleeve:0x84c040,pants:0x84c040,belt:0x1e1e22,boots:0xc8261c,glove:0x84c040,wrist:0x6a2a70,ex1:0x1a1a1a,ex2:0x34343a,eye:0xf2f2f2,pupil:0xf2f2f2}});})();
-/* 3.2b: Zamasu fusionado: pelo blanco, abrigo gris de Kaioshin con forro rojo, faja roja, botas blancas; forma nueva «Corrupto» con el brazo derecho morado */
-(()=>{const z=CHARS.find(x=>x.id==='zamasuk');if(!z)return;
- Object.assign(z,{extras:['earringL','pointyEars','kaioCoat'],colors:{skin:0x7ac87a,top:0x5a5a64,sleeve:0x1a1a20,pants:0x26262c,belt:0xc0201e,boots:0xf0f0f0,glove:0x7ac87a,wrist:0x1a1a20,ex1:0x5aff9a,ex2:0xffffff}});
- if(!z.forms.some(f=>f.id==='corrupt'))z.forms.push(F('corrupt','Fusión corrupta',5,{era:'S',cost:5,drain:.016,regen:.02,extras:['earringL','pointyEars','kaioCoat','purpleArm'],aura:0xb06aff,auraOn:1,bolt:1,scale:[1.08,1.04,1.08]}));})();
+/* 3.2b/3.3: Zamasu fusionado (id 'zamasu'): pelo blanco, abrigo gris de Kaioshin con forro rojo, faja roja, botas blancas; «Mitad corrompida» con el brazo derecho morado y enorme */
+(()=>{const z=CHARS.find(x=>x.id==='zamasu');if(!z)return;
+ Object.assign(z,{extras:['earrings','pointyEars','kaioCoat'],colors:Object.assign({},z.colors,{skin:0x7ac87a,top:0x5a5a64,sleeve:0x1a1a20,pants:0x26262c,belt:0xc0201e,boots:0xf0f0f0,glove:0x7ac87a,wrist:0x1a1a20})});
+ const h=z.forms.find(f=>f.id==='half');if(h)Object.assign(h,{name:'Fusión corrupta',extras:['earrings','pointyEars','kaioCoat','purpleArm'],colors:{skin:0x7ac87a}});})();
 /* 3.2b: Kaioken (botón KK) para Goku, Vegito y Gogeta en cualquier momento y forma */
 /* Gogeta: el Soul Punisher se llama Quebrantador de Espíritu (esfera pequeña y multicolor, ver plus-moves.js) */
 (()=>{const g=CHARS.find(c=>c.id==='gogeta');if(g&&g.ult&&/Soul Punisher/.test(g.ult.name))Object.assign(g.ult,{name:'Quebrantador de Espíritu',type:'soul'});})();
+/* =========================================================
+   KAIOKEN CLASH 3.3 — escala de poder del jugador (MM = mil millones, B = billón)
+   ========================================================= */
+const MM=1e9,BB=1e12,setF=(c,id,o)=>{const f=c&&c.forms.find(x=>x.id===id);if(f)Object.assign(f,o);return f;},addF=(c,f)=>{if(c&&!c.forms.some(x=>x.id===f.id))c.forms.push(f);},
+ ordF=(c,ids)=>{if(c)c.order=ids.map(id=>c.forms.findIndex(f=>f.id===id)).filter(i=>i>=0).concat(c.forms.map((_,i)=>i).filter(i=>!ids.includes(c.forms[i].id)&&!c.forms[i].hidden));};
+/* Goku: Ultra Instinto Verdadero (6,50 B, pelo con contorno plateado). El Gigante de Luz deja de ser forma (ahora es técnica, ver plus-moves.js) */
+(()=>{const g=CHARS.find(c=>c.id==='goku');if(!g)return;const ui=g.forms.find(f=>f.id==='ui')||{};
+ addF(g,F('tui','Ultra Instinto Verdadero',6.5*BB/g.base,{era:'S',cost:7,drain:.018,ui:.7,hair:ui.hair,hairColor:0x2c2c3a,extras:(ui.extras||g.extras||[]).concat('silverHair'),aura:0xdfe6f4,auraOn:1,pupil:0xc0c8d8,bolt:0}));
+ setF(g,'giant',{hidden:1});ordF(g,['base','kk3','kk10','kk20','ssj','ssj2','ssj3','ssj4','ssg','ssb','ssbkk','uio','ui','tui']);})();
+/* Granolah: base = Freezer 3.ª forma en Namek; «el más fuerte del universo» algo por debajo de Goku UI dominado y Vegeta Ultra Ego. Su forma no cambia su aspecto */
+(()=>{const g=CHARS.find(c=>c.id==='granolah');if(!g)return;g.base=530000*4;
+ setF(g,'wish',{name:'El más fuerte del universo',mult:7*1e11/g.base,hair:undefined,hairColor:undefined,extras:undefined,colors:undefined,aura:0x7affc0,auraOn:1,bolt:1});})();
+/* Gas Heata (imágenes del usuario, de la primera a la última):
+   base = Goku SSJ de Namek, tamaño de Krilin → Deseo cumplido (gabardina, algo más alto que Goku, > UI dominado) → Berserker (rayos morados, >> UI dominado y Ultra Ego)
+   → Instintos controlados (envejecido y delgado; solo cae ante Goku, Vegeta y Granolah juntos) → Gas Zombie (demacrado, ojos negros; solo Bills, Black Freezer o fusiones) */
+(()=>{const g=CHARS.find(c=>c.id==='gas');if(!g)return;const B=1.5e8,CY=0x5ac0d4;g.base=B;
+ Object.assign(g,{h:.86,scale:[1,.92,1]});
+ setF(g,'wish',{name:'Deseo cumplido',mult:1.2*BB/B,hairColor:0x24202c,extras:['dreadsLong','gasCrown','pointyEars','tabardLong','bootBuckle'],aura:0xff7a3a,auraOn:1,bolt:0,scale:[1.22,1.25,1.18],colors:{skin:CY}});
+ setF(g,'coat',{name:'Berserker',mult:2.5*BB/B,hairColor:0x7a3aa0,extras:['dreadsWild','gasTusksBig','pointyEars','rags','bootBuckle','blankEyes'],aura:0xb040ff,auraOn:1,bolt:1,scale:[1.6,1.28,1.5],
+  colors:{skin:CY,top:CY,sleeve:CY,glove:CY,pants:0xe8e8f4,belt:0xe8e8f4}});
+ setF(g,'awaken',{name:'Instintos controlados',mult:7.2*BB/B,hairColor:0x6a3a8a,extras:['dreadsWild','gasCrown','pointyEars','tabardTorn','gasLines','bootBuckle'],aura:0xff5ab0,auraOn:1,bolt:1,scale:[1.08,1.3,1.04],
+  colors:{skin:0xa8c8e0,top:0xe2dcea,sleeve:0xe2dcea,glove:0xa8c8e0}});
+ setF(g,'limit',{name:'Gas Zombie',mult:8.6*BB/B});ordF(g,['base','wish','coat','awaken','limit']);})();
+/* Black Freezer: 10,5 B */
+(()=>{const f=CHARS.find(c=>c.id==='freezer');setF(f,'black',{mult:10.5*BB/f.base});})();
+/* Bills: dos versiones (Batalla de los Dioses / final de Super). Modo Destructor con aura de Ultra Ego más densa y rayos morados, permanente */
+(()=>{const b=CHARS.find(c=>c.id==='bills');if(!b)return;b.base=45*MM;
+ setF(b,'base',{name:'Base'});setF(b,'god',{name:'Poder',mult:60/45});setF(b,'serious',{name:'Base relajado',mult:4.5*BB/b.base,aura:0xb070ff,auraOn:0,bolt:0});
+ addF(b,F('p50','Poder 50 %',9*BB/b.base,{era:'S',cost:3,drain:.008,aura:0x9a50ff,auraOn:1}));
+ addF(b,F('p70','Poder 70 %',12.6*BB/b.base,{era:'S',cost:4,drain:.012,aura:0x8a40ff,auraOn:1,bolt:1}));
+ addF(b,F('destroyer','Modo Destructor',18*BB/b.base,{era:'S',cost:6,drain:0,aura:0x6a1aff,auraOn:1,bolt:1,destroyer:1}));
+ addF(b,F('p100','Poder 100 %',25.7*BB/b.base,{era:'S',cost:7,drain:.02,aura:0x5a0aff,auraOn:1,bolt:1,destroyer:1}));
+ ordF(b,['base','god','serious','p50','p70','destroyer','p100']);})();
+/* Fusiones: Blue Evolución y Ultra Instinto Verdadero nuevos (al final de la lista) */
+(()=>{for(const id of['gogeta','vegetto']){const c=CHARS.find(x=>x.id===id);if(!c)continue;const blue=c.forms.find(f=>f.id==='ssb'||f.id==='vblue')||{},ui=c.forms.find(f=>f.id==='ui')||{};
+ addF(c,F('be','Blue Evolución',blue.mult*1.4,{era:'S',cost:6,drain:.02,hair:blue.hair,hairColor:0x2a6ad8,aura:0x3a6aff,auraOn:1,bolt:1,pupil:0x1a3a9a,scale:[1.08,1.02,1.08]}));
+ addF(c,F('tui','Ultra Instinto Verdadero',ui.mult*2,{era:'S',cost:7,drain:.018,ui:.7,hair:ui.hair,hairColor:0x2c2c3a,extras:(c.extras||[]).concat('silverHair'),aura:0xdfe6f4,auraOn:1,pupil:0xc0c8d8}));}})();
+/* Zamasu fusionado: Zamasu Infinito */
+(()=>{const z=CHARS.find(c=>c.id==='zamasu');addF(z,F('infinite','Zamasu Infinito',10.5*BB/z.base,{era:'S',cost:7,drain:.02,regen:.02,extras:['earrings','pointyEars','kaioCoat','purpleArm'],aura:0xd08aff,auraOn:1,bolt:1,scale:[1.18,1.1,1.18],colors:{skin:0x9a7ad0,glove:0x9a7ad0}}));})();
+/* Versiones con poder fijo por forma (valores del jugador). Se suman a las versiones sacadas de la historia */
+const VER_FIX={
+ gogeta:[{arc:'bro',pw:{base:1.6*BB,ssj:2.4*BB,ssg:4.8*BB,ssb:8*BB,be:11*BB}},{arc:'gr',pw:{base:2.1*BB,ssj:3.2*BB,ssg:6.3*BB,ssb:10.5*BB,be:14.7*BB,ue:16*BB,tui:18.5*BB}}],
+ vegetto:[{arc:'tr',pw:{base:1.07*BB,svg:1.6*BB,ssg:3.2*BB,vblue:5.4*BB,vbkk:9.7*BB}},{arc:'gr',pw:{base:2.2*BB,svg:3.3*BB,ssg:6.6*BB,vblue:11*BB,be:15.4*BB,ue:16.8*BB,tui:19.4*BB}}],
+ zamasuk:[{arc:'tr',pw:{base:120*MM}}],
+ black:[{arc:'tr',pw:{base:900*MM,rose:4.5*BB,rose3:4.8*BB,rose4:5.2*BB}}],
+ zamasu:[{arc:'tr',pw:{base:5*BB,half:6.5*BB,infinite:10.5*BB}}],
+ bills:[{arc:'god',pw:{base:45*MM,god:60*MM}},{arc:'gr',pw:{serious:4.5*BB,p50:9*BB,p70:12.6*BB,destroyer:18*BB,p100:25.7*BB}}]};
+/* Kaioken en fusiones: efectivo, no literal (x20 = ×1,8; x50 = ×2) para respetar el techo de Bills */
+const KK_FUSION={3:1.2,10:1.5,20:1.8,50:2};
+/* Granolah: outfit con la ropa negra de su forma del deseo */
+OUTFITS.push({id:'gr_black',who:'granolah',saga:'Granolah el superviviente',name:'Ropa negra',price:220,add:['suspenders'],rm:['vestButtons','scarfRed'],colors:{top:0x18181c,sleeve:0x18181c,pants:0x18181c,belt:0x9a9aa4,wrist:0x18181c,glove:0xe8c8a8,boots:0x18181c}});
 
 
 /* ---------------- Utilidades ---------------- */
@@ -1309,6 +1360,8 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
   add(new THREE.TorusGeometry(.11,.035,8,18),w,J.torso,0,.45,0,Math.PI/2);}
  if(e==='gasLines'){const ln=new THREE.MeshBasicMaterial({color:0x4a3a5a});for(const sd of[1,-1]){add(Bx(.004,.05,.004),ln,J.head,sd*.11,.11,.14,0,0,sd*.2);add(Bx(.04,.004,.004),ln,J.head,sd*.065,.11,.165);}}
  if(e==='blankEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(i%2)o.visible=false;});}
+ /* 3.3: Ultra Instinto Verdadero: contorno plateado en el pelo */
+ if(e==='silverHair'){const mat=new THREE.MeshBasicMaterial({color:0xd8e2f0,side:THREE.BackSide}),ha=(model.M||model).hairAnchor;if(ha)ha.traverse(o=>{if(o.isMesh&&o.material===OUTLINE){o.userData.o0=o.material;o.userData.s0=o.scale.clone();o.scale.multiplyScalar(1.07);o.material=mat;}});}
  if(e==='blackEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(!(i%2)){o.userData.m0=o.material;o.material=o.material.clone();o.material.color.setHex(0x14101c);}});}
  /* 3.2b: Gas según el manga: rastas moradas (o negras) largas, diadema dorada con colmillos de marfil, tabardo rojo con ribete amarillo y cuello en V */
  if(e==='dreads'||e==='dreadsWild'||e==='dreadsLong'){const wild=e==='dreadsWild',long=e==='dreadsLong';add(new THREE.SphereGeometry(.182,20,12,0,TAU,0,Math.PI*.52),m.hair,J.head,0,.15,-.012,-.18);
@@ -1345,7 +1398,7 @@ HAIR.granolahW={cap:1,tip:.08,sp:HS(SSJ_C,1.05,1.05).concat([[0,.12,-.13,-1.6,0,
 HAIR.granolah={cap:1,tip:.1,sp:HM([0,.17,-.02,-.9,0,.36,.09],[.08,.15,-.01,-1.0,-.35,.34,.085],[.13,.1,-.03,-1.2,-.75,.3,.075],[.15,.03,-.05,-1.6,-1.0,.26,.065]).concat([[0,.12,-.13,-1.9,0,.3,.075],[.05,.16,.1,.6,-.2,.16,.05]])};
 function setExtras(model,list){
  const key=list.join(',');if(model.extrasKey===key)return;model.extrasKey=key;
- for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;if(model.eyes)model.eyes.forEach(o=>{o.visible=true;if(o.userData.m0){o.material=o.userData.m0;delete o.userData.m0;}});
+ for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;if(model.eyes)model.eyes.forEach(o=>{o.visible=true;if(o.userData.m0){o.material=o.userData.m0;delete o.userData.m0;}});{const ha=(model.M||model).hairAnchor;if(ha)ha.traverse(o=>{if(o.userData.o0){o.material=o.userData.o0;delete o.userData.o0;if(o.userData.s0){o.scale.copy(o.userData.s0);delete o.userData.s0;}}});}
  const J=model.J,m=model.mats,add=(geo,mat,parent,x,y,z,rx=0,ry=0,rz=0)=>{const p=addPart(geo,mat,parent,x,y,z);p.rotation.set(rx,ry,rz);model.extras.push(p);return p;};
  const cone=(r,h,s=10)=>{const g=new THREE.ConeGeometry(r,h,s);g.translate(0,h/2,0);return g;};
  for(const e of list){
@@ -2754,7 +2807,7 @@ class Fighter{
   this.pos=V3();this.vel=V3();this.face=0;this.inp=blankInput();this.cpu=false;this.formIdx=0;this.torn=0;verInit(this,o);}
  dispose(){this.dropAvatar();scene.remove(this.model.root);scene.remove(this.shadow);disposeModel(this.model);this.killSpecial();}
  get form(){return this.ch.forms[this.formIdx];}
- allowed(i){if(this.storyForms)return this.storyForms.includes(i);return ERA[this.ch.forms[i].era]<=game.techo&&(this.cpu||this.remote||this.role!=='p'||owns(this.ch,i));}
+ allowed(i){if(this.ch.forms[i].hidden)return false;if(this.storyForms)return this.storyForms.includes(i);return ERA[this.ch.forms[i].era]<=game.techo&&(this.cpu||this.remote||this.role!=='p'||owns(this.ch,i));}
  reset(side,at){this.kkL=0;if(at)this.pos.copy(at);else this.pos.set(side*7,world.spawnY+2,0);this.home=this.pos.clone();this.vel.set(0,0,0);this.face=side>0?-Math.PI/2:Math.PI/2;
   this.hp=this.maxHp;this.ki=this.role==="boss"?KIMAX:3;this.formIdx=this.startForm;this.ai=null;this.bai=null;this.comboDmg=0;this.lastCombo=0;this.transDur=0;this.state='idle';this.st=0;this.stT=0;this.comboHits=0;this.comboT=0;this.rage=false;this.finalEffort=false;this.torn=0;this.growT=0;this.formT=0;
   if(this.model.dragon){this.model.resetHeads();this.headHp=[0,0,0].map(()=>this.maxHp*.22);this.enr=0;}
@@ -2768,12 +2821,12 @@ class Fighter{
  tire(v){if(this.role==='p'&&!this.ch.android)this.fatigue=Math.min(1,this.fatigue+v*(world&&world.gravity||1));}
  /* Técnica equipada en la tienda (solo jugadores locales; online y CPU usan las de serie) */
  tech(which){const def=which==='ult'?this.ch.ult:which==='s2'?(this.ch.s2||this.ch.s1):this.ch.s1;if(this.role!=='p'||this.cpu||this.remote||game.online)return def;const id=(prog.eq[this.ch.id]||{})[which],t=id&&TECHS.find(x=>x.id===id);return t&&t.who.includes(this.ch.id)&&ownsTech(t.id)?t:def;}
- realPower(){const f=this.form;let m=f.mult;if(f.growth)m*=1+Math.min(this.growT,60)*.01;if(f.ue)m*=1+1.2*(1-this.hp/this.maxHp); // Ultra Ego: más fuerte cuanto más daño recibe
-  if(this.ch.brolyPassive&&this.role!=='boss')m*=1+this.brolyK()*.4;if(f.collapse)m*=Math.max(.45,1-this.collapseT*.012);return Math.min(this.base*m*(this.absorbMul||1)*(this.kkL||1)*(1+.35*(this.mastK||0)),(this.verCap||Infinity)*(this.kkL||1));}
+ realPower(){const f=this.form;let m=(this.verMult&&this.verMult[this.formIdx])||f.mult;if(f.growth)m*=1+Math.min(this.growT,60)*.01;if(f.ue)m*=1+1.2*(1-this.hp/this.maxHp); // Ultra Ego: más fuerte cuanto más daño recibe
+  if(this.ch.brolyPassive&&this.role!=='boss')m*=1+this.brolyK()*.4;if(f.collapse)m*=Math.max(.45,1-this.collapseT*.012);return Math.min(this.base*m*(this.absorbMul||1)*kkMul(this)*(1+.35*(this.mastK||0)),(this.verCap||Infinity)*kkMul(this));}
  /* Broly se crece durante la pelea: hasta +40 % de poder y -30 % de daño recibido a los 2 minutos */
  brolyK(){return Math.min(this.fightT||0,120)/120;}
  /* Contra la CPU en Fácil/Intermedio su poder no supera el tuyo por más de "cap" veces */
- power(){const T=game.mode==='tdp',p=T?tdpPow(this):this.realPower();return this.cap&&this.opp?Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap*verGap(this)):p;}
+ power(){const T=game.mode==='tdp',p=T?tdpPow(this):Math.min(this.realPower(),this.storyCap||Infinity);return this.cap&&this.opp?Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap*verGap(this)):p;}
  reach(){return(this.giant+(this.opp?this.opp.giant:1)-2)*1.1;}
  addKi(v){this.ki=clamp(this.ki+v,0,KIMAX);}
  sy(){return this.model.body.scale.y*this.giant;}
@@ -2973,7 +3026,7 @@ class Fighter{
   const av=this.avatar;if(av){GHOST_MAT.uniforms.uT.value=t;{const cs=av.root.scale.x;av.root.scale.setScalar(lerp(cs,this.giant,1-Math.exp(-3.5*dt)));}av.speed=m.speed;av.root.position.copy(this.pos);av.root.rotation.y=this.face;av.root.rotation.x=m.root.rotation.x;av.target=m.target;animateModel(av,dt*(game.phase?game.timescale:1),false);
    m.root.position.copy(this.pos).add(V3(0,.8*this.giant-.7,0)).addScaledVector(this.fwd(),.1*this.giant);
    if(Math.random()<.4)spawn({pos:this.pos.clone().add(V3(rand(-1,1)*this.giant*.4,rand(0,1.4)*this.giant,rand(-1,1)*this.giant*.3)),vel:V3(0,rand(2,6),0),color:0x9fe8ff,size:rand(.6,1.6),life:.6,op:.6});}
-  const f=this.form;let lv=0;if(this.state==='charge')lv=1;else if(this.state==='transform')lv=1.15;else if(this.state==='special'&&this.sp&&this.sp.phase==='charge')lv=.8;else if(this.state==='rush')lv=.7;else if(f.ue)lv=.8;else if(this.kkL||(f.auraOn??(f.mult>=40||f.kk)))lv=.42;if(this.tele)lv=1.1;
+  const f=this.form;let lv=0;if(this.state==='charge')lv=1;else if(this.state==='transform')lv=1.15;else if(this.state==='special'&&this.sp&&this.sp.phase==='charge')lv=.8;else if(this.state==='rush')lv=.7;else if(f.ue||f.destroyer)lv=f.destroyer?.95:.8;else if(this.kkL||(f.auraOn??(f.mult>=40||f.kk)))lv=.42;if(this.tele)lv=1.1;
   this.aura.setStyle(f.ue);if(f.ue&&this.state!=='ko'&&Math.random()<dt*14)spawn({pos:this.pos.clone().add(V3(rand(-.6,.6),rand(0,1.6)*this.sy(),rand(-.6,.6))),vel:V3(rand(-.5,.5),rand(1.5,3.5),rand(-.5,.5)),color:0x3a0a6a,size:rand(.5,1.1)*this.giant,life:.9,grow:.6,smoke:true,op:.55});
   if(this.state==='ko')lv=0;this.aura.body=this.model.body;this.aura.target=lv;this.aura.update(dt,t,(f.bolt||(this.pendingForm>=0&&this.ch.forms[this.pendingForm].bolt))&&lv>.2);
   this.plight.color.setHex(f.aura);this.plight.intensity=this.aura.level*1.6;
@@ -3391,7 +3444,7 @@ function renderMenu(){const m=$('#menu');$('#hud').style.display='none';m.style.
  else if(menuState==='chars'){const cell=i=>{const ch=CHARS[i];return`<div class="cell${lockedC(i)?' lock':''}" data-act="pickChar" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${lockedC(i)?'🔒 ':''}${ch.name}${cur[0]===i?'<div class="cur"></div><span class="tag t1">1P</span>':''}${cur[1]===i&&!['boss','train','surv'].includes(game.mode)?'<div class="cur c2"></div><span class="tag t2">'+p2Label(true)+'</span>':''}</div>`;};
   const side=p=>{if(p&&game.mode==='boss')return'<b>JEFE</b><br>Lo eliges después de tu luchador.';if(p&&game.mode==='surv')return'<b>SUPERVIVENCIA</b><br>Rivales al azar, cada oleada más fuerte. Cada K.O. da monedas.';if(p&&game.mode==='train')return'<b>MAESTRO · WHIS</b><br>Poder 50 B. No ataca y esquiva como el Ultra Instinto dominado. Mide tus combos y te da consejos.';const ch=CHARS[cur[p]],who=p?p2Label():'1P',st=pst[p];
    const forms=st==='char'?`${lockedC(cur[p])?'<div style="color:#ff9a5a">🔒 '+LOCK_MSG+'</div>':''}<div class="csdet">${ch.forms.length} formas · poder base ${fmtP(ch.base)}<br>Especial: ${ch.s1.name}<br>Definitivo: ${ch.ult.name}</div>`
-    :`<div style="color:#c8cce0">${st==='form'?'Empieza en:':'Empieza en: <span style="color:#7dff7a">'+ch.forms[fsel[p]].name+' · LISTO</span>'}</div>${st==='form'?`<div class="formpick">${ch.forms.map((f,i)=>{const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i,p));return`<div class="${i===fsel[p]?'on':''}${lk?' lk':''}" data-act="pickForm" data-arg="${p},${i}">${lk?'🔒 ':''}${f.name} · ${fmtP(verBase(ch,p)*f.mult)}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}</div>${lockMsg&&humanSide(p)?`<div style="color:#ff9a5a;margin-top:4px">${lockMsg}</div>`:''}`:''}`;
+    :`<div style="color:#c8cce0">${st==='form'?'Empieza en:':'Empieza en: <span style="color:#7dff7a">'+ch.forms[fsel[p]].name+' · LISTO</span>'}</div>${st==='form'?`<div class="formpick">${ch.forms.map((f,i)=>{if(f.hidden)return'';const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i,p));return`<div class="${i===fsel[p]?'on':''}${lk?' lk':''}" data-act="pickForm" data-arg="${p},${i}">${lk?'🔒 ':''}${f.name} · ${fmtP(verFormPow(ch,i,p))}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}</div>${lockMsg&&humanSide(p)?`<div style="color:#ff9a5a;margin-top:4px">${lockMsg}</div>`:''}`:''}`;
    return`<b>${who} · ${ch.name}</b><br>${forms}`;};
   const hint1=pst[0]==='char'?'1P: <span class="k">WASD</span> mover · <span class="k">F</span> elegir':pst[0]==='form'?'1P: <span class="k">W</span><span class="k">S</span> forma inicial · <span class="k">F</span> confirmar · <span class="k">G</span> volver':'1P listo · <span class="k">G</span> cambiar';
   const hint2=['boss','train','surv'].includes(game.mode)?'':solo()?(pst[0]==='ready'?'1P elige también al '+p2Label().toLowerCase()+' con <span class="k">WASD</span> y <span class="k">F</span>':'Primero elige 1P; después 1P elige al '+p2Label().toLowerCase()):
@@ -3937,7 +3990,7 @@ function storyStart(n){const B=book;for(const f of game.f)f.dispose();game.f=[];
   for(const e of[n.e,n.e2].filter(Boolean)){const f=storyFighter(idx++,e,{team:1});f.cpu=true;if(D.cap!==Infinity)f.cap=D.cap*(e.cap||1);all.push(f);}
   all.forEach(f=>{f.opp=all.find(x=>x.team!==f.team);});game.f=all;game.squad=[all.filter(f=>f.team===0).map(f=>({c:f.chi})),all.filter(f=>f.team===1).map(f=>({c:f.chi}))];}
  else{game.mode='cpu';const b=storyFighter(1,n.e,{team:1});b.cpu=true;if(D.cap!==Infinity)b.cap=D.cap*(n.e.cap||1);a.opp=b;b.opp=a;game.f=[a,b];}
- game.wins=[0,0];game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display=game.mode==='boss'?'none':'flex';$('#bossbar').style.display=bossMode()?'block':'none';$('#train').style.display='none';
+ storyPost(n);game.wins=[0,0];game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display=game.mode==='boss'?'none':'flex';$('#bossbar').style.display=bossMode()?'block':'none';$('#train').style.display='none';
  $('#menu').innerHTML='';menuState=null;playTrack(arcTrack(B&&B.id)||W.music);startRound();game.timer=999;
  const g=n.goal||{};if(g.type==='survive'||g.type==='timed')game.story.left=g.t;
  showMsg(B.kind==='wi'?'¿QUÉ PASARÍA SI…?':'CAPÍTULO',n.name+' · '+goalTxt(n)+' · '+DIFFS[game.diff].name,1.6);if(n.pre)setTimeout(()=>{if(game.story&&game.story.n===n&&game.phase==='intro')dlgStart(n.pre);},400);}
@@ -4562,6 +4615,22 @@ const MOVE3={
    if(sp.t>=.8){const t=tgtOf(f),from=sp.m.position.clone(),v=(t?t.chest():from.clone().addScaledVector(fwd,10)).sub(from).normalize().multiplyScalar(30);
     projs.push(newProj(f,from,v,{kind:'ball',base:(s.pow??(sp.isU?3000:1500)),color:0xffffff,r:R,homing:2.5,isU:sp.isU,full:sp.full,mesh:sp.m,rainbow:1}));sp.m=null;sp.phase='throw';sp.t=0;sfx('beamFire');}}
   else{sp.pose='throw';if(sp.t>.35)f.sp=null;}},
+ /* 3.3: Gigante de Luz (técnica definitiva de Goku en Ultra Instinto): el avatar celeste lo envuelve, lo protege de todo daño
+    y, al llegar al rival, descarga una ráfaga de golpes devastadora */
+ giantRush(f,dt,sp,s){const t=tgtOf(f);f.invuln=Math.max(f.invuln||0,.2);GHOST_MAT.uniforms.uT.value+=dt;
+  if(!sp.av){const m=makeModel(f.ch);applyFormModel(m,f.ch,f.form,0);m.root.traverse(o=>{if(o.isMesh){if(o.material===OUTLINE)o.visible=false;else{o.material=GHOST_MAT;o.castShadow=false;}}});
+   m.root.scale.copy(f.model.root.scale).multiplyScalar(.2);scene.add(m.root);sp.av=m;sp.avRoot=m.root;sp.phase='grow';sp.t=0;sfx('transform',1.2);flashScreen(.35,'#9fe8ff');pop(f,'¡GIGANTE DE LUZ!','#9fe8ff',true);}
+  const av=sp.av,k=sp.phase==='grow'?Math.min(1,sp.t/.5):sp.phase==='fade'?Math.max(0,1-sp.t/.35):1;
+  av.root.scale.copy(f.model.root.scale).multiplyScalar(.2+2.6*k);av.root.position.copy(f.pos);av.root.rotation.copy(f.model.root.rotation);
+  for(const j of JOINTS)if(av.J[j]&&f.model.J[j])av.J[j].rotation.copy(f.model.J[j].rotation);
+  if(sp.phase==='grow'){sp.pose='powerup';if(sp.t>=.5){sp.phase='dash';sp.t=0;}return;}
+  if(sp.phase==='dash'){sp.pose='fly';if(!t){sp.phase='fade';sp.t=0;return;}const to=t.chest().sub(f.chest()),d=to.length();f.pos.addScaledVector(to.normalize(),Math.min(d,60*dt));
+   if(d<3+f.reach()){sp.phase='combo';sp.t=0;sp.n=0;}else if(sp.t>.9){sp.phase='fade';sp.t=0;}return;}
+  if(sp.phase==='combo'){const hits=sp.isU?8:6;sp.pose=['punchR','punchL','uppercut','punchR','punchL','kick','punchR','uppercut'][sp.n%8];
+   if(sp.t>=.11&&sp.n<hits){sp.t=0;sp.n++;if(t&&t.pos.distanceTo(f.pos)<6+f.reach()){applyHit(f,t,{kind:'ult',base:(s.pow??3400)/hits,knock:sp.n===hits?34:2,up:sp.n===hits?.5:.1,stun:.35,full:true});
+     const c=t.chest();ring(c,0x9fe8ff,3,.25,false,.15);for(let i=0;i<8;i++)spawn({pos:c.clone().add(rndDir().multiplyScalar(.6)),vel:rndDir().multiplyScalar(12),color:0xbff0ff,size:.5,life:.3});game.shake=Math.max(game.shake||0,.5);}}
+   if(sp.n>=hits&&sp.t>.2){sp.phase='fade';sp.t=0;}return;}
+  sp.pose='idle';if(sp.t>=.35){scene.remove(av.root);disposeModel(av);sp.av=null;sp.avRoot=null;f.sp=null;}},
  meteors(f,dt,sp,s){const t=tgtOf(f),N=sp.isU?12:7;sp.pose='raise';const n=Math.min(N,Math.floor(sp.t/1.2*N));
   while((sp.fired||0)<n&&t){sp.fired=(sp.fired||0)+1;const from=t.pos.clone().add(V3(rand(-9,9),rand(26,34),rand(-9,9))),v=t.chest().sub(from).normalize().multiplyScalar(34);projs.push(newProj(f,from,v,{kind:'ball',base:(s.pow??(sp.isU?3000:1400))/N*1.6,color:0xff7a2a,r:.9,homing:.5,mesh:(()=>{const m=rockMesh();fxGroup.add(m);return m;})()}));}
   if(sp.t>=1.4)f.sp=null;}};
@@ -4578,9 +4647,12 @@ function moveFxStep(dt){mvT+=dt;for(const p of projs)if(p.rainbow){soulTint(p.me
 function spMeshes(sp){const L=[];if(!sp)return L;for(const k in sp){const v=sp[k];if(v&&v.isObject3D)L.push(v);else if(Array.isArray(v))for(const x of v)if(x&&x.isObject3D)L.push(x);}return L;}
 function cleanSp(sp){for(const m of spMeshes(sp))if(m.parent&&!projs.some(p=>p.mesh===m))m.parent.remove(m);}
 function spWatch(f){if(f._spPrev&&f._spPrev!==f.sp)cleanSp(f._spPrev);f._spPrev=f.sp;}
+/* Goku en Ultra Instinto (dominado o verdadero): su definitivo pasa a ser el Gigante de Luz */
+const GIANT_TECH={name:'Gigante de Luz',type:'giantRush',color:0x9fe8ff,pow:3400};
+{const t0=Fighter.prototype.tech;Fighter.prototype.tech=function(w){if(w==='ult'&&this.ch.id==='goku'&&this.form&&['ui','tui'].includes(this.form.id))return GIANT_TECH;return t0.call(this,w);};}
 retypeTechs();
 /* Generado por gen-versions.js desde story/*.js: versión de cada luchador por arco (poder base y formas acumuladas). No editar a mano. */
-const VER_DATA={"goku":[{"arc":"sai","base":8000,"forms":["base","kk3","kk10"]},{"arc":"nam","base":3000000,"forms":["base","kk3","kk10","kk20","ssj"]},{"arc":"cel","base":3000000,"forms":["base","kk3","kk10","kk20","ssj"]},{"arc":"buu","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3"]},{"arc":"dai","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4"]},{"arc":"god","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb"]},{"arc":"tr","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk"]},{"arc":"tp","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui"]},{"arc":"bro","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui"]},{"arc":"mor","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui","giant"]},{"arc":"gr","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui","giant"]}],"piccolo":[{"arc":"sai","base":1200,"forms":["base"]},{"arc":"nam","base":1100000,"forms":["base"]},{"arc":"cel","base":20000000,"forms":["base","kami"]}],"raditz":[{"arc":"sai","base":1100,"forms":["base","full"]}],"gohan":[{"arc":"sai","base":2800,"forms":["base"]},{"arc":"nam","base":20000,"forms":["base"]},{"arc":"cel","base":3000000,"forms":["base","ssj2","ssj"]},{"arc":"buu","base":3000000,"forms":["base","ssj2","ssj","mystic"]},{"arc":"god","base":3000000,"forms":["base","ssj2","ssj","mystic"]}],"nappa":[{"arc":"sai","base":4000,"forms":["base","rage"]}],"vegeta":[{"arc":"sai","base":18000,"forms":["base"]},{"arc":"nam","base":3000000,"forms":["base"]},{"arc":"cel","base":3000000,"forms":["base","ssj","sv"]},{"arc":"buu","base":3000000,"forms":["base","ssj","sv","majin","ssj2"]},{"arc":"dai","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3"]},{"arc":"god","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb"]},{"arc":"tr","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb"]},{"arc":"tp","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"bro","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"mor","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"gr","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe","ue"]}],"krilin":[{"arc":"sai","base":0,"forms":["base"]},{"arc":"nam","base":0,"forms":["base"]}],"ginyu":[{"arc":"nam","base":120000,"forms":["base","pose"]}],"freezer":[{"arc":"nam","base":530000,"forms":["f1","f2","f3","f50","f100"]},{"arc":"cel","base":530000,"forms":["f1","f2","f3","f50","f100"]},{"arc":"god","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"tp","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"bro","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"gr","base":530000,"forms":["f1","f2","f3","f50","f100","golden","black"]}],"trunks":[{"arc":"cel","base":2400000,"forms":["ssj","st"]},{"arc":"buu","base":2400000,"forms":["ssj","st","base"]},{"arc":"god","base":2400000,"forms":["ssj","st","base"]},{"arc":"tr","base":2400000,"forms":["ssj","st","base","ssj2","rage"]}],"a18":[{"arc":"cel","base":24000000,"forms":["base"]}],"a17":[{"arc":"cel","base":25000000,"forms":["base","full"]},{"arc":"tp","base":25000000,"forms":["base","full"]}],"cell":[{"arc":"cel","base":30000000,"forms":["imp","semi","perf","sp"]}],"goten":[{"arc":"buu","base":900000,"forms":["base","ssj"]},{"arc":"god","base":900000,"forms":["base","ssj"]}],"buu":[{"arc":"buu","base":300000000,"forms":["fat","super","gabs","kid"]}],"gotenks":[{"arc":"buu","base":1000000,"forms":["ssj","ssj3"]}],"vegetto":[{"arc":"buu","base":80000000,"forms":["base","svg"]},{"arc":"tr","base":80000000,"forms":["base","svg","vblue"]}],"tama1":[{"arc":"dai","base":900000000,"forms":["base"]}],"tama2":[{"arc":"dai","base":1050000000,"forms":["base"]}],"tama3":[{"arc":"dai","base":1200000000,"forms":["base"]}],"bills":[{"arc":"god","base":0,"forms":["base"]}],"whis":[{"arc":"god","base":0,"forms":["base"]}],"hit":[{"arc":"tr","base":15000000000,"forms":["base","skip","full"]},{"arc":"tp","base":15000000000,"forms":["base","skip","full"]}],"black":[{"arc":"tr","base":3000000,"forms":["base","rose"]}],"zamasuk":[{"arc":"tr","base":15000000000,"forms":["base","immortal"]}],"zamasu":[{"arc":"tr","base":300000000000,"forms":["base","half"]}],"kefla":[{"arc":"tp","base":800000000,"forms":["ssj","ssj2"]}],"jiren":[{"arc":"tp","base":120000000000,"forms":["full","base","limit"]}],"toppo":[{"arc":"tp","base":0,"forms":["base"]}],"broly":[{"arc":"bro","base":18000000000,"forms":["base","wrath","ssj","lssj"]}],"gogeta":[{"arc":"bro","base":342000000,"forms":["ssg","ssb"]}],"moro":[{"arc":"mor","base":15000000000,"forms":["young","planets","s73","merus","earth"]}],"granolah":[{"arc":"gr","base":100000000000,"forms":["wish"]}],"gas":[{"arc":"gr","base":120000000000,"forms":["wish","coat","awaken","limit"]}]};
+const VER_DATA={"goku":[{"arc":"sai","base":8000,"forms":["base","kk3","kk10"]},{"arc":"nam","base":3000000,"forms":["base","kk3","kk10","kk20","ssj"]},{"arc":"cel","base":3000000,"forms":["base","kk3","kk10","kk20","ssj"]},{"arc":"buu","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3"]},{"arc":"dai","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4"]},{"arc":"god","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb"]},{"arc":"tr","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk"]},{"arc":"tp","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui"]},{"arc":"bro","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui"]},{"arc":"mor","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui","giant"]},{"arc":"gr","base":3000000,"forms":["base","kk3","kk10","kk20","ssj","ssj2","ssj3","ssj4","ssg","ssb","ssbkk","uio","ui","giant","tui"]}],"piccolo":[{"arc":"sai","base":1200,"forms":["base"]},{"arc":"nam","base":1100000,"forms":["base"]},{"arc":"cel","base":20000000,"forms":["base","kami"]}],"raditz":[{"arc":"sai","base":1100,"forms":["base","full"]}],"gohan":[{"arc":"sai","base":2800,"forms":["base"]},{"arc":"nam","base":20000,"forms":["base"]},{"arc":"cel","base":3000000,"forms":["base","ssj2","ssj"]},{"arc":"buu","base":3000000,"forms":["base","ssj2","ssj","mystic"]},{"arc":"god","base":3000000,"forms":["base","ssj2","ssj","mystic"]}],"nappa":[{"arc":"sai","base":4000,"forms":["base","rage"]}],"vegeta":[{"arc":"sai","base":18000,"forms":["base"]},{"arc":"nam","base":3000000,"forms":["base"]},{"arc":"cel","base":3000000,"forms":["base","ssj","sv"]},{"arc":"buu","base":3000000,"forms":["base","ssj","sv","majin","ssj2"]},{"arc":"dai","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3"]},{"arc":"god","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb"]},{"arc":"tr","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb"]},{"arc":"tp","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"bro","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"mor","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe"]},{"arc":"gr","base":3000000,"forms":["base","ssj","sv","majin","ssj2","ssj3","ssg","ssb","ssbe","ue"]}],"krilin":[{"arc":"sai","base":0,"forms":["base"]},{"arc":"nam","base":0,"forms":["base"]}],"ginyu":[{"arc":"nam","base":120000,"forms":["base","pose"]}],"freezer":[{"arc":"nam","base":530000,"forms":["f1","f2","f3","f50","f100"]},{"arc":"cel","base":530000,"forms":["f1","f2","f3","f50","f100"]},{"arc":"god","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"tp","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"bro","base":530000,"forms":["f1","f2","f3","f50","f100","golden"]},{"arc":"gr","base":530000,"forms":["f1","f2","f3","f50","f100","golden","black"]}],"trunks":[{"arc":"cel","base":2400000,"forms":["ssj","st"]},{"arc":"buu","base":2400000,"forms":["ssj","st","base"]},{"arc":"god","base":2400000,"forms":["ssj","st","base"]},{"arc":"tr","base":2400000,"forms":["ssj","st","base","ssj2","rage"]}],"a18":[{"arc":"cel","base":24000000,"forms":["base"]}],"a17":[{"arc":"cel","base":25000000,"forms":["base","full"]},{"arc":"tp","base":25000000,"forms":["base","full"]}],"cell":[{"arc":"cel","base":30000000,"forms":["imp","semi","perf","sp"]}],"goten":[{"arc":"buu","base":900000,"forms":["base","ssj"]},{"arc":"god","base":900000,"forms":["base","ssj"]}],"buu":[{"arc":"buu","base":300000000,"forms":["fat","super","gabs","kid"]}],"gotenks":[{"arc":"buu","base":1000000,"forms":["ssj","ssj3"]}],"vegetto":[{"arc":"buu","base":80000000,"forms":["base","svg"]},{"arc":"tr","base":80000000,"forms":["base","svg","vblue","vbkk"]}],"tama1":[{"arc":"dai","base":900000000,"forms":["base"]}],"tama2":[{"arc":"dai","base":1050000000,"forms":["base"]}],"tama3":[{"arc":"dai","base":1200000000,"forms":["base"]}],"bills":[{"arc":"god","base":0,"forms":["base"]}],"whis":[{"arc":"god","base":0,"forms":["base"]}],"hit":[{"arc":"tr","base":15000000000,"forms":["base","skip","full"]},{"arc":"tp","base":15000000000,"forms":["base","skip","full"]}],"black":[{"arc":"tr","base":3000000,"forms":["base","rose"]}],"zamasuk":[{"arc":"tr","base":15000000000,"forms":["base","immortal"]}],"zamasu":[{"arc":"tr","base":300000000000,"forms":["base","half","infinite"]}],"kefla":[{"arc":"tp","base":800000000,"forms":["ssj","ssj2"]}],"jiren":[{"arc":"tp","base":120000000000,"forms":["full","base","limit"]}],"toppo":[{"arc":"tp","base":0,"forms":["base"]}],"broly":[{"arc":"bro","base":35000000000,"forms":["base","wrath","ssj","lssj"]}],"gogeta":[{"arc":"bro","base":342000000,"forms":["ssg","ssb"]}],"moro":[{"arc":"mor","base":15000000000,"forms":["young","planets","s73","merus","earth"]}],"granolah":[{"arc":"gr","base":2120000,"forms":["wish"]}],"gas":[{"arc":"gr","base":150000000,"forms":["wish","coat","awaken","limit"]}]};
 /* =========================================================
    KAIOKEN CLASH 3.0 — VERSIONES POR ARCO, MAESTRÍA Y EQUIPOS DE ENTRENAMIENTO
    · Versión: el mismo luchador en cada arco (Goku de la Saga Saiyajin, de Namek, de Cell…). La del primer arco es la de siempre;
@@ -4613,24 +4685,34 @@ function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!ar
 /* 3.2: poder base de la versión (el de la historia, que sigue creciendo con el arco), sus formas y el tope de poder del arco.
    Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
 const VER_CACHE={};
+/* 3.3: poder absoluto (el de la historia, sin crecer por arco): los números del jugador mandan. Las versiones de VER_FIX tienen poder fijo por forma (pw) */
+(()=>{const ord=ARCS.map(a=>a.id);for(const c in VER_FIX){const L=VER_DATA[c]=(VER_DATA[c]||[]).slice();
+ for(const e of VER_FIX[c]){const forms=Object.keys(e.pw),d={arc:e.arc,base:e.pw.base||Math.min(...Object.values(e.pw)),forms,pw:e.pw,fix:1},i=L.findIndex(v=>v.arc===e.arc);if(i>=0)L[i]=d;else L.push(d);}
+ L.sort((x,y)=>ord.indexOf(x.arc)-ord.indexOf(y.arc));}})();
 function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CACHE[ck];const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;
- const ch=CHARS[chIdx(chId)];if(!ch)return null;const b0=v=>v.base||ch.base,first=L.find(v=>b0(v)===b0(d))||d,ord=ARCS.map(a=>a.id),
-  /* 3.2b: el crecimiento por arco se mide desde Namek para todos (los números de la historia están calibrados con Goku a 3 M): así Gas, Granolah y Goku conservan sus proporciones */
-  anc=ord.indexOf(first.arc)<ord.indexOf('nam')?first.arc:'nam';
- let forms=d.forms.filter(id=>ch.forms.some(f=>f.id===id));if(d===L[L.length-1]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.map(f=>f.id).filter(id=>!seen.has(id)));}
+ const ch=CHARS[chIdx(chId)];if(!ch)return null;const ok=id=>ch.forms.some(f=>f.id===id&&!f.hidden);
+ let forms=d.forms.filter(ok);if(!d.fix&&d===L[L.length-1]&&!VER_FIX[chId]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.filter(f=>!f.hidden&&!seen.has(f.id)).map(f=>f.id));}
  if(!forms.length)forms=[ch.forms[0].id];
- const base=b0(d)*(VER_K[arc]||1)/(VER_K[anc]||1),top=Math.max(...forms.map(id=>(ch.forms.find(f=>f.id===id)||{mult:1}).mult));
- return VER_CACHE[ck]={base,forms,cap:base*top*1.36};}
+ const base=d.base||ch.base,pw=fixPw(ch,d,base),top=Math.max(...forms.map(id=>pw[id]));
+ return VER_CACHE[ck]={base,forms,cap:top*1.36,pw,fix:!!d.fix};}
+/* poder de cada forma en una versión: el fijo si lo hay; si no, base × multiplicador. En versiones fijas, una forma sin valor toma el de la forma listada más cercana por debajo */
+function fixPw(ch,d,base){const pw={};for(const f of ch.forms)pw[f.id]=base*f.mult;if(!d.pw)return pw;
+ const listed=ch.forms.filter(f=>d.pw[f.id]!=null).sort((a,b)=>a.mult-b.mult);
+ for(const f of ch.forms){if(d.pw[f.id]!=null){pw[f.id]=d.pw[f.id];continue;}let near=null;for(const l of listed)if(l.mult<=f.mult)near=l;pw[f.id]=near?d.pw[near.id]:(listed[0]?d.pw[listed[0].id]:base);}return pw;}
+const verMultOf=(ch,d)=>ch.forms.map(fm=>d.pw[fm.id]/d.base);
 /* Kaioken encima de una transformación: desde el Universo 6 (Blue + Kaioken). Antes, solo sobre el estado base y hasta el nivel que tuviera en su arco */
 const kkStackArc=arc=>!arc||ARCS.findIndex(a=>a.id===arc)>=ARCS.findIndex(a=>a.id==='tr');
 function kkArcOf(f){if(f.ver)return f.ver;const B=game.story&&game.story.book;if(B&&B.kind==='arc'&&!game.story.free)return B.id;return null;}
 /* 3.2b: el botón KK funciona siempre (petición del jugador); se deja la lógica por arco por si se quiere volver a limitar */
 const KK_FREE=true;
-function kkLevels(f){if(KK_FREE)return[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
+const KK_FUS=['gogeta','vegetto'],isFusKK=f=>KK_FUS.includes(f.ch.id);
+/* multiplicador real del Kaioken: literal en Goku; efectivo en las fusiones (x20 = ×1,8, x50 = ×2) */
+const kkMul=f=>!f.kkL?1:isFusKK(f)?(KK_FUSION[f.kkL]||1):f.kkL;
+function kkLevels(f){if(KK_FREE)return isFusKK(f)?[3,10,20,50]:[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
  const v=VER_DATA[f.ch.id]?verNear(f.ch.id,arc):null,d=v&&verInfo(f.ch.id,v);if(!d)return[];return[3,10,20].filter(n=>d.forms.includes('kk'+n));}
 const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
-function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;
+function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;f.verMult=verMultOf(f.ch,d);f.verFix=d.fix;
  let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
  f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
 function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
@@ -4642,13 +4724,14 @@ function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||g
  if(v)verApply(f,v,mine);}
 /* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
 function verFormOk(ch,i,side=0){const v=verOfSide(ch.id,side);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
+const verFormPow=(ch,i,side=0)=>{const v=verOfSide(ch.id,side),d=v&&verInfo(ch.id,v);return d?d.pw[ch.forms[i].id]:ch.base*ch.forms[i].mult;};
 const verBase=(ch,side=0)=>{const v=verOfSide(ch.id,side),d=v&&verInfo(ch.id,v);return d?d.base:ch.base;};
 /* maestría: guardada en décimas (0-1000) por luchador y forma */
 const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;
 function mastOf(f){return mastFormK(f,f.form);}
 /* maestría de una forma concreta (0-1): la tuya (si eres humano) + la que trae la versión del arco */
-function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(VER_M[f.ver]||0))/100,0,1);}
+function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(f.verFix?0:(VER_M[f.ver]||0)))/100,0,1);}
 let mastSaveT=0;
 function mastTick(f,dt){if(game.phase!=='fight'||!human(f)||game.online||f.state==='ko'||!f.form||f.form.mult<=1)return;
  const crew=game.mode==='train'?(TRAIN_CREWS[game.crew||'whis']||TRAIN_CREWS.whis).k:0,rate=game.mode==='train'?3*crew:.8,k=mKey(f.ch.id,f.form.id);
@@ -4681,6 +4764,20 @@ function trainStep(dt){if(game.mode!=='train'||game.phase!=='fight')return;const
  if(game.crewNow==='free')freeRoamStep(dt);}
 Object.assign(ACTIONS,{crew:a=>{if(!TRAIN_CREWS[a])return;game.crew=a;game.crewPicked=true;sfx('ok');startFromGuide();},
  verPick:a=>{const [ci,d,sd]=String(a).split(':'),ch=CHARS[+ci],side=+sd||0;if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOfSide(ch.id,side)),k=side?'ver2':'ver';prog[k]=prog[k]||{};prog[k][ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();sfx('sel');renderMenu();}});
+
+/* 3.3 · Modo historia: (1) formas de forma cronológica: el jugador tiene todas las que su personaje ya consiguió hasta esa pelea;
+   (2) versiones fijas (fusiones, Bills, Zamasu) también en la historia; (3) en Extremo y Legendario el rival no supera tu tope ×1,6 / ×2,2 */
+function storyChronoForms(f,n){const B=book;if(!B||B.kind!=='arc')return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id),ids=new Set();
+ const prev=(VER_DATA[f.ch.id]||[]).filter(v=>ord.indexOf(v.arc)<ai&&!v.fix).pop();if(prev)prev.forms.forEach(x=>ids.add(x));
+ for(const m of B.nodes){const N=m.fight||m;for(const k of['p','ally','e','e2']){const sp=N[k];if(sp&&sp.c===f.ch.id){(sp.forms||[]).forEach(x=>ids.add(x));if(sp.f)ids.add(sp.f);}}if(m===n)break;}
+ for(const id of ids){const i=f.ch.forms.findIndex(x=>x.id===id&&!x.hidden);if(i>=0&&!f.storyForms.includes(i))f.storyForms.push(i);}
+ f.storyForms.sort((a,b)=>f.ch.forms[a].mult-f.ch.forms[b].mult);}
+function storyFix(f){const B=book;if(!B||B.kind!=='arc'||!VER_FIX[f.ch.id])return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id);
+ const e=VER_FIX[f.ch.id].filter(x=>ord.indexOf(x.arc)<=ai).pop();if(!e)return;const d=verInfo(f.ch.id,e.arc);if(!d)return;f.base=d.base;f.verMult=verMultOf(f.ch,d);}
+const formPow=(f,i)=>f.base*((f.verMult&&f.verMult[i])||f.ch.forms[i].mult);
+function storyPost(n){if(!game.story)return;const free=game.story.free;for(const f of game.f){if(f.role==='boss')continue;storyFix(f);if(f.team===0&&!free&&f.storyForms)storyChronoForms(f,n);}
+ const a=game.f[0];if(!a||game.diff<2)return;const peak=Math.max(...(a.storyForms||[a.formIdx]).map(i=>formPow(a,i)))*(1+.35*mastFormK(a,a.ch.forms[(a.storyForms||[a.formIdx]).slice(-1)[0]]));
+ const K=game.diff===2?1.6:2.2;for(const f of game.f)if(f.team===1)f.storyCap=peak*K*((n.e&&n.e.cap)||1);}
 /* =========================================================
    KAIOKEN CLASH 3.0 — PASEO LIBRE POR EL PLANETA DE BILLS
    Sin objetivo fijo: exploras el planeta y te acercas a Vegeta, Broly, Whis, Cheelai, Goku o Bills.
@@ -4787,7 +4884,7 @@ applyTouch();world=buildEarth2(0);SUN_DIR.copy(sun.position).normalize();renderM
 </script>
 
 <script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
-(function(){const V='20261030071131',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+(function(){const V='20261030232819',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
 let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
 const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
 const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};

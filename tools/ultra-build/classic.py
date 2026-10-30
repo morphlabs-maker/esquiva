@@ -394,7 +394,7 @@ rep("lock:{k:['KeyV']}};","lock:{k:['KeyV']},up3:{k:['Space']},dn3:{k:['KeyC']},
 rep('<div id="tbtns">','<div id="camZone"></div><div id="b3d"><div class="tb b-up3" data-k="up3" aria-label="Subir">⤒</div><div class="tb b-dn3" data-k="dn3" aria-label="Bajar">⤓</div><div class="tb b-lk3" id="b3dlock" data-k="lk3" aria-label="Fijar objetivo">🎯</div><div class="tb b-kk" data-k="kk" aria-label="Kaioken">KK</div></div><div class="tb b-s2" data-k="s2" aria-label="Especial 2">🌟</div><div id="tbtns">')
 rep('data-act="photo">📷 MODO FOTO</button>${game.story?','data-act="photo">📷 MODO FOTO</button><button class="btn" data-act="cam3d">🎥 CÁMARA: ${CAM3D?\'3D (DETRÁS)\':\'CLÁSICA (DE LADO)\'}</button>${game.story?')
 # 3.2: la maestría sube el poder de la forma (hasta +35 %) y la versión del arco pone un tope de poder
-rep("return this.base*m*(this.absorbMul||1);}","return Math.min(this.base*m*(this.absorbMul||1)*(this.kkL||1)*(1+.35*(this.mastK||0)),(this.verCap||Infinity)*(this.kkL||1));}")
+rep("return this.base*m*(this.absorbMul||1);}","return Math.min(this.base*m*(this.absorbMul||1)*kkMul(this)*(1+.35*(this.mastK||0)),(this.verCap||Infinity)*kkMul(this));}")
 rep("for(const f of game.f)f.update(dt);","for(const f of game.f){f.update(dt);kkTick(f,dt);}")
 rep(" reset(side,at){"," reset(side,at){this.kkL=0;")
 rep("else if(f.auraOn??(f.mult>=40||f.kk))lv=.42;","else if(this.kkL||(f.auraOn??(f.mult>=40||f.kk)))lv=.42;")
@@ -426,7 +426,7 @@ rep("const stepCost=f=>f.kk?0:Math.ceil(f.cost/2);","const stepCost=(f,w)=>f.kk?
 rep("ai.pre=1.5+clamp((stepCost(f.ch.forms[nx])-f.ki)*.7,0,3);","ai.pre=1.5+clamp((stepCost(f.ch.forms[nx],f)-f.ki)*.7,0,3);")
 rep("f.ki<stepCost(f.ch.forms[nx])&&d>8","f.ki<stepCost(f.ch.forms[nx],f)&&d>8")
 rep("if(dir>0){const c=stepCost(f);","if(dir>0){const c=stepCost(f,this);")
-rep("for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;","for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;if(model.eyes)model.eyes.forEach(o=>{o.visible=true;if(o.userData.m0){o.material=o.userData.m0;delete o.userData.m0;}});")
+rep("for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;","for(const e of model.extras)e.parent&&e.parent.remove(e);model.extras=[];model.tail=null;if(model.eyes)model.eyes.forEach(o=>{o.visible=true;if(o.userData.m0){o.material=o.userData.m0;delete o.userData.m0;}});{const ha=(model.M||model).hairAnchor;if(ha)ha.traverse(o=>{if(o.userData.o0){o.material=o.userData.o0;delete o.userData.o0;if(o.userData.s0){o.scale.copy(o.userData.s0);delete o.userData.s0;}}});}")
 rep("killSpecial(){if(this.sp){","killSpecial(){cleanSp(this.sp);this._spPrev=null;if(this.sp){")
 rep("{f.update(dt);kkTick(f,dt);mastTick(f,dt);}","{f.update(dt);kkTick(f,dt);mastTick(f,dt);spWatch(f);}")
 # 3.2: los disparos teledirigidos que ya están cerca van directos al rival (las bolitas lanzadas al aire daban vueltas y caían al suelo sin tocarlo)
@@ -443,6 +443,13 @@ rep("const R=s.size??(sp.isU?3.6:.9);","const R=(s.size??(sp.isU?3.6:.9))*vtk(th
 rep("function applyHit(att,def,o){","function applyHit(att,def,o){if(o&&o.knock&&att)o=Object.assign({},o,{knock:o.knock*vtk(att,.85,1.35)});")
 rep("if(this.ki>=.25&&inp.mx>.3){","if(this.ki>=.25&&inp.mx>.3&&verT(this)!==0){")
 rep("Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap):p;}","Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap*verGap(this)):p;}")
+# 3.3: poder fijo por forma en versiones (fusiones, Bills, Zamasu), formas ocultas (Gigante de Luz ahora es técnica) y tope de la historia en Extremo/Legendario
+rep("realPower(){const f=this.form;let m=f.mult;","realPower(){const f=this.form;let m=(this.verMult&&this.verMult[this.formIdx])||f.mult;")
+rep("p=T?tdpPow(this):this.realPower();","p=T?tdpPow(this):Math.min(this.realPower(),this.storyCap||Infinity);")
+rep("allowed(i){if(this.storyForms)return this.storyForms.includes(i);","allowed(i){if(this.ch.forms[i].hidden)return false;if(this.storyForms)return this.storyForms.includes(i);")
+rep("${fmtP(verBase(ch,p)*f.mult)}","${fmtP(verFormPow(ch,i,p))}")
+rep("ch.forms.map((f,i)=>{const lk=humanSide(p)","ch.forms.map((f,i)=>{if(f.hidden)return'';const lk=humanSide(p)")
+rep("else if(f.ue)lv=.8;","else if(f.ue||f.destroyer)lv=f.destroyer?.95:.8;")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')
