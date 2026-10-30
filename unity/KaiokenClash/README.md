@@ -2,18 +2,24 @@
 
 Versión de Kaioken Clash para Unity, con estilo realista de figura (cuerpos musculosos, gi holgado, pelo de puntas afiladas) y mundos con colores planos y contorno, como el manga. Todo se crea por código al arrancar: no hay escenas, prefabs ni modelos que importar.
 
-## Abrirlo
+## Descargarlo en tu computador
 
-1. Instala **Unity 2022.3 LTS** desde Unity Hub (con el módulo **iOS Build Support** si quieres compilar para iPhone).
-2. En Unity Hub: **Add → Add project from disk** y elige esta carpeta (`unity/KaiokenClash`).
-3. La primera vez que se abre, el proyecto se configura solo: crea `Assets/Scenes/Main.unity`, la añade a la compilación y deja el iPhone en horizontal. También está en el menú **Kaioken Clash → Configurar proyecto**.
-4. Pulsa **Play**.
+El juego no está en Unity hasta que bajas esta carpeta a tu computador y la abres con Unity:
 
-## Pasarlo al iPhone
+1. Descarga el repositorio en ZIP: https://github.com/morphlabs-maker/esquiva/archive/refs/heads/claude/dragon-ball-offline-ios-rmhovv.zip
+2. Descomprímelo. El proyecto Unity es la carpeta `unity/KaiokenClash`.
 
-1. **File → Build Settings → iOS → Switch Platform**.
-2. **Build**: Unity genera un proyecto de Xcode.
-3. Ábrelo en **Xcode** (en un Mac), elige tu equipo de firma (Signing & Capabilities) y pulsa **Run** con el iPhone conectado.
+## Instalar Unity (Windows)
+
+1. Instala **Unity Hub**: https://unity.com/download
+2. En Unity Hub → **Installs → Install Editor → 2022.3 LTS**, con los módulos **Windows Build Support (IL2CPP)**, **Android Build Support** (con *OpenJDK* y *Android SDK & NDK*) y, si tienes Mac, **iOS Build Support**.
+3. En Unity Hub → **Projects → Add → Add project from disk** → elige `unity/KaiokenClash`. Ábrelo y pulsa **Play**. La primera vez se configura solo.
+
+## Crear las apps
+
+- **Windows**: doble clic en `construir-windows.bat` (o en Unity: menú **Kaioken Clash → Compilar para Windows**). Sale `Builds/Windows/KaiokenClash.exe`.
+- **Android**: doble clic en `construir-android.bat` (o menú **Kaioken Clash → Compilar para Android**). Sale `Builds/Android/KaiokenClash.apk`: cópialo al celular y ábrelo para instalarlo (activa «instalar apps de origen desconocido»).
+- **iPhone**: Apple solo deja compilar en un **Mac con Xcode**. En el Mac: menú **Kaioken Clash → Compilar para iPhone**, abre `Builds/iOS/Unity-iPhone.xcodeproj` en Xcode, elige tu cuenta en *Signing & Capabilities* y pulsa **Run** con el iPhone conectado.
 
 ## Qué incluye
 

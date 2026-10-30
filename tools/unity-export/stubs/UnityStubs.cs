@@ -31,7 +31,8 @@ namespace UnityEngine
     public static class Random { public static float value; public static Vector3 insideUnitSphere, onUnitSphere; public static Quaternion rotation; public static float Range(float a, float b) { return a; } public static int Range(int a, int b) { return a; } public static void InitState(int s) { } }
     public static class Time { public static float deltaTime, time; }
     public static class Debug { public static void Log(object o) { } public static void LogError(object o) { } }
-    public static class Application { public static int targetFrameRate; }
+    public static class Application { public static int targetFrameRate; public static bool isBatchMode; }
+    public enum FullScreenMode { ExclusiveFullScreen, FullScreenWindow, MaximizedWindow, Windowed }
     public enum ScreenOrientation { Portrait, LandscapeLeft, LandscapeRight, AutoRotation }
     public static class Screen { public static int width, height; public static ScreenOrientation orientation; }
     public static class QualitySettings { public static float shadowDistance; }
@@ -76,13 +77,27 @@ namespace UnityEditor
 {
     [AttributeUsage(AttributeTargets.Class)] public class InitializeOnLoadAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Method)] public class MenuItem : Attribute { public MenuItem(string p) { } }
-    public static class EditorApplication { public delegate void CallbackFunction(); public static CallbackFunction delayCall; }
+    public static class EditorApplication { public delegate void CallbackFunction(); public static CallbackFunction delayCall; public static void Exit(int c) { } }
     public static class AssetDatabase { public static bool IsValidFolder(string p) { return false; } public static string CreateFolder(string a, string b) { return ""; } public static void SaveAssets() { } }
     public class EditorBuildSettingsScene { public EditorBuildSettingsScene(string p, bool e) { } }
     public static class EditorBuildSettings { public static EditorBuildSettingsScene[] scenes; }
     public enum BuildTargetGroup { Standalone, iOS, Android }
+    public enum BuildTarget { StandaloneWindows64, Android, iOS }
+    [Flags] public enum BuildOptions { None = 0 }
+    public enum ScriptingImplementation { Mono2x, IL2CPP }
+    public enum AndroidSdkVersions { AndroidApiLevel24 = 24 }
+    [Flags] public enum AndroidArchitecture { None = 0, ARMv7 = 1, ARM64 = 2 }
+    public struct BuildPlayerOptions { public string[] scenes; public string locationPathName; public BuildTarget target; public BuildOptions options; }
+    public static class BuildPipeline { public static Build.Reporting.BuildReport BuildPlayer(BuildPlayerOptions o) { return null; } }
+    public static class EditorUserBuildSettings { public static bool buildAppBundle; }
     public enum UIOrientation { Portrait, PortraitUpsideDown, LandscapeRight, LandscapeLeft, AutoRotation }
-    public static class PlayerSettings { public static string companyName, productName; public static UIOrientation defaultInterfaceOrientation; public static bool allowedAutorotateToPortrait, allowedAutorotateToPortraitUpsideDown, allowedAutorotateToLandscapeLeft, allowedAutorotateToLandscapeRight; public static void SetApplicationIdentifier(BuildTargetGroup g, string id) { } }
+    public static class PlayerSettings { public static string companyName, productName, bundleVersion; public static UnityEngine.FullScreenMode fullScreenMode; public static void SetScriptingBackend(BuildTargetGroup g, ScriptingImplementation s) { } public static class Android { public static AndroidSdkVersions minSdkVersion; public static AndroidArchitecture targetArchitectures; } public static UIOrientation defaultInterfaceOrientation; public static bool allowedAutorotateToPortrait, allowedAutorotateToPortraitUpsideDown, allowedAutorotateToLandscapeLeft, allowedAutorotateToLandscapeRight; public static void SetApplicationIdentifier(BuildTargetGroup g, string id) { } }
+}
+namespace UnityEditor.Build.Reporting
+{
+    public enum BuildResult { Unknown, Succeeded, Failed, Cancelled }
+    public class BuildSummary { public BuildResult result; }
+    public class BuildReport { public BuildSummary summary; }
 }
 namespace UnityEditor.SceneManagement
 {
