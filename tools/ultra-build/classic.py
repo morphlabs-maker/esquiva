@@ -366,14 +366,14 @@ rep("const s=music.step%32,d=music.next-AC.currentTime;","const s=music.step%(tr
 rep("<div>${ch.forms.length} formas · poder base","<div class=\"csdet\">${ch.forms.length} formas · poder base")
 rep("setHair(model,f.hair||ch.hair);setExtras(model,f.extras||ch.extras||[]);","setHair(model,f.hair||ch.hair);setExtras(model,outfitExtras(model,f.extras||ch.extras||[]));")
 rep('<div class="hint" style="margin-top:10px"><span class="k">F2</span> pixelado','<div class="hint" style="margin-top:10px">3D: <span class="k">WASD</span> moverse · <span class="k">Space</span>/<span class="k">C</span> subir/bajar · <span class="k">L</span> fijar objetivo · ratón o <span class="k ar">←</span><span class="k ar">→</span> cámara · <span class="k">K</span> Kaioken · <span class="k">X</span> especial 2<br><span class="k">F2</span> pixelado')
-rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i));")
+rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i,p));")
 # 3.2: en la selección, el poder de cada forma es el de la versión elegida; las formas de otros arcos dicen «otra versión» en vez de pedir monedas
-rep("${lk?'🔒 ':''}${f.name} · ${fmtP(ch.base*f.mult)}${lk?' · 🪙 '+formPrice(ch,i):''}</div>`;}).join('')}","${lk?'🔒 ':''}${f.name} · ${fmtP(verBase(ch)*f.mult)}${lk?(verFormOk(ch,i)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}")
+rep("${lk?'🔒 ':''}${f.name} · ${fmtP(ch.base*f.mult)}${lk?' · 🪙 '+formPrice(ch,i):''}</div>`;}).join('')}","${lk?'🔒 ':''}${f.name} · ${fmtP(verBase(ch,p)*f.mult)}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}")
 # 3.0: selección de personaje nueva (cuadrícula a la derecha, vista previa grande con guardia y gestos) y versiones por arco
 rep("""<div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div>
   <div class="sides" style="margin-top:auto"><div>${side(0)}<div class="hint">${hint1}</div></div>""","""<div class="cs"><div class="csr"><div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div></div><div class="csl"><div class="csinfo">${side(0)}${verRow(cur[0])}<div class="hint">${hint1}</div></div>""")
 rep("""<div class="r">${side(1)}<div class="hint">${hint2}</div></div></div>`;
-  m.style.justifyContent='flex-start';""","""<div class="csinfo r">${side(1)}<div class="hint">${hint2}</div></div></div></div>`;
+  m.style.justifyContent='flex-start';""","""<div class="csinfo r">${side(1)}${csSolo()?'':verRow(cur[1],1)}<div class="hint">${hint2}</div></div></div></div>`;
   m.style.justifyContent='flex-start';""")
 rep("mm.model.root.position.set(p?2:-2,world.spawnY,0);mm.model.root.rotation.y=(p?-.5:.5)+Math.sin(t*.6)*.15;","mm.model.root.position.set(csX(p),world.spawnY,p?-.6:0);mm.model.root.scale.setScalar(p?1:1.12);mm.model.root.rotation.y=(p?-.35:.45)+Math.sin(t*.6)*.12;")
 rep("mm.model.target=pst[p]==='ready'?'transform':'idle';","mm.model.target=pst[p]==='ready'?'transform':csPose(p,t,f);")
@@ -435,6 +435,14 @@ rep("p.vel.lerp(want,Math.min(1,p.homing*dt));if(p.vel.lengthSq()>1e-6)p.vel.set
 rep("else{dead=true;if(p.kind==='ball')explosion(p.pos,p.r*1.4,p.color);","else{dead=true;if(p.rainbow){for(let k=0;k<6;k++)ring(p.pos.clone(),new THREE.Color().setHSL(k/6,1,.6).getHex(),2+k*.7,.35+k*.05,false,.15);explosion(p.pos,p.r*2.2,0xff6ad8);}else if(p.kind==='ball')explosion(p.pos,p.r*1.4,p.color);")
 # 3.2b: el retrato encuadra la cabeza por su tamaño real (ancho y alto), no solo por la altura del cuerpo: los luchadores delgados y altos ya no salen estirados
 rep("const s=m.body.scale.y*CHIBI*HEADK,hs=(ch.head?ch.head[1]:1);","const ws=new THREE.Vector3();m.M.head.getWorldScale(ws);const s=(ws.x+ws.y)/2,hs=ch.porK||1;")
+# 3.2c: la versión se nota en el combate (velocidad, ki, tamaño de los ataques, empuje, teletransporte) y la dificultad no recorta la diferencia de versión
+rep("spd(){return clamp(Math.pow(this.power()/this.opp.power(),.25),.6,2.5)*(1-.3*this.fatigue)*(1-.3*this.drained);}","spd(){return clamp(Math.pow(this.power()/this.opp.power(),.25),.6,2.5)*(1-.3*this.fatigue)*(1-.3*this.drained)*vtk(this,.8,1.2);}")
+rep("const rate=1/.7;","const rate=1/.7*vtk(this,.75,1.3);")
+rep("const w=s.w??(s.thin?.22:sp.isU?1.15:.55);","const w=(s.w??(s.thin?.22:sp.isU?1.15:.55))*vtk(this,.75,1.35);")
+rep("const R=s.size??(sp.isU?3.6:.9);","const R=(s.size??(sp.isU?3.6:.9))*vtk(this,.75,1.35);")
+rep("function applyHit(att,def,o){","function applyHit(att,def,o){if(o&&o.knock&&att)o=Object.assign({},o,{knock:o.knock*vtk(att,.85,1.35)});")
+rep("if(this.ki>=.25&&inp.mx>.3){","if(this.ki>=.25&&inp.mx>.3&&verT(this)!==0){")
+rep("Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap):p;}","Math.min(p,(T?tdpPow(this.opp):this.opp.realPower())*this.cap*verGap(this)):p;}")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')

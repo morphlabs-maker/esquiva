@@ -15,6 +15,17 @@ const verArcs=chId=>(VER_DATA[chId]||[]).map(v=>v.arc);
 function verList(chId){return verArcs(chId).filter(verOpen);}
 /* por defecto, la versión más reciente que tengas abierta */
 function verOf(chId){const L=verList(chId);if(!L.length)return null;const v=prog.ver&&prog.ver[chId];return L.includes(v)?v:L[L.length-1];}
+/* 3.2c: el rival (CPU o 2P) tiene su propia versión (prog.ver2); por defecto, la más cercana al arco de tu luchador */
+function verOfSide(chId,side){if(!side)return verOf(chId);const L=verList(chId);if(!L.length)return null;const v=prog.ver2&&prog.ver2[chId];if(L.includes(v))return v;
+ const me=typeof cur!=='undefined'&&CHARS[cur[0]]?verOf(CHARS[cur[0]].id):null;const n=verNear(chId,me);return L.includes(n)?n:L[L.length-1];}
+/* 3.2c: la versión se nota en el combate: los arcos antiguos son más lentos, cargan menos ki, sus ataques son más pequeños y empujan menos;
+   en la Saga Saiyajin no hay teletransporte. Sin versión (online, jefes…) todo queda igual (×1). */
+const verTArc=arc=>{const i=ARCS.findIndex(a=>a.id===arc);return i<0?null:i/(ARCS.length-1);};
+const vtLerp=(t,a,b)=>t==null?1:a+(b-a)*t;
+function verT(f){if(!f)return null;if(f._vtK!==undefined)return f._vtK;let arc=f.ver;if(!arc){const B=game.story&&game.story.book;if(B&&B.kind==='arc')arc=B.id;}return f._vtK=arc?verTArc(arc):null;}
+const vtk=(f,a,b)=>vtLerp(verT(f),a,b);
+/* tope de la dificultad: si el rival es de un arco más fuerte, la diferencia de versión no se recorta */
+const verGap=f=>f&&f.opp&&f.verCap&&f.opp.verCap?Math.max(1,f.verCap/f.opp.verCap):1;
 function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!arc)return L[L.length-1];const order=ARCS.map(a=>a.id),ai=order.indexOf(arc);let best=null;for(const v of L)if(order.indexOf(v)<=ai)best=v;return best||L[0];}
 /* 3.2: poder base de la versión (el de la historia, que sigue creciendo con el arco), sus formas y el tope de poder del arco.
    Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
@@ -40,15 +51,15 @@ function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.bas
  let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
  f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
 function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
- const mine=f.idx===0||(f.idx===1&&local2P());let v=null;if(mine){v=verOf(f.ch.id);if(f.idx===0)G_VER=v;}else v=verNear(f.ch.id,G_VER);
+ const mine=f.idx===0||(f.idx===1&&local2P());let v=null;if(f.idx===0){v=verOf(f.ch.id);G_VER=v;}else if(f.idx===1)v=verOfSide(f.ch.id,1);else v=verNear(f.ch.id,G_VER);
  /* 3.2: la forma elegida en la selección manda: si la versión no la tiene, se usa la primera versión que sí (antes empezaba en base) */
  const want=f.ch.forms[f.startForm]&&f.ch.forms[f.startForm].id;
  if(v&&want&&!verInfo(f.ch.id,v).forms.includes(want)){const L=verArcs(f.ch.id),ok=L.filter(a=>verInfo(f.ch.id,a).forms.includes(want)),order=ARCS.map(a=>a.id);
   if(ok.length)v=ok.sort((a,b)=>Math.abs(order.indexOf(a)-order.indexOf(v))-Math.abs(order.indexOf(b)-order.indexOf(v)))[0];}
  if(v)verApply(f,v,mine);}
 /* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
-function verFormOk(ch,i){const v=verOf(ch.id);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
-const verBase=ch=>{const v=verOf(ch.id),d=v&&verInfo(ch.id,v);return d?d.base:ch.base;};
+function verFormOk(ch,i,side=0){const v=verOfSide(ch.id,side);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
+const verBase=(ch,side=0)=>{const v=verOfSide(ch.id,side),d=v&&verInfo(ch.id,v);return d?d.base:ch.base;};
 /* maestría: guardada en décimas (0-1000) por luchador y forma */
 const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;
@@ -86,4 +97,4 @@ function trainStep(dt){if(game.mode!=='train'||game.phase!=='fight')return;const
  const al=game.f[2],t=$('#tally');if(al&&t)t.textContent=al.ch.name.toUpperCase()+' (ALIADO) '+Math.round(al.hp/al.maxHp*100)+' %';
  if(game.crewNow==='free')freeRoamStep(dt);}
 Object.assign(ACTIONS,{crew:a=>{if(!TRAIN_CREWS[a])return;game.crew=a;game.crewPicked=true;sfx('ok');startFromGuide();},
- verPick:a=>{const [ci,d]=String(a).split(':'),ch=CHARS[+ci];if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOf(ch.id));prog.ver=prog.ver||{};prog.ver[ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();sfx('sel');renderMenu();}});
+ verPick:a=>{const [ci,d,sd]=String(a).split(':'),ch=CHARS[+ci],side=+sd||0;if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOfSide(ch.id,side)),k=side?'ver2':'ver';prog[k]=prog[k]||{};prog[k][ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();sfx('sel');renderMenu();}});
