@@ -296,13 +296,13 @@ function cineBalls(C,kind){const sup=kind==='super',s=sup?3.2:.42,R=sup?13:2.4,l
  for(let i=0;i<7;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(s,24,16),new THREE.MeshBasicMaterial({map:ballTex(i+1),fog:false}));const gl=glowSprite(0xffa030,s*4);b.add(gl);scene.add(b);list.push(b);}
  C.balls={list,c:cen,r:R,s,t:0,sup};sfx('beamCharge',1.2);}
 /* 3.0: modo libre al terminar la historia: repite cualquier pelea con el luchador que quieras y todas las formas y técnicas que hayas ganado */
-const freeOn=n=>storyAllDone()&&nodeDone(n)&&!!store.get('kc_sfree',false);
+const freeOn=n=>nodeDone(n)&&!!store.get('kc_sfree',false);
 function freeChar(n){const id=store.get('kc_sfc','');const i=chIdx(id);return i>=0&&!lockedC(i)?id:n.p.c;}
 function freeSpec(n){if(!freeOn(n))return n.p;const id=freeChar(n),ch=CHARS[chIdx(id)],v=VER_DATA[id]?verNear(id,book&&book.id):null,d=v?verInfo(id,v):null;
  /* 3.1: al repetir una pelea, tu luchador usa su versión de ese arco (poder y formas de entonces) */
- let forms=ch.forms.map((f,i)=>owns(ch,i)&&(!d||d.forms.includes(f.id))?f.id:null).filter(Boolean);if(!forms.length)forms=['base'];
+ let forms=formOrder(ch).map(i=>ch.forms[i]).filter(f=>owns(ch,ch.forms.indexOf(f))&&(!d||d.forms.includes(f.id))).map(f=>f.id);if(!forms.length)forms=[ch.forms[0].id];
  return{c:id,f:forms[0],forms,base:d?d.base:Math.max(ch.base,id===n.p.c?(n.p.base||0):0)};}
-function freeRow(n){if(!storyAllDone()||!nodeDone(n))return'';const on=!!store.get('kc_sfree',false);
+function freeRow(n){if(!nodeDone(n)||n.t==='db'&&!n.fight)return'';const on=!!store.get('kc_sfree',false);
  return`<div class="mpad" style="align-items:center">🔓 Modo libre: <button class="btn sbtn" data-act="sFree">${on?'SÍ':'NO'}</button>${on?`<button class="btn sbtn" data-act="sFc" data-arg="-1">◀</button><b>${esc(charName(freeChar(n)))}</b><button class="btn sbtn" data-act="sFc" data-arg="1">▶</button>`:''}</div>${on?'<div class="tip">Con tus formas, técnicas y versión. El rival es el de la historia.</div>':''}`;}
 Object.assign(ACTIONS,{sFree:()=>{store.set('kc_sfree',!store.get('kc_sfree',false));sfx('sel');renderMenu();},
  sFc:a=>{const n=nodeById(selNode);if(!n)return;const L=CHARS.map((c,i)=>i).filter(i=>!lockedC(i)),cur0=chIdx(freeChar(n)),k=L.indexOf(cur0);store.set('kc_sfc',CHARS[L[(k+(+a||1)+L.length)%L.length]].id);sfx('sel');renderMenu();}});

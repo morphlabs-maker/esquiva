@@ -30,7 +30,8 @@ function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!ar
 /* 3.2: poder base de la versión (el de la historia, que sigue creciendo con el arco), sus formas y el tope de poder del arco.
    Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
 const VER_CACHE={};
-/* 3.3: poder absoluto (el de la historia, sin crecer por arco): los números del jugador mandan. Las versiones de VER_FIX tienen poder fijo por forma (pw) */
+/* 3.3b: cada forma vale su poder de la historia en el arco donde aparece (o en el arco que fijó el jugador, VER_PIN) y desde ahí crece con cada arco (VER_K):
+   así la misma transformación es más fuerte en los arcos posteriores y los números del jugador se cumplen en su arco. VER_FIX = poder fijo por forma */
 (()=>{const ord=ARCS.map(a=>a.id);for(const c in VER_FIX){const L=VER_DATA[c]=(VER_DATA[c]||[]).slice();
  for(const e of VER_FIX[c]){const forms=Object.keys(e.pw),d={arc:e.arc,base:e.pw.base||Math.min(...Object.values(e.pw)),forms,pw:e.pw,fix:1},i=L.findIndex(v=>v.arc===e.arc);if(i>=0)L[i]=d;else L.push(d);}
  L.sort((x,y)=>ord.indexOf(x.arc)-ord.indexOf(y.arc));}})();
@@ -38,12 +39,18 @@ function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CAC
  const ch=CHARS[chIdx(chId)];if(!ch)return null;const ok=id=>ch.forms.some(f=>f.id===id&&!f.hidden);
  let forms=d.forms.filter(ok);if(!d.fix&&d===L[L.length-1]&&!VER_FIX[chId]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.filter(f=>!f.hidden&&!seen.has(f.id)).map(f=>f.id));}
  if(!forms.length)forms=[ch.forms[0].id];
- const base=d.base||ch.base,pw=fixPw(ch,d,base),top=Math.max(...forms.map(id=>pw[id]));
+ const base0=d.base||ch.base,pw=d.fix?fixPw(ch,d,base0):growPw(ch,L,d),base=d.fix?base0:pw[ch.forms[0].id],top=Math.max(...forms.map(id=>pw[id]));
  return VER_CACHE[ck]={base,forms,cap:top*1.36,pw,fix:!!d.fix};}
 /* poder de cada forma en una versión: el fijo si lo hay; si no, base × multiplicador. En versiones fijas, una forma sin valor toma el de la forma listada más cercana por debajo */
 function fixPw(ch,d,base){const pw={};for(const f of ch.forms)pw[f.id]=base*f.mult;if(!d.pw)return pw;
  const listed=ch.forms.filter(f=>d.pw[f.id]!=null).sort((a,b)=>a.mult-b.mult);
  for(const f of ch.forms){if(d.pw[f.id]!=null){pw[f.id]=d.pw[f.id];continue;}let near=null;for(const l of listed)if(l.mult<=f.mult)near=l;pw[f.id]=near?d.pw[near.id]:(listed[0]?d.pw[listed[0].id]:base);}return pw;}
+const VER_PIN={goku:{uio:'gr',ui:'gr',tui:'gr'},vegeta:{ue:'gr'},freezer:{black:'gr'}};
+function growPw(ch,L,d){const ord=ARCS.map(a=>a.id),ai=ord.indexOf(d.arc),K=a=>VER_K[a]||1,pin=VER_PIN[ch.id]||{},pw={};
+ const real=L.filter(v=>!v.fix),idx=real.indexOf(d);let seg=0;for(let i=1;i<=idx;i++)if((real[i].base||ch.base)!==(real[i-1].base||ch.base))seg=i;
+ const b=real[seg]?(real[seg].base||ch.base):(d.base||ch.base);
+ for(const f of ch.forms){let anc;if(pin[f.id])anc=pin[f.id];else{const first=real.slice(seg).find(v=>v.forms.includes(f.id));anc=first&&ord.indexOf(first.arc)<=ai?first.arc:real[seg]?real[seg].arc:d.arc;}
+  pw[f.id]=b*f.mult*K(d.arc)/K(anc);}return pw;}
 const verMultOf=(ch,d)=>ch.forms.map(fm=>d.pw[fm.id]/d.base);
 /* Kaioken encima de una transformación: desde el Universo 6 (Blue + Kaioken). Antes, solo sobre el estado base y hasta el nivel que tuviera en su arco */
 const kkStackArc=arc=>!arc||ARCS.findIndex(a=>a.id===arc)>=ARCS.findIndex(a=>a.id==='tr');
@@ -120,6 +127,12 @@ function storyChronoForms(f,n){const B=book;if(!B||B.kind!=='arc')return;const o
 function storyFix(f){const B=book;if(!B||B.kind!=='arc'||!VER_FIX[f.ch.id])return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id);
  const e=VER_FIX[f.ch.id].filter(x=>ord.indexOf(x.arc)<=ai).pop();if(!e)return;const d=verInfo(f.ch.id,e.arc);if(!d)return;f.base=d.base;f.verMult=verMultOf(f.ch,d);}
 const formPow=(f,i)=>f.base*((f.verMult&&f.verMult[i])||f.ch.forms[i].mult);
-function storyPost(n){if(!game.story)return;const free=game.story.free;for(const f of game.f){if(f.role==='boss')continue;storyFix(f);if(f.team===0&&!free&&f.storyForms)storyChronoForms(f,n);}
+function storyPost(n){if(!game.story)return;const free=game.story.free;
+ /* modo libre: tu luchador usa su versión de ese arco (poder de cada forma y tope) */
+ if(free&&game.f[0]&&book&&book.kind==='arc'){const a=game.f[0],v=VER_DATA[a.ch.id]?verNear(a.ch.id,book.id):null,d=v&&verInfo(a.ch.id,v);if(d){a.base=d.base;a.verMult=verMultOf(a.ch,d);a.verCap=d.cap;a.verFix=d.fix;}}
+ for(const f of game.f){if(f.role==='boss')continue;if(!(free&&f===game.f[0]))storyFix(f);if(f.team===0&&!free&&f.storyForms)storyChronoForms(f,n);}
  const a=game.f[0];if(!a||game.diff<2)return;const peak=Math.max(...(a.storyForms||[a.formIdx]).map(i=>formPow(a,i)))*(1+.35*mastFormK(a,a.ch.forms[(a.storyForms||[a.formIdx]).slice(-1)[0]]));
  const K=game.diff===2?1.6:2.2;for(const f of game.f)if(f.team===1)f.storyCap=peak*K*((n.e&&n.e.cap)||1);}
+
+/* orden de las formas para listas y selección: el de transformación (ch.order), sin las ocultas */
+const formOrder=ch=>(ch.order||ch.forms.map((_,i)=>i)).filter(i=>ch.forms[i]&&!ch.forms[i].hidden);

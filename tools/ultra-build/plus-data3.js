@@ -31,13 +31,13 @@ const FUR_D=0xc8466e,HAIR4_D=0xd23a72;
    N.º 1 con espada curva, N.º 2 alto y delgado con tridente, N.º 3 bajo y ancho con martillo. Se desbloquean al vencerlos en el arco Daima. */
 const TAMA_C={skin:0xe6e0d2,top:0xe6e0d2,sleeve:0x3a3a42,pants:0x3a3a42,belt:0x6a5ac8,boots:0xe6e0d2,glove:0xa4a4ae,wrist:0x6a5ac8,ex1:0xd8b040,ex2:0xece6d8,pupil:0xe0242a,eye:0xe0242a};
 CHARS.push(
- {id:'tama1',ears:false,name:'Guardián N.º 1',era:'S',base:9e8,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead','tamaPads','tamaChest','tamaSword'],unlock:'dai1',h:1.2,scale:[.96,1.08,.96],head:[1.04,.94,1.04],android:1,
+ {id:'tama1',ears:false,name:'Guardián N.º 1',era:'S',base:9e8,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead','tamaPads','tamaChest','tamaSword'],h:1.2,scale:[.96,1.08,.96],head:[1.04,.94,1.04],android:1,
   colors:Object.assign({},TAMA_C),s1:{name:'Corte Demoníaco',type:'sword',color:0xe8f0ff},s2:{name:'Tajo en Cruz',type:'disc',color:0xff4a4a},ult:{name:'Juicio del Guardián',type:'beam',color:0xff3a3a},
   forms:[F('base','Base',1,{era:'S'})]},
- {id:'tama2',ears:false,name:'Guardián N.º 2',era:'S',base:1.05e9,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead','tamaPads','tamaChest','tamaTrident'],unlock:'dai3',h:1.42,scale:[.86,1.24,.86],head:[1.1,.84,1.08],android:1,evade:.1,
+ {id:'tama2',ears:false,name:'Guardián N.º 2',era:'S',base:1.05e9,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead','tamaPads','tamaChest','tamaTrident'],h:1.42,scale:[.86,1.24,.86],head:[1.1,.84,1.08],android:1,evade:.1,
   colors:Object.assign({},TAMA_C,{belt:0x7078d8,wrist:0x7078d8,boots:0x7078d8}),s1:{name:'Estocada del Tridente',type:'spiral',color:0xffe06a},s2:{name:'Lluvia de Lanzas',type:'rain',color:0xffd04a},ult:{name:'Rayo del Tridente',type:'beam',color:0xffd23a},
   forms:[F('base','Base',1,{era:'S'})]},
- {id:'tama3',ears:false,name:'Guardián N.º 3',era:'S',base:1.2e9,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead3','tamaPads','tamaChest','tamaHammer'],unlock:'dai4',h:1.12,scale:[1.5,.95,1.42],android:1,
+ {id:'tama3',ears:false,name:'Guardián N.º 3',era:'S',base:1.2e9,hair:'none',hairColor:0xe6e0d2,extras:['tamaHead3','tamaPads','tamaChest','tamaHammer'],h:1.12,scale:[1.5,.95,1.42],android:1,
   colors:Object.assign({},TAMA_C,{belt:0xd8b040,wrist:0xd8b040}),s1:{name:'Martillazo',type:'meteors',color:0xffb04a},s2:{name:'Onda Sísmica',type:'barrage',color:0xffc06a},ult:{name:'Martillo del Abismo',type:'ball',color:0xff6a2a},
   forms:[F('base','Base',1,{era:'S'})]});
 ['tama1','tama2','tama3'].forEach(id=>{const c=CHARS.find(x=>x.id===id);c.voice=90;c.porK=1.35;});
