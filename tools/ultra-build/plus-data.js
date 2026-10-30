@@ -211,6 +211,7 @@ const ARCS=[
  {id:'nam',n:2,name:'Saga de Freezer',color:'#7aff6a',file:'story/nam.js'},
  {id:'cel',n:3,name:'Androides y Cell',color:'#9aff8a',file:'story/cel.js'},
  {id:'buu',n:4,name:'Saga de Majin Buu',color:'#ff8ad8',file:'story/buu.js'},
+ {id:'dai',n:'4½',side:1,name:'Daima',color:'#c060ff',file:'story/dai.js'},
  {id:'god',n:5,name:'Dioses y la resurrección de Freezer',color:'#b070ff',file:'story/god.js'},
  {id:'tr',n:6,name:'Universo 6 y Trunks del futuro',color:'#8fe0ff',file:'story/tr.js'},
  {id:'tp',n:7,name:'Torneo del Poder',color:'#ff5a4a',file:'story/tp.js'},

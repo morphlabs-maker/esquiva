@@ -79,9 +79,10 @@ function buildNamek2(v){
   syncDeco(){const M=new THREE.Matrix4(),p=V3(),q=new THREE.Quaternion(),s=V3();tL.forEach((t,i)=>{for(const im of[trunks,crowns]){im.getMatrixAt(i,M);M.decompose(p,q,s);p.y+=t.rock.top()-t.y;M.compose(p,q,s);im.setMatrixAt(i,M);}t.y=t.rock.top();});
    trunks.instanceMatrix.needsUpdate=crowns.instanceMatrix.needsUpdate=true;for(const h of houses)h.position.y=h.userData.rock.top();},
   anim(dt){this.wmat.uniforms.uT.value+=dt;if(fall)fall(dt);ship.rotation.y+=dt*.02;},
-  update(dt){this.anim(dt);const t=Math.min(99,game.roundT);this.level=-1+t/99*(fire?7:5);this.water.position.y=this.level;
+  update(dt){this.anim(dt);/* 3.2: la marea sube poco y nunca cubre las islas; en la historia, escenas y menús el mar se queda quieto (antes se inundaba todo) */
+   const t=game.phase==='fight'&&!game.story?Math.min(99,game.roundT):0;this.level=-1+t/99*1.6;this.water.position.y=this.level;
    const target=140*Math.pow(.85,Math.floor(t/33));this.bound=lerp(this.bound,target,1-Math.exp(-2*dt));this.wall.scale.set(this.bound,1,this.bound);
-   for(const r of this.rocks)if(r.island){r.y0=r.base-t*(r.central?.025:.06);r.mesh.position.y=r.y0+r.h/2;}this.syncDeco();
+   for(const r of this.rocks)if(r.island){r.y0=r.base-t*(r.central?.004:.012);r.mesh.position.y=r.y0+r.h/2;}this.syncDeco();
    if(fire&&game.phase==='fight')for(const f of game.f)if(f.pos.y<this.level+.7&&f.state!=='ko'){f.lavaT=(f.lavaT||0)-dt;if(f.lavaT<=0){f.lavaT=.25;envDamage(f,50,null);spawn({pos:f.pos.clone(),vel:V3(0,6,0),color:0xff7a2a,size:1.2,life:.4});}}}};
  return W;}
 

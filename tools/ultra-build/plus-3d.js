@@ -57,12 +57,14 @@ setInterval(set3DClass,400);
 function cam3DReset(){const p=game.f[0];if(!p)return;lock3=true;syncLockBtn();const o=p.opp;cy3=o?Math.atan2(o.pos.x-p.pos.x,o.pos.z-p.pos.z):p.face;cp3=.12;}
 Object.assign(ACTIONS,{cam3d:()=>{CAM3D=!CAM3D;store.set('kc_cam3d',CAM3D);sfx('sel');renderPause('main');set3DClass();}});
 /* ---------------- Kaioken combinable: K (o KK) sube x3 → x10 → x20 → apagado, sobre cualquier forma y en cualquier momento (también en la historia) ---------------- */
-const KK_LV=[0,3,10,20],kkCan=f=>!!f&&['goku','vegetto'].includes(f.ch.id)&&f.role!=='boss';
+const kkCan=f=>!!f&&['goku','vegetto'].includes(f.ch.id)&&f.role!=='boss';
 function kkSet(f,lv){if(f.kkL===lv)return;f.kkL=lv;f._kkVis=-1;if(lv){f.ki=Math.max(0,f.ki-.4);sfx('transform',.8);flashScreen(.25,'#ff3a3a');ring(f.chest(),0xff2a2a,5,.4,false,.2);pop(f,'¡KAIOKEN x'+lv+'!','#ff4a4a',true);}else{f.aura.setColor(f.form.aura);f.model.mats.skin.emissive.setHex(f.form.kk?0x661010:0);}}
 function kkTick(f,dt){if(!kkCan(f)||f.state==='ko'){if(f.kkL)kkSet(f,0);return;}
  if(game.phase==='fight'&&!f.form.kk){
-  if(human(f)&&f.idx===0&&!game.online&&(justPressed.has('KeyK')||(padFor(0)&&justPressed.has(padFor(0)+'B11')))){const i=KK_LV.indexOf(f.kkL||0);kkSet(f,KK_LV[(i+1)%KK_LV.length]);}
-  else if(f.cpu&&!f.kkL&&f.hp<f.maxHp*.55&&Math.random()<dt*.08)kkSet(f,Math.random()<.6?3:10);}
+  const LV=[0].concat(kkLevels(f));
+  if(human(f)&&f.idx===0&&!game.online&&(justPressed.has('KeyK')||(padFor(0)&&justPressed.has(padFor(0)+'B11')))){if(LV.length<2)pop(f,f.form.mult>1?'Kaioken solo en estado base en este arco':'Aún no domina el Kaioken','#aaa');else{const i=LV.indexOf(f.kkL||0);kkSet(f,LV[(i+1)%LV.length]);}}
+  else if(f.cpu&&!f.kkL&&LV.length>1&&f.hp<f.maxHp*.55&&Math.random()<dt*.08)kkSet(f,LV[1+(Math.random()*Math.min(2,LV.length-1)|0)]);
+  if(f.kkL&&!LV.includes(f.kkL))kkSet(f,0);}
  if(f.form.kk&&f.kkL)kkSet(f,0);
  if(!f.kkL)return;
  /* combinado con una transformación agota más rápido; nunca te deja K.O. (se apaga solo) */
@@ -74,5 +76,5 @@ setInterval(()=>{document.body.classList.toggle('cankk',!!game.phase&&kkCan(game
 /* 3.1: orden de transformación propio por luchador (ch.order) para formas añadidas al final de la lista */
 Fighter.prototype.nextForm=function(dir){const fs=this.ch.forms,ord=this.ch.order||fs.map((_,i)=>i),p=ord.indexOf(this.formIdx);
  if(dir>0){let kk=-1,non=-1;for(let k=p+1;k<ord.length;k++){const i=ord[k];if(!this.allowed(i))continue;if(fs[i].kk){if(kk<0)kk=i;}else{non=i;break;}}
-  if(non>=0&&(this.ki>=stepCost(fs[non])||kk<0))return non;return kk;}
+  if(non>=0&&(this.ki>=stepCost(fs[non],this)||kk<0))return non;return kk;}
  const curKK=this.form.kk&&this.form.mult<50;for(let k=p-1;k>=0;k--){const i=ord[k];if(!this.allowed(i))continue;const f=fs[i];if(f.kk&&!curKK)continue;return i;}return -1;};

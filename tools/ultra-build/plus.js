@@ -31,7 +31,7 @@ const chalReady=()=>activeChals().filter(c=>chalDone(c)&&!prog.chal.cl.includes(
 function claimChal(key){const c=activeChals().find(x=>x.key===key);if(!c||!chalDone(c)||prog.chal.cl.includes(key))return false;prog.chal.cl.push(key);prog.coins+=c.c;prog.earned+=c.c;track('chal');saveProg();return true;}
 const arcDone=id=>!!prog.story.c['A_'+id];
 const whatifDone=()=>Object.keys(prog.wi).filter(k=>k.startsWith('A_')).length>=WHATIF_N;
-const storyAllDone=()=>ARCS.every(a=>arcDone(a.id));
+const storyAllDone=()=>ARCS.every(a=>a.side||arcDone(a.id));
 function storyStars(){let n=0;for(const k in prog.story.c)if(!k.startsWith('A_'))n+=prog.story.c[k];return n;}
 function achValue(a){return a.st==='sigs'?prog.sig.length:a.st==='outfits'?prog.ofOwn.length:a.st==='unl'?prog.unl.length:a.st==='earned'?prog.earned:a.st==='stars'?storyStars():stat(a.st);}
 function achMet(a){if(a.arc)return a.arc==='*'?storyAllDone():arcDone(a.arc);if(a.wi)return whatifDone();return achValue(a)>=a.n;}

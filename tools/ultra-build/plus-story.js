@@ -22,7 +22,8 @@ function nodeDone(n){if(n.t==='cine')return cineSeen(n.cine.id);if(n.t==='db')re
 const mainNodes=()=>book.nodes.filter(n=>n.t!=='db');
 function nodeOpen(n){const i=book.nodes.indexOf(n);for(let j=i-1;j>=0;j--){const p=book.nodes[j];if(p.t==='db')continue;return nodeDone(p);}return true;}
 function bookProgress(b){const s=b.kind==='wi'?prog.wi:prog.story.c,ns=b.nodes.filter(n=>n.t!=='db');return[ns.filter(n=>n.t==='cine'?cineSeen(n.cine.id):(s[n.id]||0)>0).length,ns.length];}
-function arcOpen(i){return i===0||arcDone(ARCS[i-1].id);}
+/* 3.2: los arcos especiales (side, Daima) no bloquean los siguientes: el arco de los Dioses se abre al terminar Buu */
+function arcOpen(i){if(i===0)return true;let j=i-1;while(j>0&&ARCS[j].side)j--;return arcDone(ARCS[j].id);}
 function openArc(i){const a=ARCS[i];if(!arcOpen(i)){sfx('back');return;}storyMsg='Cargando '+a.name+'…';renderMenu();
  loadStory(a.id,a.file).then(d=>{book=Object.assign({kind:'arc',color:a.color},d);layoutBook(book);{const nx=nextNode(book);selNode=nx?nx.id:null;}storyMsg='';menuState='smap';sfx('ok');playTrack(arcTrack(book.id)||'menu');checkCached();renderMenu();})
   .catch(()=>{storyMsg='No se pudo descargar «'+a.name+'». La primera vez necesita internet; después funciona sin conexión.';sfx('back');renderMenu();});}
@@ -42,6 +43,7 @@ const MAP_ART={
  tp:{c1:'#1a0e3a',c2:'#3a2a6a',f1:'#c890ff',f2:'#3a6aff',em:'力',svg:G('M0 0 H100 V100 H0Z','url(#tpg)')+'<defs><radialGradient id="tpg"><stop offset="0" stop-color="#5a3aaa"/><stop offset="1" stop-color="#0a0620"/></radialGradient></defs>'+G('M12 68 Q50 54 88 68 Q50 80 12 68Z','#c4bed4')+G('M14 68 V40 H18 V66Z M82 66 V40 H86 V68Z M48 56 V30 H52 V56Z','#e0dae8','opacity=".8"')+C(50,16,5,'#b08aff','opacity=".8"')},
  bro:{c1:'#a8d0f0',c2:'#eef6fc',f1:'#55ff66',f2:'#2a6a8a',em:'伝',svg:G('M0 30 Q25 18 50 28 Q75 16 100 26','none','stroke="#6affb0" stroke-width="2" opacity=".6"')+G('M0 58 L8 40 L14 58Z M30 58 L36 46 L40 58Z M70 58 L78 38 L86 58Z','#9ad4f4')+G('M0 58 H100 V100 H0Z','#f4fbff')+G('M60 54 Q66 48 72 54Z','#d8dde8')},
  mor:{c1:'#1a1a3a',c2:'#5a4a8a',f1:'#c0a0ff',f2:'#4a3a8a',em:'魔',svg:C(78,30,14,'#5a4a7a')+C(78,30,14,'none','stroke="#9a8ad8" stroke-width=".8"')+C(20,20,3,'#3a6aff')+G('M0 70 Q50 62 100 70 V100 H0Z','#3a3a5a')+G('M10 70 V58 H22 V70Z','#6a6a8a')+G('M12 58 H20 V56 H12Z','#ffd23a')},
+ dai:{c1:'#3a1a5a',c2:'#6a3a8a',f1:'#c060ff',f2:'#ff5ad0',em:'大',svg:C(76,20,9,'#ff7ad8','opacity=".75"')+G('M0 62 L10 46 L18 62Z M80 62 L88 40 L98 62Z','#4a2a6a')+G('M0 62 H100 V100 H0Z','#5a3a7a')+G('M40 62 V44 H60 V62Z','#8a6ab0')+G('M38 44 L50 34 L62 44Z','#b08ad8')},
  gr:{c1:'#2a2830',c2:'#5a4a30',f1:'#c8a0ff',f2:'#1a1a1a',em:'黒',svg:C(50,24,10,'#5a2a7a','opacity=".7"')+G('M0 60 L12 44 L20 60Z M80 60 L90 42 L100 60Z','#4a3a2a')+G('M0 60 H100 V100 H0Z','#6a5a3a')+G('M46 40 Q50 30 54 40 L52 52 H48Z','#1a1a1a')},
  wi:{c1:'#3a2a6a',c2:'#5a3a8a',f1:'#c0a0ff',f2:'#ff8ad8',em:'?',svg:C(50,50,30,'none','stroke="#c0a0ff" stroke-width="1.4" stroke-dasharray="4 3" opacity=".6"')+C(50,50,18,'none','stroke="#ff8ad8" stroke-width="1" opacity=".5"')}};
 const artOf=B=>MAP_ART[B.kind==='wi'?'wi':B.id]||MAP_ART.wi;
@@ -144,14 +146,14 @@ function checkBookDone(B){const store=B.kind==='wi'?prog.wi:prog.story.c;if(stor
  if(!done)return;store['A_'+B.id]=1;toast(B.kind==='wi'?'🌀 HISTORIA COMPLETADA':'📖 ARCO COMPLETADO',B.name);if(B.kind==='arc'&&storyAllDone())toast('🌀 ¡DESBLOQUEADO!','Historias «¿Qué pasaría si…?»');checkAchs();}
 function storyNext(){const S=game.story,n=S&&S.n,won=n&&nodeDone(n);$('#msg').classList.remove('show');$('#sub').innerHTML='';
  const back=()=>{endStoryFight();if(prog.db.length>=7){shenlong();return;}menuState='smap';renderMenu();};
- if(won&&n.cine&&!cineSeen(n.cine.id)){endStoryFight();cinePlay(n.cine,back);}else back();}
+ if(won&&n.cine){endStoryFight();cinePlay(n.cine,back);}else back();} /* 3.2: las escenas se repiten siempre (se pueden saltar) */
 function endStoryFight(){game.phase=null;game.paused=false;for(const f of game.f)f.dispose();game.f=[];clearCombat();game.split=false;game.cine=null;game.story=null;canvas.style.filter='';$('#hud').style.display='none';
  menuState='smap';world=WORLDS[0].build(0);SUN_DIR.copy(sun.position).normalize();playTrack(arcTrack(book&&book.id)||'menu');}
 function playNode(n){if(n.t==='cine'){const first=book.kind==='arc'&&book.nodes[0]===n,an=(ARCS.find(x=>x.id===book.id)||{}).n;
  cinePlay(first?Object.assign({},n.cine,{shots:[{who:'nar',say:'',card:book.name.toUpperCase(),sub:'ARCO '+an,cam:'wide'},...n.cine.shots]}):n.cine,()=>{checkBookDone(book);menuState='smap';renderMenu();});return;}
  if(n.t==='db'){if(prog.db.includes(n.n))return;if(n.fight){storyStart(Object.assign({},n.fight,{id:n.id,t:'db',n:n.n,name:n.name||'Esfera de '+n.n+' estrellas'}));return;}
   prog.db.push(n.n);saveProg();cinePlay({id:'db_'+n.n,title:'Esfera de '+n.n+' estrellas',world:n.world||0,cast:[{c:n.who||'goku',x:0,z:0}],shots:[{who:n.who||'goku',say:'¡Mira! ¡La Esfera del Dragón de '+n.n+' estrellas! Ya tengo '+prog.db.length+' de 7.',cam:'close',pose:'victory',fx:'flash'}],noSeen:1},()=>{if(prog.db.length>=7)shenlong();else{menuState='smap';renderMenu();}});return;}
- if(n.intro&&!cineSeen(n.intro.id)){cinePlay(n.intro,()=>storyStart(n));return;}storyStart(n);}
+ if(n.intro){cinePlay(n.intro,()=>storyStart(n));return;}storyStart(n);}
 function shenlong(){cinePlay({id:'shenlong',title:'Shenlong',world:0,v:1,cast:[{c:'goku',x:-3,z:2},{c:'shenlong',x:4,z:-6,hidden:1}],shots:[
  {who:'goku',say:'¡Ya tenemos las siete Esferas del Dragón!',cam:'close',pose:'victory',balls:'normal'},
  {who:'nar',say:'El cielo se oscurece y una luz verde se eleva hacia las nubes…',cam:'wide',fx:'flash'},

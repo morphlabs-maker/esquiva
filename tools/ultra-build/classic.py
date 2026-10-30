@@ -11,7 +11,7 @@ def rep(old,new,cnt=1):
 rd=lambda f:open(D+f,encoding='utf8').read()
 # ---- cabecera y versión
 rep('KAIOKEN CLASH — prototipo jugable (fase 1)\n   1v1 local · 3 mundos · 13 luchadores · poder realista','KAIOKEN CLASH 3.0 — versión retro (chibi), 3D libre\n   Modo historia «Junto a Goku» · 33 luchadores · 5 mundos + planeta de Bills')
-rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"3.1.0",build:"2026-10-30",updateUrl:"",storeUrl:""});')
+rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"3.2.0",build:"2026-10-30",updateUrl:"",storeUrl:""});')
 # ---- luchadores, formas y técnicas (los mismos datos que Ultra)
 src,n=re.subn(r"(F\('ui','Ultra Instinto dominado',300000,\{era:'S',cost:7,)dur:25,hpReq:\.3,",r"\1",src);assert n==3,n
 rep("forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];",
@@ -367,6 +367,8 @@ rep("<div>${ch.forms.length} formas · poder base","<div class=\"csdet\">${ch.fo
 rep("setHair(model,f.hair||ch.hair);setExtras(model,f.extras||ch.extras||[]);","setHair(model,f.hair||ch.hair);setExtras(model,outfitExtras(model,f.extras||ch.extras||[]));")
 rep('<div class="hint" style="margin-top:10px"><span class="k">F2</span> pixelado','<div class="hint" style="margin-top:10px">3D: <span class="k">WASD</span> moverse · <span class="k">Space</span>/<span class="k">C</span> subir/bajar · <span class="k">L</span> fijar objetivo · ratón o <span class="k ar">←</span><span class="k ar">→</span> cámara · <span class="k">K</span> Kaioken · <span class="k">X</span> especial 2<br><span class="k">F2</span> pixelado')
 rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i));")
+# 3.2: en la selección, el poder de cada forma es el de la versión elegida; las formas de otros arcos dicen «otra versión» en vez de pedir monedas
+rep("${lk?'🔒 ':''}${f.name} · ${fmtP(ch.base*f.mult)}${lk?' · 🪙 '+formPrice(ch,i):''}</div>`;}).join('')}","${lk?'🔒 ':''}${f.name} · ${fmtP(verBase(ch)*f.mult)}${lk?(verFormOk(ch,i)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}")
 # 3.0: selección de personaje nueva (cuadrícula a la derecha, vista previa grande con guardia y gestos) y versiones por arco
 rep("""<div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div>
   <div class="sides" style="margin-top:auto"><div>${side(0)}<div class="hint">${hint1}</div></div>""","""<div class="cs"><div class="csr"><div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div></div><div class="csl"><div class="csinfo">${side(0)}${verRow(cur[0])}<div class="hint">${hint1}</div></div>""")
@@ -391,7 +393,8 @@ rep("introDialog();}","introDialog();cam3DReset();}")
 rep("lock:{k:['KeyV']}};","lock:{k:['KeyV']},up3:{k:['Space']},dn3:{k:['KeyC']},lk3:{k:['KeyL']},kk:{k:['KeyK']},s2:{k:['KeyX']}};")
 rep('<div id="tbtns">','<div id="camZone"></div><div id="b3d"><div class="tb b-up3" data-k="up3" aria-label="Subir">⤒</div><div class="tb b-dn3" data-k="dn3" aria-label="Bajar">⤓</div><div class="tb b-lk3" id="b3dlock" data-k="lk3" aria-label="Fijar objetivo">🎯</div><div class="tb b-kk" data-k="kk" aria-label="Kaioken">KK</div></div><div class="tb b-s2" data-k="s2" aria-label="Especial 2">🌟</div><div id="tbtns">')
 rep('data-act="photo">📷 MODO FOTO</button>${game.story?','data-act="photo">📷 MODO FOTO</button><button class="btn" data-act="cam3d">🎥 CÁMARA: ${CAM3D?\'3D (DETRÁS)\':\'CLÁSICA (DE LADO)\'}</button>${game.story?')
-rep("return this.base*m*(this.absorbMul||1);}","return this.base*m*(this.absorbMul||1)*(this.kkL||1);}")
+# 3.2: la maestría sube el poder de la forma (hasta +35 %) y la versión del arco pone un tope de poder
+rep("return this.base*m*(this.absorbMul||1);}","return Math.min(this.base*m*(this.absorbMul||1)*(this.kkL||1)*(1+.35*(this.mastK||0)),this.verCap||Infinity);}")
 rep("for(const f of game.f)f.update(dt);","for(const f of game.f){f.update(dt);kkTick(f,dt);}")
 rep(" reset(side,at){"," reset(side,at){this.kkL=0;")
 rep("else if(f.auraOn??(f.mult>=40||f.kk))lv=.42;","else if(this.kkL||(f.auraOn??(f.mult>=40||f.kk)))lv=.42;")
@@ -405,7 +408,6 @@ rep("case'special':o.p.special=true;","case'special':o.p.special=true;o.s2k=Math
 rep("this.pos=V3();this.vel=V3();this.face=0;this.inp=blankInput();this.cpu=false;this.formIdx=0;this.torn=0;}","this.pos=V3();this.vel=V3();this.face=0;this.inp=blankInput();this.cpu=false;this.formIdx=0;this.torn=0;verInit(this,o);}")
 rep("applyForm(){const f=this.form;","applyForm(){const f=this.form;this.mastK=mastOf(this);")
 rep("const dr=drainOf(f);if(dr&&this.state!=='transform')this.ki=Math.max(0,this.ki-dr*KIMAX*dt);","const dr=drainOf(f);if(dr&&this.state!=='transform')this.ki=Math.max(0,this.ki-dr*KIMAX*dt*(1-.6*(this.mastK||0)));")
-rep("if(att.ch.dmgMult)dmg*=att.ch.dmgMult;","dmg*=1+.35*(att.mastK||0);if(att.ch.dmgMult)dmg*=att.ch.dmgMult;")
 rep("b.cpu=M==='cpu';if(M==='cpu'&&D.cap!==Infinity)b.cap=D.cap;game.f=[a,b];}","b.cpu=M==='cpu';if(M==='cpu'&&D.cap!==Infinity)b.cap=D.cap;game.f=[a,b];if(M==='train')trainCrewSetup(a,b);}")
 rep("game.wins=[0,0];game.round=1;buildHud();$('#hud').style.display='block';$('#pp1').style.display=M==='boss'?","game.wins=[0,0];game.round=1;buildHud();if(M==='train')trainHudExtra();$('#hud').style.display='block';$('#pp1').style.display=M==='boss'?")
 rep("else{game.f[0].reset(-1);game.f[1].reset(1);}","else{game.f[0].reset(-1);game.f[1].reset(1);for(let i=2;i<game.f.length;i++)game.f[i].reset(-1,V3(-7,world.spawnY+2,4*(i-1)));}")
@@ -419,6 +421,17 @@ rep("$('#fm'+i).textContent=f.form.name+(f.kkL?' + KAIOKEN x'+f.kkL:'')+","$('#f
 rep("initCloud();\napplyTouch();",rd('plus-3d.js')+rd('plus-moves.js')+rd('plus-verdata.js')+rd('plus-mastery.js')+rd('plus-free.js')+rd('plus-world3.js')+"initCloud();\napplyTouch();")
 # 3.0.1: los proyectiles teledirigidos ya no pierden velocidad al girar (la lluvia de ki de Gogeta se quedaba flotando)
 rep("if(tgt&&p.homing&&tgt.state!=='ko'){const want=tgt.chest().sub(p.pos).normalize().multiplyScalar(p.vel.length());p.vel.lerp(want,Math.min(1,p.homing*dt));}","if(tgt&&p.homing&&tgt.state!=='ko'&&p.life>=(p.hd||0)){const sp=p.spd||(p.spd=p.vel.length());const want=tgt.chest().sub(p.pos).normalize().multiplyScalar(sp);p.vel.lerp(want,Math.min(1,p.homing*dt));if(p.vel.lengthSq()>1e-6)p.vel.setLength(sp);}")
+# 3.2: la maestría de la forma abarata transformarse (hasta -60 % de ki)
+rep("const stepCost=f=>f.kk?0:Math.ceil(f.cost/2);","const stepCost=(f,w)=>f.kk?0:Math.ceil(f.cost/2*(1-.6*(w?mastFormK(w,f):0))-1e-6);")
+rep("ai.pre=1.5+clamp((stepCost(f.ch.forms[nx])-f.ki)*.7,0,3);","ai.pre=1.5+clamp((stepCost(f.ch.forms[nx],f)-f.ki)*.7,0,3);")
+rep("f.ki<stepCost(f.ch.forms[nx])&&d>8","f.ki<stepCost(f.ch.forms[nx],f)&&d>8")
+rep("if(dir>0){const c=stepCost(f);","if(dir>0){const c=stepCost(f,this);")
+rep("killSpecial(){if(this.sp){","killSpecial(){cleanSp(this.sp);this._spPrev=null;if(this.sp){")
+rep("{f.update(dt);kkTick(f,dt);mastTick(f,dt);}","{f.update(dt);kkTick(f,dt);mastTick(f,dt);spWatch(f);}")
+# 3.2: los disparos teledirigidos que ya están cerca van directos al rival (las bolitas lanzadas al aire daban vueltas y caían al suelo sin tocarlo)
+rep("p.vel.lerp(want,Math.min(1,p.homing*dt));if(p.vel.lengthSq()>1e-6)p.vel.setLength(sp);}","const dd=tgt.chest().distanceTo(p.pos);if(dd<Math.max(5,sp*.16)*Math.max(1,tgt.giant*.8)&&p.homing>=1)p.vel.copy(want);else p.vel.lerp(want,Math.min(1,p.homing*dt));if(p.vel.lengthSq()>1e-6)p.vel.setLength(sp);}")
+# 3.2: el Quebrantador de Espíritu estalla en arcoíris
+rep("else{dead=true;if(p.kind==='ball')explosion(p.pos,p.r*1.4,p.color);","else{dead=true;if(p.rainbow){for(let k=0;k<6;k++)ring(p.pos.clone(),new THREE.Color().setHSL(k/6,1,.6).getHex(),2+k*.7,.35+k*.05,false,.15);explosion(p.pos,p.r*2.2,0xff6ad8);}else if(p.kind==='ball')explosion(p.pos,p.r*1.4,p.color);")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')

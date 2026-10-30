@@ -8,7 +8,7 @@
    ========================================================= */
 /* 3.1: cada versión sale del modo historia (plus-verdata.js): poder base y formas que tiene el luchador en ese arco.
    Fuera de la historia el poder base sigue creciendo con el arco (VER_K) aunque la historia repita el mismo número. */
-const VER_K={sai:1,nam:1.35,cel:1.8,buu:2.3,god:3,tr:3.8,tp:5,bro:5.6,mor:6.5,gr:7.5},VER_M={sai:0,nam:5,cel:12,buu:18,god:26,tr:32,tp:42,bro:46,mor:52,gr:60};
+const VER_K={sai:1,nam:1.35,cel:1.8,buu:2.3,dai:2.6,god:3,tr:3.8,tp:5,bro:5.6,mor:6.5,gr:7.5},VER_M={sai:0,nam:5,cel:12,buu:18,dai:22,god:26,tr:32,tp:42,bro:46,mor:52,gr:60};
 const arcName=id=>(ARCS.find(a=>a.id===id)||{}).name||id;
 const verOpen=id=>{const i=ARCS.findIndex(a=>a.id===id);return i<=0||arcOpen(i);};
 const verArcs=chId=>(VER_DATA[chId]||[]).map(v=>v.arc);
@@ -16,22 +16,41 @@ function verList(chId){return verArcs(chId).filter(verOpen);}
 /* por defecto, la versión más reciente que tengas abierta */
 function verOf(chId){const L=verList(chId);if(!L.length)return null;const v=prog.ver&&prog.ver[chId];return L.includes(v)?v:L[L.length-1];}
 function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!arc)return L[L.length-1];const order=ARCS.map(a=>a.id),ai=order.indexOf(arc);let best=null;for(const v of L)if(order.indexOf(v)<=ai)best=v;return best||L[0];}
-function verInfo(chId,arc){const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;const first=L.find(v=>v.base===d.base)||d;
- return{base:d.base*(VER_K[arc]||1)/(VER_K[first.arc]||1),forms:d.forms};}
+/* 3.2: poder base de la versión (el de la historia, que sigue creciendo con el arco), sus formas y el tope de poder del arco.
+   Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
+const VER_CACHE={};
+function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CACHE[ck];const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;
+ const ch=CHARS[chIdx(chId)];if(!ch)return null;const b0=v=>v.base||ch.base,first=L.find(v=>b0(v)===b0(d))||d;
+ let forms=d.forms.filter(id=>ch.forms.some(f=>f.id===id));if(d===L[L.length-1]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.map(f=>f.id).filter(id=>!seen.has(id)));}
+ if(!forms.length)forms=[ch.forms[0].id];
+ const base=b0(d)*(VER_K[arc]||1)/(VER_K[first.arc]||1),top=Math.max(...forms.map(id=>(ch.forms.find(f=>f.id===id)||{mult:1}).mult));
+ return VER_CACHE[ck]={base,forms,cap:base*top*1.36*(kkStackArc(arc)?10:1)};}
+/* Kaioken encima de una transformación: desde el Universo 6 (Blue + Kaioken). Antes, solo sobre el estado base y hasta el nivel que tuviera en su arco */
+const kkStackArc=arc=>!arc||ARCS.findIndex(a=>a.id===arc)>=ARCS.findIndex(a=>a.id==='tr');
+function kkArcOf(f){if(f.ver)return f.ver;const B=game.story&&game.story.book;if(B&&B.kind==='arc'&&!game.story.free)return B.id;return null;}
+function kkLevels(f){const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
+ const v=VER_DATA[f.ch.id]?verNear(f.ch.id,arc):null,d=v&&verInfo(f.ch.id,v);if(!d)return[];return[3,10,20].filter(n=>d.forms.includes('kk'+n));}
 const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
-function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;
+function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;
  let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
  f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
 function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
  const mine=f.idx===0||(f.idx===1&&local2P());let v=null;if(mine){v=verOf(f.ch.id);if(f.idx===0)G_VER=v;}else v=verNear(f.ch.id,G_VER);
+ /* 3.2: la forma elegida en la selección manda: si la versión no la tiene, se usa la primera versión que sí (antes empezaba en base) */
+ const want=f.ch.forms[f.startForm]&&f.ch.forms[f.startForm].id;
+ if(v&&want&&!verInfo(f.ch.id,v).forms.includes(want)){const L=verArcs(f.ch.id),ok=L.filter(a=>verInfo(f.ch.id,a).forms.includes(want)),order=ARCS.map(a=>a.id);
+  if(ok.length)v=ok.sort((a,b)=>Math.abs(order.indexOf(a)-order.indexOf(v))-Math.abs(order.indexOf(b)-order.indexOf(v)))[0];}
  if(v)verApply(f,v,mine);}
 /* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
 function verFormOk(ch,i){const v=verOf(ch.id);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
+const verBase=ch=>{const v=verOf(ch.id),d=v&&verInfo(ch.id,v);return d?d.base:ch.base;};
 /* maestría: guardada en décimas (0-1000) por luchador y forma */
 const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;
-function mastOf(f){if(!f.form||f.form.mult<=1)return 0;const own=human(f)&&!game.online?mastPct(f):0;return clamp((own+(VER_M[f.ver]||0))/100,0,1);}
+function mastOf(f){return mastFormK(f,f.form);}
+/* maestría de una forma concreta (0-1): la tuya (si eres humano) + la que trae la versión del arco */
+function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(VER_M[f.ver]||0))/100,0,1);}
 let mastSaveT=0;
 function mastTick(f,dt){if(game.phase!=='fight'||!human(f)||game.online||f.state==='ko'||!f.form||f.form.mult<=1)return;
  const crew=game.mode==='train'?(TRAIN_CREWS[game.crew||'whis']||TRAIN_CREWS.whis).k:0,rate=game.mode==='train'?3*crew:.8,k=mKey(f.ch.id,f.form.id);

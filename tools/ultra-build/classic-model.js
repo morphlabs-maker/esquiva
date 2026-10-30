@@ -35,7 +35,10 @@ HAIR.whis={cap:1,sp:[[0,.17,-.03,-.1,0,.62,.1],[0,.15,.05,.2,0,.46,.085],[.05,.1
 HAIR.raditz={cap:1,sp:HAIR.goku.sp.slice(0,5).concat([[0,.06,-.15,-2.75,0,.95,.11],[.09,.04,-.13,-2.8,-.18,.92,.1],[-.09,.04,-.13,-2.8,.18,.92,.1],[0,-.04,-.15,-2.95,0,.9,.1],[.13,0,-.08,-2.9,-.4,.8,.08],[-.13,0,-.08,-2.9,.4,.8,.08]])};
 HAIR.gohanks={cap:1,sp:HAIR.gohan.sp.map(s=>[s[0],s[1],s[2],s[3]*.8,s[4],s[5]*.9,s[6]]).concat([[.06,.1,.15,2.3,-.3,.18,.04]])};
 HAIR.granolah={cap:1,sp:[[0,.16,-.02,-.35,0,.3,.08],[.09,.14,0,-.2,-.6,.26,.07],[-.09,.14,0,-.2,.6,.26,.07],[.05,.12,.12,1.6,-.25,.16,.05],[-.05,.12,.12,1.6,.25,.16,.05],[0,.08,-.14,-1.9,0,.24,.07]]};
-HAIR.gas={cap:1,sp:[[0,.16,-.02,-.2,0,.34,.09],[.1,.13,0,-.1,-.7,.3,.08],[-.1,.13,0,-.1,.7,.3,.08],[0,.1,-.12,-1.2,0,.3,.08],[.13,.05,-.04,-.4,-1.3,.24,.06],[-.13,.05,-.04,-.4,1.3,.24,.06]]};
+/* 3.2: Gas (manga): melena larga echada hacia atrás hasta la espalda; con el deseo envejece y la melena crece; más allá del límite se eriza */
+HAIR.gas={cap:1,tip:.1,sp:HM([0,.16,-.03,-1.15,0,.3,.09],[.08,.14,-.03,-1.3,-.25,.29,.085],[.13,.09,-.05,-1.6,-.5,.27,.075],[.15,.02,-.07,-2.1,-.7,.25,.065]).concat(MANE(.85))};
+HAIR.gasW={cap:1,tip:.08,sp:HM([0,.16,-.03,-1.1,0,.36,.095],[.08,.14,-.03,-1.3,-.25,.35,.09],[.13,.09,-.05,-1.65,-.5,.33,.08],[.15,.01,-.07,-2.3,-.6,.4,.07]).concat(MANE(1.25))};
+HAIR.gasL={cap:1,tip:.08,sp:HM([0,.17,-.02,-.75,0,.4,.1],[.09,.15,-.02,-.95,-.4,.38,.09],[.14,.1,-.04,-1.3,-.75,.34,.08],[.16,.02,-.06,-2,-.8,.36,.07]).concat(MANE(1.3))};
 const NUMTEX={};
 function numTex(n){const k=n.t+n.c;return NUMTEX[k]||(NUMTEX[k]=canvasTex(64,g=>{g.fillStyle=n.c;g.font='bold 56px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText(n.t,32,36);}));}
 function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
@@ -80,4 +83,32 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
  if(e==='redRims'){const rm=new THREE.MeshBasicMaterial({color:0xd01a2a});for(const sd of[1,-1])add(Bx(.09,.016,.01),rm,J.head,sd*.067,.168,.158,0,0,sd*.18);}
  if(e==='toppoStache'){for(const sd of[1,-1]){const b=add(new THREE.CylinderGeometry(.03,.012,.15,8),m.ex1,J.head,sd*.07,.055,.155);b.rotation.z=sd*1.25;b.rotation.y=-sd*.3;}add(Sph(.035,10,8),m.ex1,J.head,0,.07,.16).scale.set(1.6,.7,.8);}
  if(e==='cape'){add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
+ /* 3.2: guardianes de las esferas del Reino Demoníaco (Daima): cabeza de metal con ojos rojos, hombreras con púas, esfera en el pecho y arma */
+ if(e==='tamaHead'||e==='tamaHead3'){const big=e==='tamaHead3',red=new THREE.MeshBasicMaterial({color:0xe0242a}),hi=new THREE.MeshBasicMaterial({color:0xff9a9a});
+  add(Sph(.186,24,18),m.skin,J.head,0,.14,0).scale.set(1,big?.9:1.08,1);
+  for(const sd of[1,-1]){const ey=add(Sph(.048,16,12),red,J.head,sd*.068,big?.17:.16,.158,0,0,sd*.55);ey.scale.set(.7,1.35,.42);add(Sph(.012,8,6),hi,J.head,sd*.06,big?.19:.18,.18);
+   const hn=add(cone(.04,.15,8),m.ex2,J.head,sd*.115,.27,-.02,0,0,-sd*.35);if(big)hn.scale.setScalar(.8);}
+  if(!big){add(Bx(.05,.022,.02),toon(0x7ac8e8),J.head,0,.075,.172);add(cone(.05,.12,8),m.ex2,J.head,0,.3,-.04,-.25);}
+  else add(Bx(.08,.016,.02),toon(0x3a3a3a),J.head,0,.09,.17);}
+ if(e==='tamaPads'){for(const L of['L','R']){const sd=L==='L'?1:-1;add(Sph(.13,18,12),m.ex2,J['sh'+L],sd*.02,.04,0).scale.set(1.05,.85,1.05);add(cone(.04,.17,8),m.ex2,J['sh'+L],sd*.08,.1,0,0,0,-sd*.9);}}
+ if(e==='tamaChest'){add(Bx(.26,.12,.05),m.ex1,J.torso,0,.2,.17);const orb=add(Sph(.05,16,12),toon(0xf08a1a),J.torso,0,.24,.2);orb.material=orb.material.clone();
+  for(const k of[-1,1])add(Sph(.009,6,4),new THREE.MeshBasicMaterial({color:0xc01a1a}),J.torso,k*.016,.245,.247);
+  add(new THREE.CylinderGeometry(.21,.21,.06,20),m.belt,J.hips,0,.09,0).scale.set(1.05,1,.9);for(const L of['L','R'])add(Sph(.085,14,10),m.ex1,J.hips,(L==='L'?1:-1)*.11,-.04,.02).scale.set(1,.8,1);}
+ if(e==='tamaSword'){const g=new THREE.Group();J.wrR.add(g);g.position.set(0,-.07,.02);model.extras.push(g);const sil=toon(0xe8ecf0);
+  add(new THREE.CylinderGeometry(.018,.018,.16,8),m.ex1,g,0,0,0);add(new THREE.TorusGeometry(.04,.012,6,12),m.ex1,g,0,-.08,0,0,Math.PI/2,0);
+  /* hoja ancha y curva con dientes en el lomo, como la de la imagen */
+  const sh=new THREE.Shape();sh.moveTo(-.05,.1);sh.quadraticCurveTo(.05,.7,.55,1.25);sh.quadraticCurveTo(.3,.75,.16,.55);
+  for(let i=0;i<5;i++){const y=.5-i*.08,x=.13-i*.012;sh.lineTo(x+.05,y);sh.lineTo(x,y-.04);}sh.lineTo(.07,.1);sh.lineTo(-.05,.1);
+  add(new THREE.ExtrudeGeometry(sh,{depth:.02,bevelEnabled:false}),sil,g,0,0,-.01);}
+ if(e==='tamaTrident'){const g=new THREE.Group();J.wrR.add(g);g.position.set(0,-.06,.02);g.rotation.x=Math.PI;model.extras.push(g);const sil=toon(0xd0d6de);
+  add(new THREE.CylinderGeometry(.014,.014,1.7,8),sil,g,0,.2,0);add(new THREE.CylinderGeometry(.02,.02,.24,8),m.ex1,g,0,-.62,0);
+  add(Bx(.22,.03,.03),m.ex1,g,0,1.06,0);add(cone(.03,.32,6),m.ex1,g,0,1.06,0);for(const sd of[1,-1])add(cone(.022,.22,6),m.ex1,g,sd*.11,1.06,0,0,0,-sd*.18);add(cone(.025,.12,6),m.ex1,g,0,-.74,0,Math.PI);}
+ if(e==='tamaHammer'){const g=new THREE.Group();J.wrR.add(g);g.position.set(0,-.06,.02);model.extras.push(g);
+  add(new THREE.CylinderGeometry(.028,.028,.8,10),m.ex1,g,0,-.2,0);add(Bx(.3,.26,.44),toon(0x9a9aa4),g,0,-.62,0);add(Bx(.32,.05,.46),toon(0x7a7a84),g,0,-.5,0);}
+ /* 3.2: armadura de los Heeter (Gas): traje oscuro, hombreras blancas y peto */
+ if(e==='heeterArmor'){const w=m.ex1;add(new THREE.SphereGeometry(.25,20,14,0,TAU,0,Math.PI*.55),w,J.torso,0,.22,0).scale.set(1.1,.95,.9);
+  for(const L of['L','R']){const sd=L==='L'?1:-1;add(Sph(.12,16,10),w,J['sh'+L],sd*.02,.03,0).scale.set(1.15,.62,1.1);add(Bx(.14,.03,.2),m.ex2,J['sh'+L],sd*.04,.08,0,0,0,-sd*.25);}
+  add(new THREE.TorusGeometry(.11,.035,8,18),w,J.torso,0,.45,0,Math.PI/2);}
+ if(e==='gasLines'){const ln=new THREE.MeshBasicMaterial({color:0x4a3a5a});for(const sd of[1,-1]){add(Bx(.004,.05,.004),ln,J.head,sd*.11,.11,.14,0,0,sd*.2);add(Bx(.04,.004,.004),ln,J.head,sd*.065,.11,.165);}}
+ if(e==='blankEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(i%2)o.visible=false;});}
 }
