@@ -71,3 +71,8 @@ function kkTick(f,dt){if(!kkCan(f)||f.state==='ko'){if(f.kkL)kkSet(f,0);return;}
  if(f._kkVis!==f.formIdx){f._kkVis=f.formIdx;f.aura.setColor(f.form.mult>1?0xff2a5a:0xff2a2a);f.model.mats.skin.emissive.setHex(0x661010);}
  if(Math.random()<dt*10)spawn({pos:f.pos.clone().add(V3(rand(-.5,.5),rand(0,1.8)*f.sy(),rand(-.5,.5))),vel:V3(0,rand(2,5),0),color:0xff3a3a,size:rand(.3,.7),life:.4});}
 setInterval(()=>{document.body.classList.toggle('cankk',!!game.phase&&kkCan(game.f[0])&&human(game.f[0]));},500);
+/* 3.1: orden de transformación propio por luchador (ch.order) para formas añadidas al final de la lista */
+Fighter.prototype.nextForm=function(dir){const fs=this.ch.forms,ord=this.ch.order||fs.map((_,i)=>i),p=ord.indexOf(this.formIdx);
+ if(dir>0){let kk=-1,non=-1;for(let k=p+1;k<ord.length;k++){const i=ord[k];if(!this.allowed(i))continue;if(fs[i].kk){if(kk<0)kk=i;}else{non=i;break;}}
+  if(non>=0&&(this.ki>=stepCost(fs[non])||kk<0))return non;return kk;}
+ const curKK=this.form.kk&&this.form.mult<50;for(let k=p-1;k>=0;k--){const i=ord[k];if(!this.allowed(i))continue;const f=fs[i];if(f.kk&&!curKK)continue;return i;}return -1;};

@@ -6,19 +6,28 @@
    · Entrenamiento: con Whis, sparring parejo con Vegeta, o tú y Vegeta contra Whis o contra Bills (solo esquivan y empujan;
      nadie puede caer en el entrenamiento). También se puede explorar libremente el planeta de Bills.
    ========================================================= */
-const VER_ARCS={goku:['sai','nam','cel','buu','god','tr','tp','bro','mor','gr'],vegeta:['sai','nam','cel','buu','god','tr','tp','bro','mor','gr'],gohan:['sai','nam','cel','buu','god','tp'],
- piccolo:['sai','nam','cel','buu','tp'],krilin:['sai','nam','cel','buu','tp'],trunks:['cel','buu','tr'],freezer:['nam','god','tp','gr'],goten:['buu','god'],a17:['cel','tp'],a18:['cel','tp']};
+/* 3.1: cada versión sale del modo historia (plus-verdata.js): poder base y formas que tiene el luchador en ese arco.
+   Fuera de la historia el poder base sigue creciendo con el arco (VER_K) aunque la historia repita el mismo número. */
 const VER_K={sai:1,nam:1.35,cel:1.8,buu:2.3,god:3,tr:3.8,tp:5,bro:5.6,mor:6.5,gr:7.5},VER_M={sai:0,nam:5,cel:12,buu:18,god:26,tr:32,tp:42,bro:46,mor:52,gr:60};
 const arcName=id=>(ARCS.find(a=>a.id===id)||{}).name||id;
 const verOpen=id=>{const i=ARCS.findIndex(a=>a.id===id);return i<=0||arcOpen(i);};
-function verList(chId){return(VER_ARCS[chId]||[]).filter(verOpen);}
-function verOf(chId){const L=verList(chId);if(!L.length)return null;const v=prog.ver&&prog.ver[chId];return L.includes(v)?v:L[0];}
-/* la CPU usa la versión del mismo arco que la tuya (o la más cercana anterior) */
-function verNear(chId,arc){const L=VER_ARCS[chId];if(!L||!arc)return null;const order=ARCS.map(a=>a.id),ai=order.indexOf(arc);let best=null;for(const v of L)if(order.indexOf(v)<=ai)best=v;return best||L[0];}
+const verArcs=chId=>(VER_DATA[chId]||[]).map(v=>v.arc);
+function verList(chId){return verArcs(chId).filter(verOpen);}
+/* por defecto, la versión más reciente que tengas abierta */
+function verOf(chId){const L=verList(chId);if(!L.length)return null;const v=prog.ver&&prog.ver[chId];return L.includes(v)?v:L[L.length-1];}
+function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!arc)return L[L.length-1];const order=ARCS.map(a=>a.id),ai=order.indexOf(arc);let best=null;for(const v of L)if(order.indexOf(v)<=ai)best=v;return best||L[0];}
+function verInfo(chId,arc){const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;const first=L.find(v=>v.base===d.base)||d;
+ return{base:d.base*(VER_K[arc]||1)/(VER_K[first.arc]||1),forms:d.forms};}
+const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
-function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon')return;
+function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;
+ let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
+ f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
+function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
  const mine=f.idx===0||(f.idx===1&&local2P());let v=null;if(mine){v=verOf(f.ch.id);if(f.idx===0)G_VER=v;}else v=verNear(f.ch.id,G_VER);
- if(v&&VER_K[v]){f.ver=v;f.base*=VER_K[v];}}
+ if(v)verApply(f,v,mine);}
+/* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
+function verFormOk(ch,i){const v=verOf(ch.id);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
 /* maestría: guardada en décimas (0-1000) por luchador y forma */
 const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;

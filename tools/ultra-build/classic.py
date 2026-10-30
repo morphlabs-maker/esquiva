@@ -11,7 +11,7 @@ def rep(old,new,cnt=1):
 rd=lambda f:open(D+f,encoding='utf8').read()
 # ---- cabecera y versión
 rep('KAIOKEN CLASH — prototipo jugable (fase 1)\n   1v1 local · 3 mundos · 13 luchadores · poder realista','KAIOKEN CLASH 3.0 — versión retro (chibi), 3D libre\n   Modo historia «Junto a Goku» · 33 luchadores · 5 mundos + planeta de Bills')
-rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"3.0.0",build:"2026-10-28",updateUrl:"",storeUrl:""});')
+rep('const APP=Object.freeze({version:"1.8.0",build:"2026-10-18",updateUrl:"",storeUrl:""});','const APP=Object.freeze({version:"3.1.0",build:"2026-10-30",updateUrl:"",storeUrl:""});')
 # ---- luchadores, formas y técnicas (los mismos datos que Ultra)
 src,n=re.subn(r"(F\('ui','Ultra Instinto dominado',300000,\{era:'S',cost:7,)dur:25,hpReq:\.3,",r"\1",src);assert n==3,n
 rep("forms:[F('base','Base',1,{era:'S',aura:0xb070ff}),F('god','Poder divino',3,{era:'S',cost:4,drain:.012,aura:0x9a50ff,auraOn:1}),\n  F('serious','Destrucción total',5,{era:'S',cost:6,drain:.02,aura:0x7a30ff,auraOn:1,bolt:1})]},\n];",
@@ -366,6 +366,7 @@ rep("const s=music.step%32,d=music.next-AC.currentTime;","const s=music.step%(tr
 rep("<div>${ch.forms.length} formas · poder base","<div class=\"csdet\">${ch.forms.length} formas · poder base")
 rep("setHair(model,f.hair||ch.hair);setExtras(model,f.extras||ch.extras||[]);","setHair(model,f.hair||ch.hair);setExtras(model,outfitExtras(model,f.extras||ch.extras||[]));")
 rep('<div class="hint" style="margin-top:10px"><span class="k">F2</span> pixelado','<div class="hint" style="margin-top:10px">3D: <span class="k">WASD</span> moverse · <span class="k">Space</span>/<span class="k">C</span> subir/bajar · <span class="k">L</span> fijar objetivo · ratón o <span class="k ar">←</span><span class="k ar">→</span> cámara · <span class="k">K</span> Kaioken · <span class="k">X</span> especial 2<br><span class="k">F2</span> pixelado')
+rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i));")
 # 3.0: selección de personaje nueva (cuadrícula a la derecha, vista previa grande con guardia y gestos) y versiones por arco
 rep("""<div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div>
   <div class="sides" style="margin-top:auto"><div>${side(0)}<div class="hint">${hint1}</div></div>""","""<div class="cs"><div class="csr"><div class="grid">${CHARS.map((c,i)=>cell(i)).join('')}</div></div><div class="csl"><div class="csinfo">${side(0)}${verRow(cur[0])}<div class="hint">${hint1}</div></div>""")
@@ -415,7 +416,9 @@ rep("{f.update(dt);kkTick(f,dt);}","{f.update(dt);kkTick(f,dt);mastTick(f,dt);}"
 rep("if(game.mode==='tdp')tdpStep(dt);}","if(game.mode==='tdp')tdpStep(dt);trainStep(dt);}")
 rep("function toMenu(state){","function toMenu(state){if(ROAM.init)roamEnd();")
 rep("$('#fm'+i).textContent=f.form.name+(f.kkL?' + KAIOKEN x'+f.kkL:'')+","$('#fm'+i).textContent=f.form.name+(f.kkL?' + KAIOKEN x'+f.kkL:'')+(f.form.mult>1&&human(f)&&!game.online&&mastPct(f)>=1?' · '+Math.floor(mastPct(f))+' %':'')+")
-rep("initCloud();\napplyTouch();",rd('plus-3d.js')+rd('plus-moves.js')+rd('plus-mastery.js')+rd('plus-free.js')+rd('plus-world3.js')+"initCloud();\napplyTouch();")
+rep("initCloud();\napplyTouch();",rd('plus-3d.js')+rd('plus-moves.js')+rd('plus-verdata.js')+rd('plus-mastery.js')+rd('plus-free.js')+rd('plus-world3.js')+"initCloud();\napplyTouch();")
+# 3.0.1: los proyectiles teledirigidos ya no pierden velocidad al girar (la lluvia de ki de Gogeta se quedaba flotando)
+rep("if(tgt&&p.homing&&tgt.state!=='ko'){const want=tgt.chest().sub(p.pos).normalize().multiplyScalar(p.vel.length());p.vel.lerp(want,Math.min(1,p.homing*dt));}","if(tgt&&p.homing&&tgt.state!=='ko'&&p.life>=(p.hd||0)){const sp=p.spd||(p.spd=p.vel.length());const want=tgt.chest().sub(p.pos).normalize().multiplyScalar(sp);p.vel.lerp(want,Math.min(1,p.homing*dt));if(p.vel.lengthSq()>1e-6)p.vel.setLength(sp);}")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')

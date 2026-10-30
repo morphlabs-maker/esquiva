@@ -198,7 +198,7 @@ function buildShenlong(sup){const g=new THREE.Group(),bodyC=sup?0xffc23a:0x3aa84
  return{root:g,head,shen:1,sup:!!sup};}
 /* 3.0: actor de cinemática (también los que nacen de una fusión a mitad de escena) */
 function mkCineCast(c,cast){let m,ch=null;if(c.c==='shenlong'||c.c==='sshenlong')m=buildShenlong(c.c==='sshenlong');else{const i=chIdx(c.c);if(i<0&&c.c!=='whis')return null;ch=i<0?WHIS:CHARS[i];m=makeModel(ch);m.outfit=null;applyFormModel(m,ch,ch.forms[formIx(ch,c.f||'base')],0);const au=makeAura();au.setColor(ch.forms[formIx(ch,c.f||'base')].aura);m.root.add(au.group);m.aura=au;}
- const gy=world.groundY(c.x||0,c.z||0),g0=(gy>-1e9?gy:world.spawnY)+(c.y||0);m.root.position.set(c.x||0,g0,c.z||0);m.root.scale.setScalar(c.s||1);scene.add(m.root);
+ const gy=cineGround(c.x||0,c.z||0),g0=(gy>-1e9?gy:world.spawnY)+(c.y||0);m.root.position.set(c.x||0,g0,c.z||0);m.root.scale.setScalar(c.s||1);scene.add(m.root);
  const o=cast[c.c]={m,ch,f:c.f||'base',to:null,pose:c.pose||'idle',aura:0,g0};if(c.under){m.root.position.y=g0-6;m.root.visible=false;}if(c.hidden)m.root.visible=false;return o;}
 function cinePlay(sc,done){clearMenuModels();for(const f of game.f)f.dispose();game.f=[];clearCombat();game.phase=null;$('#hud').style.display='none';
  const W=sc.world==='bills'?TRAIN_WORLD:sc.world==='tdp'?TDP_WORLD:WORLDS[clamp(sc.world|0,0,WORLDS.length-1)];world=W.build(sc.v|0);SUN_DIR.copy(sun.position).normalize();playTrack(sc.music||(typeof book!=='undefined'&&book&&menuState!=='gallery'&&arcTrack(book.id))||W.music);
@@ -206,7 +206,7 @@ function cinePlay(sc,done){clearMenuModels();for(const f of game.f)f.dispose();g
  for(const k in cast){const o=cast[k];if(o.m.shen)continue;const other=Object.values(cast).filter(x=>x!==o&&!x.m.shen)[0];if(other){const d=other.m.root.position.clone().sub(o.m.root.position);o.m.root.rotation.y=Math.atan2(d.x,d.z);}}
  CINE={sc,i:-1,t:0,cast,done,typed:0,camP:V3(0,6,18),camL:V3(0,2,0),fx:[],shake:0};menuState='cine';cam.position.set(0,6,18);renderMenu();cineNext();}
 function cineNext(){const C=CINE;if(!C)return;const sh=C.sc.shots[C.i];if(sh&&C.typed<(sh.say||'').length){C.typed=1e9;return;}
- C.i++;C.t=0;C.typed=0;if(C.i>=C.sc.shots.length){cineEnd();return;}const s=C.sc.shots[C.i],o=C.cast[s.who];
+ C.i++;C.t=0;C.typed=0;if(C.i>=C.sc.shots.length){cineEnd();return;}const s=C.sc.shots[C.i],o=C.cast[s.who];cinePickCam(C,s);
  if(o&&!o.m.shen){if(s.pose)o.pose=s.pose;if(s.to)o.to=V3(s.to[0],0,s.to[1]);}
  if(s.form){const ft=o&&!o.m.shen?o:C.cast[s.fw]||Object.values(C.cast).find(x=>!x.m.shen);if(ft){ft.pendingF=s.form;ft.pose='transform';ft.aura=1.2;ft.tT=1.1;sfx('transform',1);}}
  if(s.poses)for(const k in s.poses)if(C.cast[k])C.cast[k].pose=s.poses[k];
@@ -230,19 +230,19 @@ function cineFrame(dt,t){const C=CINE,s=C.sc.shots[C.i];if(!s)return;C.t+=dt;con
  for(let i=C.fx.length-1;i>=0;i--){const e=C.fx[i];e.t+=dt;const a=e.from.m.root.position.clone().add(V3(0,.9,0)),b=e.to.m.root.position.clone().add(V3(0,.9,0)),p=a.clone().lerp(b,Math.min(1,e.t*1.8));
   spawn({pos:p,color:e.c,size:1.1,life:.35});spawn({pos:a.clone().lerp(p,Math.random()),color:0xffffff,size:.5,life:.2});if(e.t*1.8>=1&&!e.hit){e.hit=1;explosion(b,2,e.c);e.to.pose='hit';C.shake=1;sfx('boom',.8);}if(e.t>1.1)C.fx.splice(i,1);}
  const o=C.cast[s.who],live=Object.values(C.cast).filter(x=>!x.m.shen),cen=V3();live.forEach(x=>cen.add(x.m.root.position));if(live.length)cen.multiplyScalar(1/live.length);
- let tp,lk;const mode=s.cam||'two';
+ let tp,lk;const mode=C.camMode||s.cam||'two';
  if(mode==='shen'){const sh=Object.values(C.cast).find(x=>x.m.shen);const hp=sh?sh.m.head.getWorldPosition(V3()):V3(0,20,0),k=sh?Math.max(1,sh.m.root.scale.x*(sh.m.sup?1.25:1)*.75):1;tp=hp.clone().add(V3(-6,-7,17).multiplyScalar(k));lk=hp.clone().add(V3(0,-2*k,0));}
  else if(mode==='close'&&o&&!o.m.shen){const p=o.m.root.position,fw=V3(Math.sin(o.m.root.rotation.y),0,Math.cos(o.m.root.rotation.y)),r=V3(-fw.z,0,fw.x),s2=o.m.body.scale.y*(o.m.root.scale.x||1);tp=p.clone().addScaledVector(fw,2.3*s2).addScaledVector(r,.6*s2).add(V3(0,1.25*s2,0));lk=p.clone().add(V3(0,1.1*s2,0));}
  else if(mode==='low'&&o&&!o.m.shen){const p=o.m.root.position,fw=V3(Math.sin(o.m.root.rotation.y),0,Math.cos(o.m.root.rotation.y));tp=p.clone().addScaledVector(fw,3.4).add(V3(.8,.3,0));lk=p.clone().add(V3(0,1.3,0));}
  else if(mode==='sky'){tp=cen.clone().add(V3(0,2.5,20));lk=cen.clone().add(V3(0,9,0));}
  else if(mode==='wide'){const a=t*.12;tp=cen.clone().add(V3(Math.cos(a)*16,7,Math.sin(a)*16));lk=cen.clone().add(V3(0,1.5,0));}
  else{let ab=V3(1,0,0),sep=4;if(live.length>1){ab=live[1].m.root.position.clone().sub(live[0].m.root.position);ab.y=0;sep=ab.length();ab.normalize();}const n=V3(-ab.z,0,ab.x);tp=cen.clone().addScaledVector(n,5+sep*.8).add(V3(0,1.8,0));lk=cen.clone().add(V3(0,1,0));}
- const gy=world.groundY(tp.x,tp.z);if(gy>-1e9&&tp.y<gy+.8)tp.y=gy+.8;C.camP.lerp(tp,1-Math.exp(-4*dt));C.camL.lerp(lk,1-Math.exp(-4*dt));cam.position.copy(C.camP);
+ cineMove(C,mode,o,tp,lk,live);const gy=world.groundY(tp.x,tp.z);if(gy>-1e9&&tp.y<gy+.8)tp.y=gy+.8;if(C.cut){C.cut=false;C.camP.copy(tp);C.camL.copy(lk);}else{C.camP.lerp(tp,1-Math.exp(-4*dt));C.camL.lerp(lk,1-Math.exp(-4*dt));}cam.position.copy(C.camP);
  if(C.shake>0){C.shake-=dt*1.5;const k=Math.max(0,C.shake)*.3;cam.position.add(V3(rand(-k,k),rand(-k,k),rand(-k,k)));}cam.lookAt(C.camL);}
 function cineEnd(){const C=CINE;if(!C)return;CINE=null;if(C.balls){for(const b of C.balls.list)scene.remove(b);C.balls=null;}for(const k in C.cast){const m=C.cast[k].m;scene.remove(m.root);if(!m.shen)disposeModel(m);}
  if(!C.sc.noSeen&&!cineSeen(C.sc.id)){prog.story.seen.push(C.sc.id);saveProg();}menuState=null;$('#menu').innerHTML='';
  world=WORLDS[0].build(0);SUN_DIR.copy(sun.position).normalize();playTrack('menu');if(C.done)C.done();else{menuState='title';renderMenu();}}
-function cineHTML(){return`<div class="cinebar t"></div><div class="cinebar b"></div><div class="cinetap" data-act="cineNext"></div><button class="btn cineskip" data-act="cineSkip">SALTAR ▶▶</button>
+function cineHTML(){return`<div class="cinebar t"></div><div class="cinebar b"></div><div class="cinetap" data-act="cineNext"></div><button class="btn cineskip" data-act="cineSkip">SALTAR ▶▶</button><div id="cinefade"></div><div class="cinegrain"></div>
  <div id="cinecard"><span></span><b></b></div><div id="cinebox" data-act="cineNext"><b></b><span id="cinetxt"></span><em>▶</em></div>`;}
 
 /* ---------------- Cinemática especial al conseguir una forma nueva ---------------- */
@@ -296,9 +296,28 @@ function cineBalls(C,kind){const sup=kind==='super',s=sup?3.2:.42,R=sup?13:2.4,l
 /* 3.0: modo libre al terminar la historia: repite cualquier pelea con el luchador que quieras y todas las formas y técnicas que hayas ganado */
 const freeOn=n=>storyAllDone()&&nodeDone(n)&&!!store.get('kc_sfree',false);
 function freeChar(n){const id=store.get('kc_sfc','');const i=chIdx(id);return i>=0&&!lockedC(i)?id:n.p.c;}
-function freeSpec(n){if(!freeOn(n))return n.p;const id=freeChar(n),ch=CHARS[chIdx(id)],forms=ch.forms.map((f,i)=>owns(ch,i)?f.id:null).filter(Boolean);
- const v=verOf(id);return{c:id,f:forms[0],forms,base:Math.max(ch.base*(VER_K[v]||1),id===n.p.c?(n.p.base||0):0)};}
+function freeSpec(n){if(!freeOn(n))return n.p;const id=freeChar(n),ch=CHARS[chIdx(id)],v=VER_DATA[id]?verNear(id,book&&book.id):null,d=v?verInfo(id,v):null;
+ /* 3.1: al repetir una pelea, tu luchador usa su versión de ese arco (poder y formas de entonces) */
+ let forms=ch.forms.map((f,i)=>owns(ch,i)&&(!d||d.forms.includes(f.id))?f.id:null).filter(Boolean);if(!forms.length)forms=['base'];
+ return{c:id,f:forms[0],forms,base:d?d.base:Math.max(ch.base,id===n.p.c?(n.p.base||0):0)};}
 function freeRow(n){if(!storyAllDone()||!nodeDone(n))return'';const on=!!store.get('kc_sfree',false);
  return`<div class="mpad" style="align-items:center">🔓 Modo libre: <button class="btn sbtn" data-act="sFree">${on?'SÍ':'NO'}</button>${on?`<button class="btn sbtn" data-act="sFc" data-arg="-1">◀</button><b>${esc(charName(freeChar(n)))}</b><button class="btn sbtn" data-act="sFc" data-arg="1">▶</button>`:''}</div>${on?'<div class="tip">Con tus formas, técnicas y versión. El rival es el de la historia.</div>':''}`;}
 Object.assign(ACTIONS,{sFree:()=>{store.set('kc_sfree',!store.get('kc_sfree',false));sfx('sel');renderMenu();},
  sFc:a=>{const n=nodeById(selNode);if(!n)return;const L=CHARS.map((c,i)=>i).filter(i=>!lockedC(i)),cur0=chIdx(freeChar(n)),k=L.indexOf(cur0);store.set('kc_sfc',CHARS[L[(k+(+a||1)+L.length)%L.length]].id);sfx('sel');renderMenu();}});
+/* 3.1: el suelo de las cinemáticas cuenta también las rocas y plataformas (antes los actores salían hundidos en los escalones del Torneo) */
+function cineGround(x,z){let g=world.groundY(x,z);for(const r of world.rocks||[])if(r.alive&&!r.cover&&Math.hypot(x-r.x,z-r.z)<r.r+.3)g=Math.max(g,r.top());return g;}
+/* 3.1: cinemáticas de película: cortes secos con fundido, plano por encima del hombro del que escucha,
+   acercamiento lento en los primeros planos, travelling lateral en los planos de dos y grúa en los generales */
+function cinePickCam(C,s){const prev=C.camMode,want=s.cam||'two',o=C.cast[s.who];let m=want;
+ if(want==='close'&&o&&!o.m.shen&&cineListener(C,o)&&((C.i*7+s.who.length)%3===1))m='over';
+ if(want==='two'&&!s.cam&&C.i%4===3)m='over';
+ C.camMode=m;if(prev&&prev!==m||(s.cam==='close'&&C.lastWho!==s.who)){C.cut=true;const f=$('#cinefade');if(f){f.classList.add('on');setTimeout(()=>f.classList.remove('on'),110);}}C.lastWho=s.who;}
+function cineListener(C,o){const live=Object.values(C.cast).filter(x=>x!==o&&!x.m.shen&&x.m.root.visible);if(!live.length)return null;
+ return live.sort((a,b)=>a.m.root.position.distanceTo(o.m.root.position)-b.m.root.position.distanceTo(o.m.root.position))[0];}
+function cineMove(C,mode,o,tp,lk,live){const t=C.t;
+ if(mode==='over'&&o&&!o.m.shen){const L=cineListener(C,o);if(L){const sp=o.m.root.position,lp=L.m.root.position,d=sp.clone().sub(lp);d.y=0;const dl=d.length()||1;d.multiplyScalar(1/dl);const side=V3(-d.z,0,d.x),k=(L.m.body.scale.y||1)*(L.m.root.scale.x||1);
+  tp.copy(lp).addScaledVector(d,-1.6*k).addScaledVector(side,.75*k).add(V3(0,1.45*k,0));lk.copy(sp).add(V3(0,1.15*(o.m.body.scale.y||1),0));tp.lerp(lk,clamp(t/6,0,.18));return;}}
+ if(mode==='close')tp.lerp(lk,clamp(t/5,0,1)*.32);
+ else if(mode==='two'){const d=tp.clone().sub(lk);d.y=0;const n=V3(-d.z,0,d.x).normalize();tp.addScaledVector(n,(clamp(t/5,0,1)-.5)*2.4);}
+ else if(mode==='wide')tp.y+=clamp(t/5,0,1)*3.5;
+ else if(mode==='low')tp.y+=clamp(t/4,0,1)*.6;}

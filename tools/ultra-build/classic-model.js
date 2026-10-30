@@ -22,6 +22,10 @@ HAIR.vegettoSS={cap:1,tip:.1,sp:HS(SSJ_C,1.08).concat([[.06,.1,.15,2.0,-.3,.22,.
 HAIR.gogeta={cap:1,tip:.12,sp:GOKU_C.concat([[.05,.1,.15,2.1,-.35,.2,.045],[-.06,.1,.15,2.1,.4,.18,.04]])};
 HAIR.gogetaSS={cap:1,tip:.1,sp:SSJ_C.concat([[.05,.1,.15,2.2,-.35,.22,.045],[-.06,.1,.15,2.2,.4,.2,.04]])};
 HAIR.gogeta4={cap:1,tip:.12,sp:HAIR.ssj4.sp.concat([[.05,.1,.15,2.1,-.35,.22,.045],[-.06,.1,.15,2.1,.4,.2,.04]])};
+/* 3.1: melenas de Super Saiyajin 4 (Daima) y de Vegeta Super Saiyajin 3 */
+HAIR.ssj4d={cap:1,tip:.1,sp:HS(GOKU_C,1.4,1.25).concat(MANE(1.05),HM([.15,.0,-.1,-2.7,-.55,.5,.1]),GOKU_B,[[.02,.13,.13,2.3,-.1,.18,.045]])};
+HAIR.vegeta4d={cap:1,tip:.1,sp:HS(HAIR.vegeta.sp,.85,1.05).concat(MANE(.55))};
+HAIR.vegeta3={cap:1,tip:.1,sp:HS(HAIR.vegeta.sp.slice(0,11),.8).concat(MANE(1.05))};
 (()=>{const b=CHARS.find(c=>c.id==='broly');if(b)b.forms.forEach(f=>{if(f.id==='ssj'||f.id==='lssj')f.hair='brolyL';});})();
 HAIR.kefla={cap:1,sp:HAIR.ssj.sp.map(s=>[s[0]*1.12,s[1],s[2]*1.1,s[3]*1.15,s[4]*1.2,s[5]*1.3,s[6]*1.1])};
 HAIR.gamma1={cap:1,sp:[[0,.15,0,-.45,0,.2,.075],[.1,.12,.02,-.3,-.85,.18,.065],[-.1,.12,.02,-.3,.85,.18,.065],[.05,.12,.12,1.1,-.2,.14,.05],[-.05,.12,.12,1.1,.2,.14,.05]]};
@@ -72,6 +76,8 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
  if(e==='sash'){add(new THREE.CylinderGeometry(.205,.205,.07,20),m.ex1,J.hips,0,.075,0).scale.set(1.06,1,.9);add(Bx(.06,.18,.02),m.ex1,J.hips,.12,-.04,.15,0,0,.2);}
  if(e==='gtVest'){for(const sd of[1,-1])add(Bx(.15,.36,.035),m.top,J.torso,sd*.12,.27,.177,0,sd*.2,0);add(Bx(.46,.4,.03),m.top,J.torso,0,.27,-.18);}
  if(e==='headband'){add(new THREE.TorusGeometry(.172,.018,6,24),m.ex1,J.head,0,.21,0,Math.PI/2);}
+ if(e==='furChest'){add(Sph(.2,20,14),m.skin,J.torso,0,.27,.05).scale.set(1.02,1,.82);for(const sd of[1,-1])add(Bx(.004,.11,.004),m.mouth,J.torso,sd*.03,.2,.215);}
+ if(e==='redRims'){const rm=new THREE.MeshBasicMaterial({color:0xd01a2a});for(const sd of[1,-1])add(Bx(.09,.016,.01),rm,J.head,sd*.067,.168,.158,0,0,sd*.18);}
  if(e==='toppoStache'){for(const sd of[1,-1]){const b=add(new THREE.CylinderGeometry(.03,.012,.15,8),m.ex1,J.head,sd*.07,.055,.155);b.rotation.z=sd*1.25;b.rotation.y=-sd*.3;}add(Sph(.035,10,8),m.ex1,J.head,0,.07,.16).scale.set(1.6,.7,.8);}
  if(e==='cape'){add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
 }

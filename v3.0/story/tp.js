@@ -1,0 +1,43 @@
+/* Kaioken Clash · Modo historia · Arco 7: Torneo del Poder (datos) */
+KC_STORY({id:'tp',name:'Torneo del Poder',nodes:[
+{id:'tp0',t:'cine',name:'Ocho universos, un ganador',place:'Mundo del Vacío',cine:{id:'c_tp0',title:'El Torneo del Poder',world:2,cast:[{c:'goku',x:-3,z:0},{c:'vegeta',x:-5,z:2},{c:'jiren',x:4,z:0,under:1},{c:'toppo',x:7,z:3,under:1},{c:'hit',x:6,z:-4,under:1},{c:'kefla',x:9,z:-1,under:1}],shots:[
+ {who:'nar',say:'Zeno organiza un torneo: los universos que pierdan serán borrados.',cam:'wide'},
+ {who:'nar',say:'Desde el suelo de la arena aparecen los guerreros de cada universo.',cam:'wide',rise:['jiren','toppo','hit','kefla'],card:'TORNEO DEL PODER'},
+ {who:'toppo',say:'Las Tropas del Orgullo defenderán la justicia del Universo 11.',cam:'close',pose:'crossArms'},
+ {who:'jiren',say:'…',cam:'close',pose:'crossArms'},
+ {who:'goku',say:'Ese tipo es increíblemente fuerte. Tengo que pelear con él.',cam:'two'},
+ {who:'vegeta',say:'No te distraigas, Kakaroto. Primero sobrevive.',cam:'close'}]}},
+{id:'tp1',t:'fight',name:'Kefla',place:'Arena del Torneo del Poder',world:2,
+ p:{c:'goku',f:'ssb',base:3e6,forms:['ssb','uio']},e:{c:'kefla',f:'ssj',base:8e8,hp:1.4,forms:['ssj','ssj2']},
+ goal:{type:'win'},stars:[{type:'time',v:140,txt:'Gana en menos de 140 s'},{type:'hp',v:.4,txt:'Termina con más del 40 % de vida'}],coins:280,
+ pre:[['kefla','¡Te voy a sacar del ring a patadas!'],['goku','¡Dos guerreras fusionadas! ¡Increíble!']]},
+{id:'db6',t:'db',n:6,name:'Esfera de 6 estrellas',hint:'Tras la estatua del Gran Sacerdote.',who:'vegeta',world:2},
+{id:'tp1b',t:'fight',name:'El orgullo de Vegeta',place:'Arena del Torneo del Poder',world:2,
+ p:{c:'vegeta',f:'ssbe',base:2.6e6,forms:['ssbe']},e:{c:'jiren',f:'full',base:1.2e11,hp:1.8,forms:['full']},
+ goal:{type:'survive',t:50},stars:[{type:'hp',v:.3,txt:'Resiste con más del 30 % de vida'},{type:'ult',txt:'Lanza un definitivo'}],coins:290,
+ pre:[['vegeta','Soy el príncipe de los Saiyajin. ¡No retrocederé ni un paso!'],['jiren','Tu orgullo no te salvará.']]},
+{id:'tp2',t:'fight',name:'Goku y Vegeta contra Jiren',place:'Arena en ruinas',world:2,v:1,
+ p:{c:'goku',f:'ssb',base:3e6,forms:['ssb','ssbkk']},ally:{c:'vegeta',f:'ssbe',base:2.6e6,forms:['ssbe']},e:{c:'jiren',base:1.2e11,hp:2,forms:['base','full']},
+ goal:{type:'survive',t:90},stars:[{type:'ally',txt:'Vegeta sigue en pie al final'},{type:'hp',v:.3,txt:'Resiste con más del 30 % de vida'}],coins:300,
+ pre:[['jiren','La confianza no vale nada. Solo la fuerza.'],['vegeta','Pues te enseñaremos la fuerza de dos Saiyajin.']],
+ cine:{id:'c_tp2',title:'El instinto superior',world:2,v:1,cast:[{c:'goku',x:-2,z:0,f:'ssb'},{c:'jiren',x:4,z:0}],shots:[
+  {who:'nar',say:'Al límite de sus fuerzas, el cuerpo de Goku empieza a moverse solo.',cam:'wide'},
+  {who:'nar',say:'Goku cae dentro de su propia Genkidama… y del interior surge una luz plateada.',cam:'wide',fx:'flash'},
+  {who:'goku',say:'…',cam:'close',form:'uio',uiwake:'goku',card:'ULTRA INSTINTO'},
+  {who:'nar',say:'Su cuerpo esquiva y contraataca sin pensar. Hasta los dioses se levantan de sus asientos.',cam:'low',uiwake:'goku',pose:'stance'},
+  {who:'jiren',say:'¿Qué es esto? ¿Me esquiva sin pensar?',cam:'close'}]}},
+{id:'tp3',t:'fight',name:'Ultra Instinto contra Jiren',place:'Arena en ruinas',world:2,v:1,
+ p:{c:'goku',f:'ui',base:3e6,forms:['ui']},e:{c:'jiren',f:'full',base:1.2e11,hp:1.8,forms:['full','limit']},
+ goal:{type:'win'},stars:[{type:'ult',txt:'Lanza un definitivo'},{type:'time',v:150,txt:'Gana en menos de 150 s'}],coins:340,
+ pre:[['jiren','Muéstrame ese poder. Lo superaré.'],['goku','Ya no pienso. Solo me muevo.']]},
+{id:'tp3b',t:'fight',name:'La última alianza',place:'Arena en ruinas',world:2,v:1,
+ intro:{id:'c_tp3b',title:'Tres contra uno',world:2,v:1,cast:[{c:'goku',x:-3,z:0},{c:'freezer',x:-5,z:2,f:'golden'},{c:'a17',x:-1,z:3},{c:'jiren',x:4,z:0,f:'limit'}],shots:[
+  {who:'freezer',say:'No te equivoques, mono. Solo peleo a tu lado porque me conviene.',cam:'close'},
+  {who:'a17',say:'Os cubro. Acabad con él de una vez.',cam:'close'},
+  {who:'goku',say:'¡Freezer, juntos! ¡Ahora!',cam:'low',pose:'charge',aura:{goku:1}}]},
+ p:{c:'goku',base:3e6,forms:['ssb']},ally:{c:'freezer',f:'golden',base:5.3e5,forms:['golden']},e:{c:'jiren',f:'limit',base:1.2e11,hp:1.6,forms:['limit']},
+ goal:{type:'win'},stars:[{type:'ally',txt:'Freezer sigue en pie al final'},{type:'ult',txt:'Lanza un definitivo'}],coins:330},
+{id:'tp4',t:'cine',name:'El deseo del Androide 17',place:'Mundo del Vacío',cine:{id:'c_tp4',title:'El deseo del Androide 17',world:2,cast:[{c:'a17',x:0,z:0},{c:'goku',x:-3,z:1}],shots:[
+ {who:'nar',say:'Los tres caen juntos de la arena. El Androide 17, último en pie, gana para el Universo 7.',cam:'wide'},
+ {who:'a17',say:'Mi deseo: que vuelvan todos los universos borrados.',cam:'close',fx:'flash'},
+ {who:'goku',say:'¡Bien hecho, 17! Ese es un buen deseo.',cam:'two',pose:'victory'}]}}]});

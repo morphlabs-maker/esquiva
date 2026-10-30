@@ -6,8 +6,10 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 
 | Juego | Archivo | Descripción |
 | --- | --- | --- |
-| Kaioken Clash | `index.html` | Versión 3.0 (3D libre con cámara detrás del luchador, Kaioken combinable, técnicas con forma propia, versiones por arco y maestría, paseo por el planeta de Bills, Toppo, mundo en órbita) sobre la 2.2: retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 34 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
+| Kaioken Clash | `index.html` | Versión 3.1 (versiones por arco reales, SSJ4 de Daima, Vegeta SSJ3, cinemáticas de película) sobre la 3.0 (3D libre con cámara detrás del luchador, Kaioken combinable, técnicas con forma propia, versiones por arco y maestría, paseo por el planeta de Bills, Toppo, mundo en órbita) sobre la 2.2: retro/chibi. Contenido de Ultra + modo historia «Junto a Goku», 34 luchadores, tienda nueva, outfits, Supervivencia, 2P en un celular, repetición y foto |
 | Kaioken Clash Ultra | `ultra.html` | Versión realista/anime sobre la 1.8, 25 luchadores |
+| Kaioken Clash 3.0 (copia) | `v3.0/index.html` | Copia guardada de la 3.0 con sus propios `story/`, `vendor/` y `fonts/`; no se actualiza sola. Etiqueta git `v3.0`. |
+| Edición Unity | `unity/KaiokenClash/` | Proyecto Unity 2022.3 en C# (ver su README). Personajes de proporciones de figura y mundos estilo manga, creados por código. Datos exportados de la web. |
 
 - Ultra también se publica como Artifact (https://claude.ai/artifact/6wVtcHbPRnkgo13nTjW5kJ, versión 5). Esa copia usa `window.KC_PORTRAITS` con imágenes en data URI y three.js desde cdnjs; la de `ultra.html` usa `portraits/<id>.webp` y `vendor/three.min.js`.
 - `main` sigue con el minijuego Esquiva original. No se ha tocado ni se ha abierto PR.
@@ -58,6 +60,11 @@ Dos juegos de peleas 3D de Dragon Ball (proyecto de fans) en un solo repo, sin s
 - **3.0 · Outfits** con piezas propias (`add`/`rm` en `OUTFITS`): Vegeta gi azul sin armadura, Yardrat, Capsule Corp; Goku fin de Z, GT, gi negro, Yardrat, granjero, Patrulla…
 - **3.0 · Mundo 12**: Órbita de la Tierra (`plus-world3.js`), sin suelo.
 - **3.0 · Historia libre**: al terminar la historia, en peleas ya superadas «Modo libre» deja jugar con cualquier luchador y todas tus formas (`freeSpec`).
+- **3.1 · Versiones por arco desde la historia** (`gen-versions.js` → `plus-verdata.js`, se regenera en `make.sh`): cada versión fija poder base y formas de ese arco en todos los modos (Goku Saga Saiyajin: 8000 y solo Kaioken). Fuera de la historia el poder base sigue creciendo con `VER_K`. Formas extra fuera de la historia en `EXTRA` (Vegeta SSJ3 en Buu). En «Modo libre» de la historia se usa la versión del arco de esa pelea.
+- **3.1 · SSJ4 de Daima** (pelaje rosado, pecho al aire, melena magenta, ojos con borde rojo) para Goku, Vegeta, Gogeta y Vegito; **Vegeta SSJ3** añadido al final de su lista de formas (no mueve compras guardadas) con orden de transformación en `ch.order`.
+- **3.1 · Arreglos**: los proyectiles teledirigidos no pierden velocidad (`p.spd`, `p.hd` retraso antes de perseguir); la lluvia de ki de Gogeta ya golpea. En las cinemáticas el suelo cuenta las rocas (`cineGround`): nadie sale hundido en los escalones del Torneo.
+- **3.1 · Cinemáticas de película**: cortes con fundido (`#cinefade`), plano por encima del hombro (`over`), acercamiento lento en primeros planos, travelling y grúa, viñeta y grano (`cinePickCam`, `cineMove`).
+- **Edición Unity** (`unity/KaiokenClash`): `tools/unity-export/export.js` vuelca los datos de la web a `Assets/Resources/Data/kaioken.json`. Sin escenas ni prefabs: `Bootstrap` crea el juego al arrancar y `Editor/KaiokenSetup.cs` crea la escena y la configuración de iPhone. Comprobación sin Unity: `mcs` contra `tools/unity-export/stubs/UnityStubs.cs` (firmas) y `mono` con `UnityRuntime.cs` + `sim/Sim.cs` (simulación de peleas y cinemáticas). Falta por portar: online, tienda, outfits, Torneo por horas, NPC y 2 jugadores.
 - **Actualización automática** en vez de un botón de actualizar. Nunca recarga en plena pelea; un `sessionStorage` evita bucles de recarga.
 
 ## Cómo se construye Ultra (`tools/ultra-build/`)

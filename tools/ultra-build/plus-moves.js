@@ -51,7 +51,7 @@ const MOVE3={
   sp.pose='idle';if(sp.t>.15){f.model.J.elR.remove(sp.m);f.sp=null;}},
  rain(f,dt,sp,s,fwd){const N=sp.isU?40:26,D=1.1;sp.pose=sp.t<.2?'raise':(Math.floor(sp.t*12)%2?'blastR':'blastL');const n=Math.min(N,Math.floor(sp.t/D*N));
   const r=V3(-fwd.z,0,fwd.x);while(sp.fired<n){sp.fired++;const yaw=rand(-1.3,1.3),pitch=rand(.25,1.2),dir=fwd.clone().multiplyScalar(Math.cos(yaw)*Math.cos(pitch)).addScaledVector(r,Math.sin(yaw)*Math.cos(pitch)).add(V3(0,Math.sin(pitch),0)).normalize();
-   const from=f.hand(sp.fired%2?1:-1);projs.push(newProj(f,from,dir.multiplyScalar(rand(26,36)),{kind:'blast',base:(s.pow??(sp.isU?110:80)),color:s.color,r:.32,homing:2.4}));if(sp.fired%3===0)sfx('blast');}
+   const from=f.hand(sp.fired%2?1:-1);projs.push(newProj(f,from,dir.multiplyScalar(rand(34,42)),{kind:'blast',base:(s.pow??(sp.isU?110:80)),color:s.color,r:.6,homing:9,hd:.28}));if(sp.fired%3===0)sfx('blast');}
   if(sp.t>=D+.15)f.sp=null;},
  hellzone(f,dt,sp,s){const t=tgtOf(f),N=sp.isU?16:10;if(!sp.orbs)sp.orbs=[];
   if(sp.phase==='charge'){sp.pose=Math.floor(sp.t*10)%2?'blastR':'blastL';const n=Math.min(N,Math.floor(sp.t/1.1*N));

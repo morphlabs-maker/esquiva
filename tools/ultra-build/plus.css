@@ -143,3 +143,9 @@ body.roam #train{display:none!important}
 body.touch .csdet,body.touch .csinfo .hint{display:none}
 body.touch .csl{gap:3px}body.touch .csl .mid{flex-direction:row;gap:4px}body.touch .csl .mid .tip{display:none}body.touch .csl .mid .btn{padding:6px 10px}
 body.touch .csinfo .formpick{max-height:22vh}
+/* 3.1: aspecto de película en las cinemáticas */
+#cinefade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .16s;z-index:3}#cinefade.on{opacity:1;transition:none}
+.cinegrain{position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%);mix-blend-mode:multiply}
+.cinegrain::after{content:'';position:absolute;inset:-50%;opacity:.07;background-image:repeating-radial-gradient(circle at 17% 32%,#fff 0,#000 1px,transparent 2px,transparent 4px);animation:grain .4s steps(3) infinite}
+@keyframes grain{0%{transform:translate(0,0)}33%{transform:translate(-3%,2%)}66%{transform:translate(2%,-3%)}100%{transform:translate(0,0)}}
+.cinebar{height:11vh!important}
