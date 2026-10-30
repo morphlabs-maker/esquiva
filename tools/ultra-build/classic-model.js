@@ -85,8 +85,8 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
  if(e==='cape'){add(Bx(.42,.62,.02),m.ex2,J.torso,0,.12,-.2,.12);}
  /* 3.2: guardianes de las esferas del Reino Demoníaco (Daima): cabeza de metal con ojos rojos, hombreras con púas, esfera en el pecho y arma */
  if(e==='tamaHead'||e==='tamaHead3'){const big=e==='tamaHead3',red=new THREE.MeshBasicMaterial({color:0xe0242a}),hi=new THREE.MeshBasicMaterial({color:0xff9a9a});
-  add(Sph(.186,24,18),m.skin,J.head,0,.14,0).scale.set(1,big?.9:1.08,1);
-  for(const sd of[1,-1]){const ey=add(Sph(.048,16,12),red,J.head,sd*.068,big?.17:.16,.158,0,0,sd*.55);ey.scale.set(.7,1.35,.42);add(Sph(.012,8,6),hi,J.head,sd*.06,big?.19:.18,.18);
+  add(Sph(.186,24,18),m.skin,J.head,0,.14,0).scale.set(1,big?.9:1.02,1);
+  for(const sd of[1,-1]){const ey=add(Sph(.048,16,12),red,J.head,sd*.068,big?.17:.16,.158,0,0,sd*.55);ey.scale.set(.82,1.12,.42);add(Sph(.012,8,6),hi,J.head,sd*.06,big?.19:.18,.18);
    const hn=add(cone(.04,.15,8),m.ex2,J.head,sd*.115,.27,-.02,0,0,-sd*.35);if(big)hn.scale.setScalar(.8);}
   if(!big){add(Bx(.05,.022,.02),toon(0x7ac8e8),J.head,0,.075,.172);add(cone(.05,.12,8),m.ex2,J.head,0,.3,-.04,-.25);}
   else add(Bx(.08,.016,.02),toon(0x3a3a3a),J.head,0,.09,.17);}
@@ -111,4 +111,37 @@ function chibiExtras(model,e,add,cone){const J=model.J,m=model.mats;
   add(new THREE.TorusGeometry(.11,.035,8,18),w,J.torso,0,.45,0,Math.PI/2);}
  if(e==='gasLines'){const ln=new THREE.MeshBasicMaterial({color:0x4a3a5a});for(const sd of[1,-1]){add(Bx(.004,.05,.004),ln,J.head,sd*.11,.11,.14,0,0,sd*.2);add(Bx(.04,.004,.004),ln,J.head,sd*.065,.11,.165);}}
  if(e==='blankEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(i%2)o.visible=false;});}
+ if(e==='blackEyes'){if(model.eyes)model.eyes.forEach((o,i)=>{if(!(i%2)){o.userData.m0=o.material;o.material=o.material.clone();o.material.color.setHex(0x14101c);}});}
+ /* 3.2b: Gas según el manga: rastas moradas (o negras) largas, diadema dorada con colmillos de marfil, tabardo rojo con ribete amarillo y cuello en V */
+ if(e==='dreads'||e==='dreadsWild'||e==='dreadsLong'){const wild=e==='dreadsWild',long=e==='dreadsLong';add(new THREE.SphereGeometry(.182,20,12,0,TAU,0,Math.PI*.52),m.hair,J.head,0,.15,-.012,-.18);
+  for(let i=0;i<17;i++){const a=(i/16-.5)*Math.PI*1.25,x=Math.sin(a)*.15,z=-Math.cos(a)*.13-.02,L=(long?.7:.52)+(i%3)*.06;
+   const g=new THREE.CylinderGeometry(.024,.019,L,6);g.translate(0,-L/2,0);
+   const d=add(g,m.hair,J.head,x,.25-Math.abs(Math.sin(a))*.04,z,wild?.45+((i*37)%10)/10*.6:.22+(i%2)*.08,0,Math.sin(a)*(wild?.6:.28));d.userData.dread=1;}}
+ if(e==='gasCrown'||e==='gasTusksBig'){const big=e==='gasTusksBig',iv=toon(0xf0e2b4),au=toon(0xe0b84a);add(new THREE.TorusGeometry(.178,.012,6,26),au,J.head,0,.2,0,Math.PI/2+.12);
+  for(const sd of[1,-1]){const t=add(new THREE.ConeGeometry(.026*(big?1.25:1),.15*(big?1.35:1),8),iv,J.head,sd*.075,.13-(big?.045:.025),.168,Math.PI+.12,0,sd*.18);t.scale.z=.6;}}
+ if(e==='tabard'||e==='tabardLong'||e==='tabardTorn'){const R=toon(0xb81a1e),Y=toon(0xf0d870),Lg=e==='tabardLong',T=e==='tabardTorn',h=Lg?.95:.62;
+  for(const z of[.176,-.176]){const pnl=add(Bx(.3,h,.025),R,J.torso,0,.4-h/2,z);if(T)pnl.scale.set(.85,.55,1);add(Bx(.025,h*(T?.55:1),.03),Y,J.torso,0,.4-h*(T?.275:.5),z*1.03);}
+  if(!T)for(const sd of[1,-1]){add(Bx(.36,.03,.12),R,J.torso,sd*.2,.42,0,0,0,-sd*.32);add(Bx(.36,.012,.125),Y,J.torso,sd*.2,.405,0,0,0,-sd*.32);}
+  add(new THREE.CylinderGeometry(.04,.04,.015,14),Y,J.torso,0,.36,.19,Math.PI/2);}
+ if(e==='rags'){const w=toon(0xe6e2ea);const sk=add(new THREE.CylinderGeometry(.21,.3,.36,12,1,true),w,J.hips,0,-.16,0);sk.material=w;w.side=THREE.DoubleSide;
+  for(let i=0;i<8;i++){const a=i/8*TAU;add(cone(.04,.14,4),w,J.hips,Math.sin(a)*.27,-.4,Math.cos(a)*.27,Math.PI);}}
+ if(e==='bootBuckle'){const au=toon(0xe0b84a);for(const L of['L','R'])add(Bx(.11,.02,.06),au,J['kn'+L],0,-.36,.06);}
+ /* Granolah: visor de francotirador sobre el ojo derecho, bufanda blanca, chaleco con botones y tirantes en su forma del deseo */
+ if(e==='scope'){const au=toon(0xd8a83a),lens=new THREE.MeshBasicMaterial({color:0x7ae8ff});add(new THREE.TorusGeometry(.045,.014,8,18),au,J.head,-.066,.14,.165);add(new THREE.CircleGeometry(.04,16),lens,J.head,-.066,.14,.17);
+  add(new THREE.TorusGeometry(.178,.014,6,26),toon(0x5a3a1a),J.head,0,.16,0,Math.PI/2);}
+ if(e==='vestButtons'){const b=toon(0xd8b040);for(let i=0;i<4;i++)for(const sd of[1,-1])add(Sph(.014,8,6),b,J.torso,sd*.05,.36-i*.08,.19);}
+ if(e==='suspenders'){const g=toon(0x9a9aa4);for(const sd of[1,-1]){add(Bx(.045,.4,.02),g,J.torso,sd*.08,.24,.19);add(Bx(.045,.4,.02),g,J.torso,sd*.08,.24,-.19);add(Bx(.06,.05,.025),toon(0xd0d0d8),J.torso,sd*.08,.36,.2);}}
+ /* Cell Max: placas rojas con manchas, alas negras grandes, boca abierta y cola con maza */
+ if(e==='maxPlates'){for(const L of['L','R']){add(Sph(.13,16,12),m.top,J['sh'+L],0,.03,0).scale.set(1.1,.9,1.05);add(new THREE.CylinderGeometry(.075,.07,.12,12),m.top,J['el'+L],0,-.09,0);add(new THREE.CylinderGeometry(.085,.075,.2,12),m.boots,J['kn'+L],0,-.13,.01);add(Sph(.075,12,8),m.top,J['kn'+L],0,0,.03);}
+  add(new THREE.SphereGeometry(.25,20,12,0,TAU,0,Math.PI*.5),m.top,J.torso,0,.18,.02).scale.set(1.1,1.2,.92);}
+ if(e==='maxWings'){const wm=toon(0x34343a);for(const sd of[1,-1]){const w=add(Sph(.3,18,12),wm,J.torso,sd*.24,.42,-.24,.2,sd*.25,-sd*.65);w.scale.set(1.25,.48,.12);}}
+ if(e==='maxMouth'){add(new THREE.SphereGeometry(.19,20,12,0,TAU,0,Math.PI*.55),m.top,J.head,0,.15,-.03,-.5);add(Sph(.05,12,8),new THREE.MeshBasicMaterial({color:0x2a1020}),J.head,0,.06,.16).scale.set(1,1.2,.5);add(Bx(.06,.012,.01),new THREE.MeshBasicMaterial({color:0xf4f4f4}),J.head,0,.1,.18);add(Sph(.022,8,6),toon(0x7ab0ff),J.head,0,.04,.17);}
+ if(e==='maxMace'&&model.tail){model.tail.forEach(sg=>sg.material=m.top);const end=model.tail[model.tail.length-1],k=toon(0x2a2a2e);add(Sph(.1,12,10),k,end,0,.32,0);for(let i=0;i<8;i++){const a=i/8*TAU;add(cone(.022,.07,5),k,end,Math.cos(a)*.09,.32+(i%2?.04:-.04),Math.sin(a)*.09,0,0,0).lookAt(end.localToWorld(V3(Math.cos(a),0,Math.sin(a))));}}
+ /* Zamasu fusionado: abrigo de Kaioshin gris con forro rojo, faja roja, cuello alto; su forma corrupta tiene el brazo derecho morado y enorme */
+ if(e==='kaioCoat'){const red=toon(0xb01a1a);red.side=THREE.BackSide;add(new THREE.CylinderGeometry(.22,.3,.56,22,1,true,Math.PI*.4,Math.PI*1.2),m.top,J.hips,0,-.2,-.01);add(new THREE.CylinderGeometry(.215,.295,.56,22,1,true,Math.PI*.4,Math.PI*1.2),red,J.hips,0,-.2,-.01);
+  add(new THREE.CylinderGeometry(.11,.13,.1,18,1,true),red,J.torso,0,.46,0);add(new THREE.TorusGeometry(.2,.04,8,22),toon(0xc0201e),J.hips,0,.1,0,Math.PI/2).scale.set(1.05,.9,1);}
+ if(e==='purpleArm'){const pm=toon(0x8a5ac0);for(let i=0;i<9;i++){const r=.08+Math.random()*.05;add(Sph(r,12,10),pm,i<4?J.shR:i<7?J.elR:J.wrR,(Math.random()-.5)*.08,-.04-i%4*.05,(Math.random()-.5)*.06).scale.setScalar(1.6);}}
 }
+
+HAIR.granolahW={cap:1,tip:.08,sp:HS(SSJ_C,1.05,1.05).concat([[0,.12,-.13,-1.6,0,.4,.08],[.1,.08,-.12,-1.8,-.5,.36,.07],[-.1,.08,-.12,-1.8,.5,.36,.07]])};
+HAIR.granolah={cap:1,tip:.1,sp:HM([0,.17,-.02,-.9,0,.36,.09],[.08,.15,-.01,-1.0,-.35,.34,.085],[.13,.1,-.03,-1.2,-.75,.3,.075],[.15,.03,-.05,-1.6,-1.0,.26,.065]).concat([[0,.12,-.13,-1.9,0,.3,.075],[.05,.16,.1,.6,-.2,.16,.05]])};

@@ -53,7 +53,7 @@ KC_STORY({id:'buu',name:'Saga de Majin Buu',nodes:[
   {who:'nar',say:'Los Pendientes Potara de los Kaioshin atraen a los dos guerreros con una fuerza imparable.',cam:'two',poses:{goku:'fly',vegeta:'fly'},card:'POTARA'},
   {who:'nar',say:'',cam:'wide',merge:{from:['goku','vegeta'],into:'vegetto',f:'base'}},
   {who:'vegetto',say:'Soy Vegito. Y vengo a acabar contigo.',cam:'close',pose:'stance'}]},
- p:{c:'vegetto',base:2e7,forms:['base','svg']},e:{c:'buu',f:'gabs',base:3e8,hp:1.4,forms:['gabs']},
+ p:{c:'vegetto',f:'svg',base:8e7,forms:['base','svg']},e:{c:'buu',f:'gabs',base:3e8,hp:1.4,forms:['gabs']},
  goal:{type:'win'},stars:[{type:'noTrans',txt:'Gana sin transformarte'},{type:'time',v:120,txt:'Gana en menos de 120 s'}],coins:230,
  pre:[['vegetto','No soy Goku ni Vegeta. Soy el que te va a derrotar.'],['buu','¡Imposible! ¡Buu es el más fuerte!']]},
 {id:'buu4',t:'fight',name:'La Genkidama contra Kid Buu',place:'Planeta de los Kaioshin',world:3,v:1,

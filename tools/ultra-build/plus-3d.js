@@ -57,7 +57,7 @@ setInterval(set3DClass,400);
 function cam3DReset(){const p=game.f[0];if(!p)return;lock3=true;syncLockBtn();const o=p.opp;cy3=o?Math.atan2(o.pos.x-p.pos.x,o.pos.z-p.pos.z):p.face;cp3=.12;}
 Object.assign(ACTIONS,{cam3d:()=>{CAM3D=!CAM3D;store.set('kc_cam3d',CAM3D);sfx('sel');renderPause('main');set3DClass();}});
 /* ---------------- Kaioken combinable: K (o KK) sube x3 → x10 → x20 → apagado, sobre cualquier forma y en cualquier momento (también en la historia) ---------------- */
-const kkCan=f=>!!f&&['goku','vegetto'].includes(f.ch.id)&&f.role!=='boss';
+const kkCan=f=>!!f&&['goku','vegetto','gogeta'].includes(f.ch.id)&&f.role!=='boss';
 function kkSet(f,lv){if(f.kkL===lv)return;f.kkL=lv;f._kkVis=-1;if(lv){f.ki=Math.max(0,f.ki-.4);sfx('transform',.8);flashScreen(.25,'#ff3a3a');ring(f.chest(),0xff2a2a,5,.4,false,.2);pop(f,'¡KAIOKEN x'+lv+'!','#ff4a4a',true);}else{f.aura.setColor(f.form.aura);f.model.mats.skin.emissive.setHex(f.form.kk?0x661010:0);}}
 function kkTick(f,dt){if(!kkCan(f)||f.state==='ko'){if(f.kkL)kkSet(f,0);return;}
  if(game.phase==='fight'&&!f.form.kk){

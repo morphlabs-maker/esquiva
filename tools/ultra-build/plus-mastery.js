@@ -20,15 +20,19 @@ function verNear(chId,arc){const L=verArcs(chId);if(!L.length)return null;if(!ar
    Las formas que no salen en ninguna versión (compradas o de otros modos) solo están en la última versión del luchador. */
 const VER_CACHE={};
 function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CACHE[ck];const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;
- const ch=CHARS[chIdx(chId)];if(!ch)return null;const b0=v=>v.base||ch.base,first=L.find(v=>b0(v)===b0(d))||d;
+ const ch=CHARS[chIdx(chId)];if(!ch)return null;const b0=v=>v.base||ch.base,first=L.find(v=>b0(v)===b0(d))||d,ord=ARCS.map(a=>a.id),
+  /* 3.2b: el crecimiento por arco se mide desde Namek para todos (los números de la historia están calibrados con Goku a 3 M): así Gas, Granolah y Goku conservan sus proporciones */
+  anc=ord.indexOf(first.arc)<ord.indexOf('nam')?first.arc:'nam';
  let forms=d.forms.filter(id=>ch.forms.some(f=>f.id===id));if(d===L[L.length-1]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.map(f=>f.id).filter(id=>!seen.has(id)));}
  if(!forms.length)forms=[ch.forms[0].id];
- const base=b0(d)*(VER_K[arc]||1)/(VER_K[first.arc]||1),top=Math.max(...forms.map(id=>(ch.forms.find(f=>f.id===id)||{mult:1}).mult));
- return VER_CACHE[ck]={base,forms,cap:base*top*1.36*(kkStackArc(arc)?10:1)};}
+ const base=b0(d)*(VER_K[arc]||1)/(VER_K[anc]||1),top=Math.max(...forms.map(id=>(ch.forms.find(f=>f.id===id)||{mult:1}).mult));
+ return VER_CACHE[ck]={base,forms,cap:base*top*1.36};}
 /* Kaioken encima de una transformación: desde el Universo 6 (Blue + Kaioken). Antes, solo sobre el estado base y hasta el nivel que tuviera en su arco */
 const kkStackArc=arc=>!arc||ARCS.findIndex(a=>a.id===arc)>=ARCS.findIndex(a=>a.id==='tr');
 function kkArcOf(f){if(f.ver)return f.ver;const B=game.story&&game.story.book;if(B&&B.kind==='arc'&&!game.story.free)return B.id;return null;}
-function kkLevels(f){const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
+/* 3.2b: el botón KK funciona siempre (petición del jugador); se deja la lógica por arco por si se quiere volver a limitar */
+const KK_FREE=true;
+function kkLevels(f){if(KK_FREE)return[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
  const v=VER_DATA[f.ch.id]?verNear(f.ch.id,arc):null,d=v&&verInfo(f.ch.id,v);if(!d)return[];return[3,10,20].filter(n=>d.forms.includes('kk'+n));}
 const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
