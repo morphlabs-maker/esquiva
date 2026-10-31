@@ -1075,6 +1075,35 @@ const VER_FIX={
 const KK_FUSION={3:1.2,10:1.5,20:1.8,50:2};
 /* Granolah: outfit con la ropa negra de su forma del deseo */
 OUTFITS.push({id:'gr_black',who:'granolah',saga:'Granolah el superviviente',name:'Ropa negra',price:220,add:['suspenders'],rm:['vestButtons','scarfRed'],colors:{top:0x18181c,sleeve:0x18181c,pants:0x18181c,belt:0x9a9aa4,wrist:0x18181c,glove:0xe8c8a8,boots:0x18181c}});
+/* =========================================================
+   KAIOKEN CLASH 3.4 — una sola escala de poder coherente por arco
+   Las cifras de Super del jugador (fusiones, Zamasu, Bills, Black Freezer) están en B; la historia usaba Goku a 3 M.
+   VER_ABS fija el poder de las formas divinas y de los rivales de cada arco para que todos estén en el mismo rango
+   y se cumpla quién le gana a quién (en «jugar» y en la historia). Las formas mortales (base, SSJ…) siguen con el crecimiento por arco.
+   ========================================================= */
+const VER_ABS={
+ goku:{tr:{ssg:.5*BB,ssb:1*BB,ssbkk:2*BB},tp:{ssg:.55*BB,ssb:1.1*BB,ssbkk:2.05*BB,uio:2.1*BB,ui:2.4*BB},bro:{ssg:.6*BB,ssb:1.2*BB,ssbkk:2.1*BB,uio:2.2*BB,ui:2.5*BB},
+  mor:{ssg:.62*BB,ssb:1.25*BB,ssbkk:2.15*BB,uio:2.25*BB,ui:2.6*BB},gr:{ssg:.65*BB,ssb:1.3*BB,ssbkk:2.2*BB,uio:2.3*BB,ui:3*BB,tui:5*BB}},
+ vegeta:{tr:{ssg:.48*BB,ssb:.95*BB},tp:{ssg:.52*BB,ssb:1.05*BB,ssbe:1.9*BB},bro:{ssg:.58*BB,ssb:1.15*BB,ssbe:2*BB},mor:{ssg:.6*BB,ssb:1.2*BB,ssbe:2.1*BB},gr:{ssg:.63*BB,ssb:1.25*BB,ssbe:2.2*BB,ue:2.8*BB}},
+ freezer:{tp:{golden:1.2*BB},bro:{golden:1.25*BB},gr:{golden:1.4*BB,black:10.5*BB}},
+ hit:{tr:{base:.3*BB,skip:.5*BB,full:.9*BB},tp:{base:.35*BB,skip:.6*BB,full:1*BB}},
+ trunks:{tr:{rage:.7*BB}},
+ jiren:{tp:{base:.6*BB,full:2*BB,limit:2.35*BB}},
+ toppo:{tp:{base:.15*BB,justice:.4*BB,god:1.9*BB}},
+ kefla:{tp:{base:.2*BB,ssj:.9*BB,ssj2:1.6*BB}},
+ a17:{tp:{base:.1*BB,full:.25*BB,ranger:.6*BB}},
+ broly:{bro:{base:.2*BB,wrath:1*BB,ssj:1.5*BB,lssj:2.7*BB}},
+ moro:{mor:{old:.05*BB,young:.5*BB,planets:1.2*BB,s73:1.6*BB,merus:2*BB,earth:2.8*BB}},
+ gohan:{gr:{mystic:1*BB,beast:3.2*BB}},
+ piccolo:{gr:{awaken:.9*BB,orange:1.6*BB,orangeG:2.4*BB}},
+ cell:{gr:{max:2.5*BB}}};
+/* gr: Granolah 2,7 B < Ultra Ego 2,8 B < UI dominado 3 B < Gas Deseo 3,2 B < Berserker 4,2 B < UI Verdadero 5 B < Instintos 5,8 B < Gas Zombie 6,5 B < Black Freezer 10,5 B */
+(()=>{const g=CHARS.find(c=>c.id==='gas');if(g){setF(g,'wish',{mult:3.2*BB/g.base});setF(g,'coat',{mult:4.2*BB/g.base});setF(g,'awaken',{mult:5.8*BB/g.base});setF(g,'limit',{mult:6.5*BB/g.base});}
+ const gr=CHARS.find(c=>c.id==='granolah');if(gr)setF(gr,'wish',{mult:2.7*BB/gr.base});
+ const k=CHARS.find(c=>c.id==='goku');if(k){setF(k,'tui',{mult:5*BB/k.base});setF(k,'ui',{mult:3*BB/k.base});setF(k,'uio',{mult:2.3*BB/k.base});}
+ const v=CHARS.find(c=>c.id==='vegeta');if(v)setF(v,'ue',{mult:2.8*BB/v.base});})();
+/* orden de transformación de todos: de menos a más poder (las fusiones ya no tienen el Blue después del Ultra Ego) */
+for(const c of CHARS){if(!c.forms||c.forms.length<2)continue;c.order=c.forms.map((f,i)=>i).filter(i=>!c.forms[i].hidden).sort((a,b)=>c.forms[a].mult-c.forms[b].mult||a-b);}
 
 
 /* ---------------- Utilidades ---------------- */
@@ -3444,7 +3473,7 @@ function renderMenu(){const m=$('#menu');$('#hud').style.display='none';m.style.
  else if(menuState==='chars'){const cell=i=>{const ch=CHARS[i];return`<div class="cell${lockedC(i)?' lock':''}" data-act="pickChar" data-arg="${i}"><img src="${PORTRAITS[i]}" alt="">${lockedC(i)?'🔒 ':''}${ch.name}${cur[0]===i?'<div class="cur"></div><span class="tag t1">1P</span>':''}${cur[1]===i&&!['boss','train','surv'].includes(game.mode)?'<div class="cur c2"></div><span class="tag t2">'+p2Label(true)+'</span>':''}</div>`;};
   const side=p=>{if(p&&game.mode==='boss')return'<b>JEFE</b><br>Lo eliges después de tu luchador.';if(p&&game.mode==='surv')return'<b>SUPERVIVENCIA</b><br>Rivales al azar, cada oleada más fuerte. Cada K.O. da monedas.';if(p&&game.mode==='train')return'<b>MAESTRO · WHIS</b><br>Poder 50 B. No ataca y esquiva como el Ultra Instinto dominado. Mide tus combos y te da consejos.';const ch=CHARS[cur[p]],who=p?p2Label():'1P',st=pst[p];
    const forms=st==='char'?`${lockedC(cur[p])?'<div style="color:#ff9a5a">🔒 '+LOCK_MSG+'</div>':''}<div class="csdet">${ch.forms.length} formas · poder base ${fmtP(ch.base)}<br>Especial: ${ch.s1.name}<br>Definitivo: ${ch.ult.name}</div>`
-    :`<div style="color:#c8cce0">${st==='form'?'Empieza en:':'Empieza en: <span style="color:#7dff7a">'+ch.forms[fsel[p]].name+' · LISTO</span>'}</div>${st==='form'?`<div class="formpick">${formOrder(ch).map(i=>[ch.forms[i],i]).map(([f,i])=>{if(f.hidden)return'';const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i,p));return`<div class="${i===fsel[p]?'on':''}${lk?' lk':''}" data-act="pickForm" data-arg="${p},${i}">${lk?'🔒 ':''}${f.name} · ${fmtP(verFormPow(ch,i,p))}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}</div>${lockMsg&&humanSide(p)?`<div style="color:#ff9a5a;margin-top:4px">${lockMsg}</div>`:''}`:''}`;
+    :`<div style="color:#c8cce0">${st==='form'?'Empieza en:':'Empieza en: <span style="color:#7dff7a">'+ch.forms[fsel[p]].name+' · LISTO</span>'}</div>${st==='form'?`<div class="formpick">${formOrder(ch).map(i=>[ch.forms[i],i]).map(([f,i])=>{if(f.hidden)return'';const lk=(humanSide(p)&&!owns(ch,i))||!verFormOk(ch,i,p);return`<div class="${i===fsel[p]?'on':''}${lk?' lk':''}" data-act="pickForm" data-arg="${p},${i}">${lk?'🔒 ':''}${f.name} · ${fmtP(verFormPow(ch,i,p))}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}</div>${lockMsg&&humanSide(p)?`<div style="color:#ff9a5a;margin-top:4px">${lockMsg}</div>`:''}`:''}`;
    return`<b>${who} · ${ch.name}</b><br>${forms}`;};
   const hint1=pst[0]==='char'?'1P: <span class="k">WASD</span> mover · <span class="k">F</span> elegir':pst[0]==='form'?'1P: <span class="k">W</span><span class="k">S</span> forma inicial · <span class="k">F</span> confirmar · <span class="k">G</span> volver':'1P listo · <span class="k">G</span> cambiar';
   const hint2=['boss','train','surv'].includes(game.mode)?'':solo()?(pst[0]==='ready'?'1P elige también al '+p2Label().toLowerCase()+' con <span class="k">WASD</span> y <span class="k">F</span>':'Primero elige 1P; después 1P elige al '+p2Label().toLowerCase()):
@@ -3571,7 +3600,7 @@ function menuKey(code){
   const ctl=solo()&&pst[0]==='ready'?1:0;
   const nav=(p,d)=>{if(pst[p]==='char'){let i=cur[p];if(d==='l')i=(i+CHARS.length-1)%CHARS.length;if(d==='r')i=(i+1)%CHARS.length;if(d==='u')i=i-7>=0?i-7:i;if(d==='d')i=i+7<CHARS.length?i+7:i;cur[p]=i;sfx('sel');}
    else if(pst[p]==='form'){const O=formOrder(CHARS[cur[p]]),n=O.length,k=Math.max(0,O.indexOf(fsel[p]));if(d==='u'||d==='l')fsel[p]=O[(k+n-1)%n];if(d==='d'||d==='r')fsel[p]=O[(k+1)%n];sfx('sel');}};
-  const ok=p=>{if(pst[p]==='char'){if(humanSide(p)&&lockedC(cur[p])){lockMsg=LOCK_MSG;sfx('back');return;}pst[p]='form';fsel[p]=0;lockMsg='';sfx('ok');}else if(pst[p]==='form'){if(humanSide(p)&&!owns(CHARS[cur[p]],fsel[p])){lockMsg='Forma bloqueada: cómprala en la TIENDA';sfx('back');return;}lockMsg='';pst[p]='ready';sfx('ok');}};
+  const ok=p=>{if(pst[p]==='char'){if(humanSide(p)&&lockedC(cur[p])){lockMsg=LOCK_MSG;sfx('back');return;}pst[p]='form';fsel[p]=0;lockMsg='';sfx('ok');}else if(pst[p]==='form'){if(!verFormOk(CHARS[cur[p]],fsel[p],p)){lockMsg='Esa forma no existe en esta versión';sfx('back');return;}if(humanSide(p)&&!owns(CHARS[cur[p]],fsel[p])){lockMsg='Forma bloqueada: cómprala en la TIENDA';sfx('back');return;}lockMsg='';pst[p]='ready';sfx('ok');}};
   const back=p=>{if(pst[p]==='ready'){pst[p]='form';sfx('back');return true;}if(pst[p]==='form'){pst[p]='char';sfx('back');return true;}return false;};
   const m1={KeyA:'l',KeyD:'r',KeyW:'u',KeyS:'d'},m2={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',ArrowDown:'d'};
   if(m1[code])nav(ctl,m1[code]);
@@ -4169,12 +4198,12 @@ function cineBalls(C,kind){const sup=kind==='super',s=sup?3.2:.42,R=sup?13:2.4,l
 /* 3.0: modo libre al terminar la historia: repite cualquier pelea con el luchador que quieras y todas las formas y técnicas que hayas ganado */
 const freeOn=n=>nodeDone(n)&&!!store.get('kc_sfree',false);
 function freeChar(n){const id=store.get('kc_sfc','');const i=chIdx(id);return i>=0&&!lockedC(i)?id:n.p.c;}
-function freeSpec(n){if(!freeOn(n))return n.p;const id=freeChar(n),ch=CHARS[chIdx(id)],v=VER_DATA[id]?verNear(id,book&&book.id):null,d=v?verInfo(id,v):null;
+function freeSpec(n){if(!freeOn(n))return n.p;const id=freeChar(n),ch=CHARS[chIdx(id)],v=VER_DATA[id]?freeVer(id):null,d=v?verInfo(id,v):null;
  /* 3.1: al repetir una pelea, tu luchador usa su versión de ese arco (poder y formas de entonces) */
  let forms=formOrder(ch).map(i=>ch.forms[i]).filter(f=>owns(ch,ch.forms.indexOf(f))&&(!d||d.forms.includes(f.id))).map(f=>f.id);if(!forms.length)forms=[ch.forms[0].id];
  return{c:id,f:forms[0],forms,base:d?d.base:Math.max(ch.base,id===n.p.c?(n.p.base||0):0)};}
 function freeRow(n){if(!nodeDone(n)||n.t==='db'&&!n.fight)return'';const on=!!store.get('kc_sfree',false);
- return`<div class="mpad" style="align-items:center">🔓 Modo libre: <button class="btn sbtn" data-act="sFree">${on?'SÍ':'NO'}</button>${on?`<button class="btn sbtn" data-act="sFc" data-arg="-1">◀</button><b>${esc(charName(freeChar(n)))}</b><button class="btn sbtn" data-act="sFc" data-arg="1">▶</button>`:''}</div>${on?'<div class="tip">Con tus formas, técnicas y versión. El rival es el de la historia.</div>':''}`;}
+ return`<div class="mpad" style="align-items:center">🔓 Modo libre: <button class="btn sbtn" data-act="sFree">${on?'SÍ':'NO'}</button>${on?`<button class="btn sbtn" data-act="sFc" data-arg="-1">◀</button><b>${esc(charName(freeChar(n)))}</b><button class="btn sbtn" data-act="sFc" data-arg="1">▶</button>${freeVer(freeChar(n))?` · Versión <button class="btn sbtn" data-act="sFv" data-arg="-1">◀</button><b>${esc(arcName(freeVer(freeChar(n))))}</b><button class="btn sbtn" data-act="sFv" data-arg="1">▶</button>`:''}`:''}</div>${on?'<div class="tip">Con tus formas, técnicas y versión. El rival es el de la historia.</div>':''}`;}
 Object.assign(ACTIONS,{sFree:()=>{store.set('kc_sfree',!store.get('kc_sfree',false));sfx('sel');renderMenu();},
  sFc:a=>{const n=nodeById(selNode);if(!n)return;const L=CHARS.map((c,i)=>i).filter(i=>!lockedC(i)),cur0=chIdx(freeChar(n)),k=L.indexOf(cur0);store.set('kc_sfc',CHARS[L[(k+(+a||1)+L.length)%L.length]].id);sfx('sel');renderMenu();}});
 /* 3.1: el suelo de las cinemáticas cuenta también las rocas y plataformas (antes los actores salían hundidos en los escalones del Torneo) */
@@ -4689,18 +4718,24 @@ const VER_CACHE={};
    así la misma transformación es más fuerte en los arcos posteriores y los números del jugador se cumplen en su arco. VER_FIX = poder fijo por forma */
 (()=>{const ord=ARCS.map(a=>a.id);for(const c in VER_FIX){const L=VER_DATA[c]=(VER_DATA[c]||[]).slice();
  for(const e of VER_FIX[c]){const forms=Object.keys(e.pw),d={arc:e.arc,base:e.pw.base||Math.min(...Object.values(e.pw)),forms,pw:e.pw,fix:1},i=L.findIndex(v=>v.arc===e.arc);if(i>=0)L[i]=d;else L.push(d);}
- L.sort((x,y)=>ord.indexOf(x.arc)-ord.indexOf(y.arc));}})();
+ L.sort((x,y)=>ord.indexOf(x.arc)-ord.indexOf(y.arc));}
+ /* 3.4: formas que no salen en ninguna versión: las de Super van a una versión del último arco (Gohan Bestia, Piccolo Naranja, Cell Max);
+    las demás, a la última versión. Así ninguna versión tiene formas de otra época (Vegito de Z sin Blue) */
+ for(const id in VER_DATA){if(VER_FIX[id])continue;const ch=CHARS[chIdx(id)];if(!ch)continue;const L=VER_DATA[id],seen=new Set(L.flatMap(v=>v.forms)),orph=ch.forms.filter(f=>!f.hidden&&!seen.has(f.id));if(!orph.length)continue;
+  const S=orph.filter(f=>f.era==='S'),Z=orph.filter(f=>f.era!=='S'),last=L[L.length-1];if(Z.length)last.forms=last.forms.concat(Z.map(f=>f.id));
+  if(S.length){if(ord.indexOf(last.arc)>=ord.indexOf('god'))last.forms=last.forms.concat(S.map(f=>f.id));else L.push({arc:'gr',base:last.base,forms:last.forms.concat(S.map(f=>f.id))});}}})();
 function verInfo(chId,arc){const ck=chId+'|'+arc;if(VER_CACHE[ck])return VER_CACHE[ck];const L=VER_DATA[chId]||[],d=L.find(v=>v.arc===arc);if(!d)return null;
  const ch=CHARS[chIdx(chId)];if(!ch)return null;const ok=id=>ch.forms.some(f=>f.id===id&&!f.hidden);
- let forms=d.forms.filter(ok);if(!d.fix&&d===L[L.length-1]&&!VER_FIX[chId]){const seen=new Set(L.flatMap(v=>v.forms));forms=forms.concat(ch.forms.filter(f=>!f.hidden&&!seen.has(f.id)).map(f=>f.id));}
+ let forms=d.forms.filter(ok);
  if(!forms.length)forms=[ch.forms[0].id];
- const base0=d.base||ch.base,pw=d.fix?fixPw(ch,d,base0):growPw(ch,L,d),base=d.fix?base0:pw[ch.forms[0].id],top=Math.max(...forms.map(id=>pw[id]));
+ const base0=d.base||ch.base,pw=d.fix?fixPw(ch,d,base0):growPw(ch,L,d),A=!d.fix&&(VER_ABS[chId]||{})[arc];if(A)for(const k in A)if(pw[k]!=null)pw[k]=A[k];
+ const base=d.fix?base0:pw[ch.forms[0].id],top=Math.max(...forms.map(id=>pw[id]));
  return VER_CACHE[ck]={base,forms,cap:top*1.36,pw,fix:!!d.fix};}
 /* poder de cada forma en una versión: el fijo si lo hay; si no, base × multiplicador. En versiones fijas, una forma sin valor toma el de la forma listada más cercana por debajo */
 function fixPw(ch,d,base){const pw={};for(const f of ch.forms)pw[f.id]=base*f.mult;if(!d.pw)return pw;
  const listed=ch.forms.filter(f=>d.pw[f.id]!=null).sort((a,b)=>a.mult-b.mult);
  for(const f of ch.forms){if(d.pw[f.id]!=null){pw[f.id]=d.pw[f.id];continue;}let near=null;for(const l of listed)if(l.mult<=f.mult)near=l;pw[f.id]=near?d.pw[near.id]:(listed[0]?d.pw[listed[0].id]:base);}return pw;}
-const VER_PIN={goku:{uio:'gr',ui:'gr',tui:'gr'},vegeta:{ue:'gr'},freezer:{black:'gr'}};
+const VER_PIN={};
 function growPw(ch,L,d){const ord=ARCS.map(a=>a.id),ai=ord.indexOf(d.arc),K=a=>VER_K[a]||1,pin=VER_PIN[ch.id]||{},pw={};
  const real=L.filter(v=>!v.fix),idx=real.indexOf(d);let seg=0;for(let i=1;i<=idx;i++)if((real[i].base||ch.base)!==(real[i-1].base||ch.base))seg=i;
  const b=real[seg]?(real[seg].base||ch.base):(d.base||ch.base);
@@ -4714,20 +4749,22 @@ function kkArcOf(f){if(f.ver)return f.ver;const B=game.story&&game.story.book;if
 const KK_FREE=true;
 const KK_FUS=['gogeta','vegetto'],isFusKK=f=>KK_FUS.includes(f.ch.id);
 /* multiplicador real del Kaioken: literal en Goku; efectivo en las fusiones (x20 = ×1,8, x50 = ×2) */
-const kkMul=f=>!f.kkL?1:isFusKK(f)?(KK_FUSION[f.kkL]||1):f.kkL;
+/* Goku en formas divinas (Dios en adelante) también usa el Kaioken efectivo: si no, x20 sobre el UI se saldría de toda escala */
+const kkMul=f=>!f.kkL?1:isFusKK(f)||(f.ch.id==='goku'&&f.form&&f.form.mult>=6000)?(KK_FUSION[f.kkL]||1):f.kkL;
 function kkLevels(f){if(KK_FREE)return isFusKK(f)?[3,10,20,50]:[3,10,20];const arc=kkArcOf(f);if(kkStackArc(arc))return[3,10,20];if(f.form.mult>1)return[];
  const v=VER_DATA[f.ch.id]?verNear(f.ch.id,arc):null,d=v&&verInfo(f.ch.id,v);if(!d)return[];return[3,10,20].filter(n=>d.forms.includes('kk'+n));}
 const verAllows=(f,i)=>!f.verIdx||f.verIdx.includes(i);
 let G_VER=null;
-function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;f.verMult=verMultOf(f.ch,d);f.verFix=d.fix;
+function verApply(f,v,own){const d=verInfo(f.ch.id,v);if(!d)return;f.ver=v;f.base=d.base;f.verCap=d.cap;f.verMult=verMultOf(f.ch,d);f.verFix=d.fix;f.verAbs=(VER_ABS[f.ch.id]||{})[v]||null;
  let idx=d.forms.map(id=>f.ch.forms.findIndex(x=>x.id===id)).filter(i=>i>=0);if(own)idx=idx.filter(i=>owns(f.ch,i));if(!idx.length)idx=[0];
  f.verIdx=idx;f.storyForms=idx;if(!idx.includes(f.startForm))f.startForm=idx[0];}
 function verInit(f,o){f.ver=null;if(o.base||o.role==='boss'||o.role==='dummy'||game.story||game.online||game.mode==='tdp'||f.ch.model==='dragon'||!VER_DATA[f.ch.id])return;
  const mine=f.idx===0||(f.idx===1&&local2P());let v=null;if(f.idx===0){v=verOf(f.ch.id);G_VER=v;}else if(f.idx===1)v=verOfSide(f.ch.id,1);else v=verNear(f.ch.id,G_VER);
  /* 3.2: la forma elegida en la selección manda: si la versión no la tiene, se usa la primera versión que sí (antes empezaba en base) */
  const want=f.ch.forms[f.startForm]&&f.ch.forms[f.startForm].id;
- if(v&&want&&!verInfo(f.ch.id,v).forms.includes(want)){const L=verArcs(f.ch.id),ok=L.filter(a=>verInfo(f.ch.id,a).forms.includes(want)),order=ARCS.map(a=>a.id);
-  if(ok.length)v=ok.sort((a,b)=>Math.abs(order.indexOf(a)-order.indexOf(v))-Math.abs(order.indexOf(b)-order.indexOf(v)))[0];}
+ /* 3.4: la versión manda: si la forma elegida no existe en ella, empieza en la más fuerte de esa versión que no la supere */
+ if(v&&want){const d=verInfo(f.ch.id,v);if(!d.forms.includes(want)){const wm=f.ch.forms[f.startForm].mult;let best=f.ch.forms.findIndex(x=>x.id===d.forms[0]);
+  for(const id of d.forms){const i=f.ch.forms.findIndex(x=>x.id===id);if(i>=0&&f.ch.forms[i].mult<=wm&&f.ch.forms[i].mult>=f.ch.forms[best].mult)best=i;}f.startForm=best;}}
  if(v)verApply(f,v,mine);}
 /* ¿esta forma existe en la versión elegida? (para la selección de personaje) */
 function verFormOk(ch,i,side=0){const v=verOfSide(ch.id,side);if(!v)return true;const d=verInfo(ch.id,v);return!d||d.forms.includes(ch.forms[i].id);}
@@ -4738,7 +4775,7 @@ const mKey=(c,fm)=>c+'.'+fm;
 const mastPct=f=>((prog.mast||{})[mKey(f.ch.id,f.form.id)]||0)/10;
 function mastOf(f){return mastFormK(f,f.form);}
 /* maestría de una forma concreta (0-1): la tuya (si eres humano) + la que trae la versión del arco */
-function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(f.verFix?0:(VER_M[f.ver]||0)))/100,0,1);}
+function mastFormK(f,fm){if(!f||!fm||fm.mult<=1)return 0;const own=human(f)&&!game.online?((prog.mast||{})[mKey(f.ch.id,fm.id)]||0)/10:0;return clamp((own+(f.verFix||(f.verAbs&&f.verAbs[fm.id]!=null)?0:(VER_M[f.ver]||0)))/100,0,1);}
 let mastSaveT=0;
 function mastTick(f,dt){if(game.phase!=='fight'||!human(f)||game.online||f.state==='ko'||!f.form||f.form.mult<=1)return;
  const crew=game.mode==='train'?(TRAIN_CREWS[game.crew||'whis']||TRAIN_CREWS.whis).k:0,rate=game.mode==='train'?3*crew:.8,k=mKey(f.ch.id,f.form.id);
@@ -4770,7 +4807,9 @@ function trainStep(dt){if(game.mode!=='train'||game.phase!=='fight')return;const
  const al=game.f[2],t=$('#tally');if(al&&t)t.textContent=al.ch.name.toUpperCase()+' (ALIADO) '+Math.round(al.hp/al.maxHp*100)+' %';
  if(game.crewNow==='free')freeRoamStep(dt);}
 Object.assign(ACTIONS,{crew:a=>{if(!TRAIN_CREWS[a])return;game.crew=a;game.crewPicked=true;sfx('ok');startFromGuide();},
- verPick:a=>{const [ci,d,sd]=String(a).split(':'),ch=CHARS[+ci],side=+sd||0;if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOfSide(ch.id,side)),k=side?'ver2':'ver';prog[k]=prog[k]||{};prog[k][ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();sfx('sel');renderMenu();}});
+ verPick:a=>{const [ci,d,sd]=String(a).split(':'),ch=CHARS[+ci],side=+sd||0;if(!ch)return;const L=verList(ch.id);if(!L.length)return;const i=L.indexOf(verOfSide(ch.id,side)),k=side?'ver2':'ver';prog[k]=prog[k]||{};prog[k][ch.id]=L[(i+(+d||1)+L.length)%L.length];saveProg();
+  /* si la forma elegida no existe en la nueva versión, pasa a la más fuerte que sí */
+  if(typeof fsel!=='undefined'&&cur[side]===+ci&&!verFormOk(ch,fsel[side],side)){const O=formOrder(ch).filter(j=>verFormOk(ch,j,side));if(O.length)fsel[side]=O[O.length-1];}sfx('sel');renderMenu();}});
 
 /* 3.3 · Modo historia: (1) formas de forma cronológica: el jugador tiene todas las que su personaje ya consiguió hasta esa pelea;
    (2) versiones fijas (fusiones, Bills, Zamasu) también en la historia; (3) en Extremo y Legendario el rival no supera tu tope ×1,6 / ×2,2 */
@@ -4779,18 +4818,24 @@ function storyChronoForms(f,n){const B=book;if(!B||B.kind!=='arc')return;const o
  for(const m of B.nodes){const N=m.fight||m;for(const k of['p','ally','e','e2']){const sp=N[k];if(sp&&sp.c===f.ch.id){(sp.forms||[]).forEach(x=>ids.add(x));if(sp.f)ids.add(sp.f);}}if(m===n)break;}
  for(const id of ids){const i=f.ch.forms.findIndex(x=>x.id===id&&!x.hidden);if(i>=0&&!f.storyForms.includes(i))f.storyForms.push(i);}
  f.storyForms.sort((a,b)=>f.ch.forms[a].mult-f.ch.forms[b].mult);}
-function storyFix(f){const B=book;if(!B||B.kind!=='arc'||!VER_FIX[f.ch.id])return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id);
+function storyFix(f){const B=book;if(!B||B.kind!=='arc')return;const A=(VER_ABS[f.ch.id]||{})[B.id];
+ if(A&&!VER_FIX[f.ch.id]){f.verMult=f.ch.forms.map(fm=>A[fm.id]!=null?A[fm.id]/f.base:null);return;}if(!VER_FIX[f.ch.id])return;const ord=ARCS.map(a=>a.id),ai=ord.indexOf(B.id);
  const e=VER_FIX[f.ch.id].filter(x=>ord.indexOf(x.arc)<=ai).pop();if(!e)return;const d=verInfo(f.ch.id,e.arc);if(!d)return;f.base=d.base;f.verMult=verMultOf(f.ch,d);}
 const formPow=(f,i)=>f.base*((f.verMult&&f.verMult[i])||f.ch.forms[i].mult);
 function storyPost(n){if(!game.story)return;const free=game.story.free;
  /* modo libre: tu luchador usa su versión de ese arco (poder de cada forma y tope) */
- if(free&&game.f[0]&&book&&book.kind==='arc'){const a=game.f[0],v=VER_DATA[a.ch.id]?verNear(a.ch.id,book.id):null,d=v&&verInfo(a.ch.id,v);if(d){a.base=d.base;a.verMult=verMultOf(a.ch,d);a.verCap=d.cap;a.verFix=d.fix;}}
+ if(free&&game.f[0]&&book&&book.kind==='arc'){const a=game.f[0],v=freeVer(a.ch.id),d=v&&verInfo(a.ch.id,v);if(d){a.base=d.base;a.verMult=verMultOf(a.ch,d);a.verCap=d.cap;a.verFix=d.fix;}}
  for(const f of game.f){if(f.role==='boss')continue;if(!(free&&f===game.f[0]))storyFix(f);if(f.team===0&&!free&&f.storyForms)storyChronoForms(f,n);}
  const a=game.f[0];if(!a||game.diff<2)return;const peak=Math.max(...(a.storyForms||[a.formIdx]).map(i=>formPow(a,i)))*(1+.35*mastFormK(a,a.ch.forms[(a.storyForms||[a.formIdx]).slice(-1)[0]]));
  const K=game.diff===2?1.6:2.2;for(const f of game.f)if(f.team===1)f.storyCap=peak*K*((n.e&&n.e.cap)||1);}
 
 /* orden de las formas para listas y selección: el de transformación (ch.order), sin las ocultas */
 const formOrder=ch=>(ch.order||ch.forms.map((_,i)=>i)).filter(i=>ch.forms[i]&&!ch.forms[i].hidden);
+
+/* 3.4 · Modo libre: eliges personaje y también su versión (la de cualquier arco que tengas abierto) */
+function freeVerMap(){try{return JSON.parse(store.get('kc_sfv','{}'))||{};}catch(e){return{};}}
+function freeVer(id){const L=verList(id);if(!L.length)return null;const v=freeVerMap()[id];if(L.includes(v))return v;const n=verNear(id,book&&book.id);return L.includes(n)?n:L[L.length-1];}
+Object.assign(ACTIONS,{sFv:a=>{const n=typeof nodeById==='function'&&nodeById(selNode);if(!n)return;const id=freeChar(n),L=verList(id);if(!L.length)return;const m=freeVerMap(),i=L.indexOf(freeVer(id));m[id]=L[(i+(+a||1)+L.length)%L.length];store.set('kc_sfv',JSON.stringify(m));sfx('sel');renderMenu();}});
 /* =========================================================
    KAIOKEN CLASH 3.0 — PASEO LIBRE POR EL PLANETA DE BILLS
    Sin objetivo fijo: exploras el planeta y te acercas a Vegeta, Broly, Whis, Cheelai, Goku o Bills.
@@ -4897,7 +4942,7 @@ applyTouch();world=buildEarth2(0);SUN_DIR.copy(sun.position).normalize();renderM
 </script>
 
 <script>/* Actualización automática: el service worker busca la versión nueva en cada apertura; si cambió y no estás en plena pelea, se recarga sola */
-(function(){const V='20261030234431',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
+(function(){const V='20261031001416',ok='serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');if(!ok)return;
 let reg=null,pend=false;const busy=()=>{try{return typeof game!=='undefined'&&!!game.phase&&game.phase!=='over'&&typeof menuState!=='undefined'&&!menuState;}catch(e){return false;}};
 const go=()=>{try{if(sessionStorage.getItem('kc_upd')===V+'>'+pend)return;sessionStorage.setItem('kc_upd',V+'>'+pend);}catch(e){}location.reload();};
 const chk=()=>{if(reg)reg.update().catch(()=>{});fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&j.v&&j.v!==V){pend=j.v;if(!busy())go();}}).catch(()=>{});};

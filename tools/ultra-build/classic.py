@@ -366,7 +366,7 @@ rep("const s=music.step%32,d=music.next-AC.currentTime;","const s=music.step%(tr
 rep("<div>${ch.forms.length} formas · poder base","<div class=\"csdet\">${ch.forms.length} formas · poder base")
 rep("setHair(model,f.hair||ch.hair);setExtras(model,f.extras||ch.extras||[]);","setHair(model,f.hair||ch.hair);setExtras(model,outfitExtras(model,f.extras||ch.extras||[]));")
 rep('<div class="hint" style="margin-top:10px"><span class="k">F2</span> pixelado','<div class="hint" style="margin-top:10px">3D: <span class="k">WASD</span> moverse · <span class="k">Space</span>/<span class="k">C</span> subir/bajar · <span class="k">L</span> fijar objetivo · ratón o <span class="k ar">←</span><span class="k ar">→</span> cámara · <span class="k">K</span> Kaioken · <span class="k">X</span> especial 2<br><span class="k">F2</span> pixelado')
-rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=humanSide(p)&&(!owns(ch,i)||!verFormOk(ch,i,p));")
+rep("const lk=humanSide(p)&&!owns(ch,i);","const lk=(humanSide(p)&&!owns(ch,i))||!verFormOk(ch,i,p);")
 # 3.2: en la selección, el poder de cada forma es el de la versión elegida; las formas de otros arcos dicen «otra versión» en vez de pedir monedas
 rep("${lk?'🔒 ':''}${f.name} · ${fmtP(ch.base*f.mult)}${lk?' · 🪙 '+formPrice(ch,i):''}</div>`;}).join('')}","${lk?'🔒 ':''}${f.name} · ${fmtP(verBase(ch,p)*f.mult)}${lk?(verFormOk(ch,i,p)?' · 🪙 '+formPrice(ch,i):' · otra versión'):''}</div>`;}).join('')}")
 # 3.0: selección de personaje nueva (cuadrícula a la derecha, vista previa grande con guardia y gestos) y versiones por arco
@@ -448,10 +448,12 @@ rep("realPower(){const f=this.form;let m=f.mult;","realPower(){const f=this.form
 rep("p=T?tdpPow(this):this.realPower();","p=T?tdpPow(this):Math.min(this.realPower(),this.storyCap||Infinity);")
 rep("allowed(i){if(this.storyForms)return this.storyForms.includes(i);","allowed(i){if(this.ch.forms[i].hidden)return false;if(this.storyForms)return this.storyForms.includes(i);")
 rep("${fmtP(verBase(ch,p)*f.mult)}","${fmtP(verFormPow(ch,i,p))}")
-rep("ch.forms.map((f,i)=>{const lk=humanSide(p)","formOrder(ch).map(i=>[ch.forms[i],i]).map(([f,i])=>{if(f.hidden)return'';const lk=humanSide(p)")
+rep("ch.forms.map((f,i)=>{const lk=(humanSide(p)","formOrder(ch).map(i=>[ch.forms[i],i]).map(([f,i])=>{if(f.hidden)return'';const lk=(humanSide(p)")
 rep("else if(f.ue)lv=.8;","else if(f.ue||f.destroyer)lv=f.destroyer?.95:.8;")
 # 3.3b: W/S recorren las formas en su orden de transformación (Vegeta SSJ3 antes del SSJ4)
 rep("else if(pst[p]==='form'){const n=CHARS[cur[p]].forms.length;if(d==='u'||d==='l')fsel[p]=(fsel[p]+n-1)%n;if(d==='d'||d==='r')fsel[p]=(fsel[p]+1)%n;sfx('sel');}};","else if(pst[p]==='form'){const O=formOrder(CHARS[cur[p]]),n=O.length,k=Math.max(0,O.indexOf(fsel[p]));if(d==='u'||d==='l')fsel[p]=O[(k+n-1)%n];if(d==='d'||d==='r')fsel[p]=O[(k+1)%n];sfx('sel');}};")
+# 3.4: ninguna forma fuera de la versión elegida, tampoco para la CPU
+rep("if(humanSide(p)&&!owns(CHARS[cur[p]],fsel[p])){lockMsg='Forma bloqueada: cómprala en la TIENDA';sfx('back');return;}","if(!verFormOk(CHARS[cur[p]],fsel[p],p)){lockMsg='Esa forma no existe en esta versión';sfx('back');return;}if(humanSide(p)&&!owns(CHARS[cur[p]],fsel[p])){lockMsg='Forma bloqueada: cómprala en la TIENDA';sfx('back');return;}")
 # HTML y CSS nuevos
 rep('<div id="duo"></div>','<div id="duo"></div>\n<div id="dlg"></div><div id="toasts"></div><div id="repbar"></div><div id="photobar"></div><div id="ppbox"></div>')
 rep('<div id="rbtns">','<div id="fbtn"><div class="tb b-fuse" data-k="fuse" aria-label="Fusión">🤝</div></div><div id="rbtns">')

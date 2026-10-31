@@ -127,3 +127,32 @@ const VER_FIX={
 const KK_FUSION={3:1.2,10:1.5,20:1.8,50:2};
 /* Granolah: outfit con la ropa negra de su forma del deseo */
 OUTFITS.push({id:'gr_black',who:'granolah',saga:'Granolah el superviviente',name:'Ropa negra',price:220,add:['suspenders'],rm:['vestButtons','scarfRed'],colors:{top:0x18181c,sleeve:0x18181c,pants:0x18181c,belt:0x9a9aa4,wrist:0x18181c,glove:0xe8c8a8,boots:0x18181c}});
+/* =========================================================
+   KAIOKEN CLASH 3.4 — una sola escala de poder coherente por arco
+   Las cifras de Super del jugador (fusiones, Zamasu, Bills, Black Freezer) están en B; la historia usaba Goku a 3 M.
+   VER_ABS fija el poder de las formas divinas y de los rivales de cada arco para que todos estén en el mismo rango
+   y se cumpla quién le gana a quién (en «jugar» y en la historia). Las formas mortales (base, SSJ…) siguen con el crecimiento por arco.
+   ========================================================= */
+const VER_ABS={
+ goku:{tr:{ssg:.5*BB,ssb:1*BB,ssbkk:2*BB},tp:{ssg:.55*BB,ssb:1.1*BB,ssbkk:2.05*BB,uio:2.1*BB,ui:2.4*BB},bro:{ssg:.6*BB,ssb:1.2*BB,ssbkk:2.1*BB,uio:2.2*BB,ui:2.5*BB},
+  mor:{ssg:.62*BB,ssb:1.25*BB,ssbkk:2.15*BB,uio:2.25*BB,ui:2.6*BB},gr:{ssg:.65*BB,ssb:1.3*BB,ssbkk:2.2*BB,uio:2.3*BB,ui:3*BB,tui:5*BB}},
+ vegeta:{tr:{ssg:.48*BB,ssb:.95*BB},tp:{ssg:.52*BB,ssb:1.05*BB,ssbe:1.9*BB},bro:{ssg:.58*BB,ssb:1.15*BB,ssbe:2*BB},mor:{ssg:.6*BB,ssb:1.2*BB,ssbe:2.1*BB},gr:{ssg:.63*BB,ssb:1.25*BB,ssbe:2.2*BB,ue:2.8*BB}},
+ freezer:{tp:{golden:1.2*BB},bro:{golden:1.25*BB},gr:{golden:1.4*BB,black:10.5*BB}},
+ hit:{tr:{base:.3*BB,skip:.5*BB,full:.9*BB},tp:{base:.35*BB,skip:.6*BB,full:1*BB}},
+ trunks:{tr:{rage:.7*BB}},
+ jiren:{tp:{base:.6*BB,full:2*BB,limit:2.35*BB}},
+ toppo:{tp:{base:.15*BB,justice:.4*BB,god:1.9*BB}},
+ kefla:{tp:{base:.2*BB,ssj:.9*BB,ssj2:1.6*BB}},
+ a17:{tp:{base:.1*BB,full:.25*BB,ranger:.6*BB}},
+ broly:{bro:{base:.2*BB,wrath:1*BB,ssj:1.5*BB,lssj:2.7*BB}},
+ moro:{mor:{old:.05*BB,young:.5*BB,planets:1.2*BB,s73:1.6*BB,merus:2*BB,earth:2.8*BB}},
+ gohan:{gr:{mystic:1*BB,beast:3.2*BB}},
+ piccolo:{gr:{awaken:.9*BB,orange:1.6*BB,orangeG:2.4*BB}},
+ cell:{gr:{max:2.5*BB}}};
+/* gr: Granolah 2,7 B < Ultra Ego 2,8 B < UI dominado 3 B < Gas Deseo 3,2 B < Berserker 4,2 B < UI Verdadero 5 B < Instintos 5,8 B < Gas Zombie 6,5 B < Black Freezer 10,5 B */
+(()=>{const g=CHARS.find(c=>c.id==='gas');if(g){setF(g,'wish',{mult:3.2*BB/g.base});setF(g,'coat',{mult:4.2*BB/g.base});setF(g,'awaken',{mult:5.8*BB/g.base});setF(g,'limit',{mult:6.5*BB/g.base});}
+ const gr=CHARS.find(c=>c.id==='granolah');if(gr)setF(gr,'wish',{mult:2.7*BB/gr.base});
+ const k=CHARS.find(c=>c.id==='goku');if(k){setF(k,'tui',{mult:5*BB/k.base});setF(k,'ui',{mult:3*BB/k.base});setF(k,'uio',{mult:2.3*BB/k.base});}
+ const v=CHARS.find(c=>c.id==='vegeta');if(v)setF(v,'ue',{mult:2.8*BB/v.base});})();
+/* orden de transformación de todos: de menos a más poder (las fusiones ya no tienen el Blue después del Ultra Ego) */
+for(const c of CHARS){if(!c.forms||c.forms.length<2)continue;c.order=c.forms.map((f,i)=>i).filter(i=>!c.forms[i].hidden).sort((a,b)=>c.forms[a].mult-c.forms[b].mult||a-b);}
